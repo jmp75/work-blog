@@ -6,8 +6,7 @@
 
 https://jmp75.github.io/work-blog/
 
-# My Blog
-
+# J-M's work-related Blog
 
 _powered by [fastpages](https://github.com/fastai/fastpages)_
 
