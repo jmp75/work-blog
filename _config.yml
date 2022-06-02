@@ -6,8 +6,8 @@
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 
-title: fastpages
-description: An easy to use blogging platform with support for Jupyter Notebooks.
+title: J-M's "lab notebook"
+description: Work-related posts for the so-called grey literature.
 github_username: jmp75
 # you can comment the below line out if your repo name is not different than your baseurl
 github_repo: "work-blog"
@@ -72,9 +72,9 @@ include:
 # This specifies what badges are turned on by default for notebook posts.
 default_badges:
   github: true
-  binder: true
-  colab: true
-  deepnote: true
+  binder: false
+  colab: false
+  deepnote: false
 
 # Escape HTML in post descriptions
 html_escape:
