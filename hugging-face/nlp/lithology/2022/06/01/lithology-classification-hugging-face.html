@@ -121,7 +121,7 @@ window.onload = wrap_img;
     <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h1"><a href="#About">About </a></li>
 <li class="toc-entry toc-h1"><a href="#Background">Background </a></li>
-<li class="toc-entry toc-h1"><a href="#Exploratory-data">Exploratory data </a>
+<li class="toc-entry toc-h1"><a href="#Getting-acquainted-with-data">Getting acquainted with data </a>
 <ul>
 <li class="toc-entry toc-h2"><a href="#Major-(primary)-lithology-codes">Major (primary) lithology codes </a></li>
 <li class="toc-entry toc-h2"><a href="#Minor-(secondary)-lithology-codes">Minor (secondary) lithology codes </a></li>
@@ -169,10 +169,10 @@ window.onload = wrap_img;
 <p>You would have an inkling that the prose of the writer (the "driller") can vary in style and detail. One typical use case is to determine the primary and (optionally) secondary lithologies of a record, as it strongly influences how fast water can flow underground. "gravel red very clayey" is on the easier side of the spectrum of difficulty: "gravel" as a primary lithology and "clay" as a secondary lithology (assuming these are valid classes for the context). It can get much trickier to classify of course, and certainly expensive if done very manually. Automating this classification process opens the possibility of an iterative process towards a sound lithology classification fit for purpose.</p>
 <p>I co-authored a conference presentation "Comparing regular expression and deep learning methods for the classification of descriptive lithology" (Page 161 of the <a href="https://mssanz.org.au/modsim2019/abstracts.html">MODSIM 2019 book of abstracts</a> if you are curious). With all the caveats of a study made on very limited resources, I was surprised by how well NLP performed overall to train and test on a human-labeled dataset.</p>
 <p>I am not working on this domain during paid hours these days, but feel like revisiting this for a bit over the course.</p>
-<h1 id="Exploratory-data">
-<a class="anchor" href="#Exploratory-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Exploratory data<a class="anchor-link" href="#Exploratory-data"> </a>
+<h1 id="Getting-acquainted-with-data">
+<a class="anchor" href="#Getting-acquainted-with-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting acquainted with data<a class="anchor-link" href="#Getting-acquainted-with-data"> </a>
 </h1>
-<p>Arbitrarily, I downloaded the data for the Namoi catchment from the <a href="http://www.bom.gov.au/water/groundwater/explorer/map.shtml">Australian Groundwater Explorer</a>. While I am not totally new to the domain, I genuinely do need to explore this data from scratch. This will probably be at least the rest of this post.</p>
+<p>Arbitrarily, I downloaded data for the <a href="https://www.awe.gov.au/water/cewo/catchment/namoi">Namoi catchment</a> from the <a href="http://www.bom.gov.au/water/groundwater/explorer/map.shtml">Australian Groundwater Explorer</a>. While I am not totally new to the domain, I genuinely do need to explore this data from scratch. This will probably be at least the rest of this post.</p>
 
 </div>
 </div>
@@ -185,23 +185,7 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 </pre></div>
 
     </div>
@@ -1069,6 +1053,12 @@ Name: Description, dtype: object</pre>
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Well, it does not require a fully trained geologist to think there should be obvious primary lithology codes for many of these, so why is there "None" for these descriptions?</p>
 <p>Not shown in the 50-odd sample above are descriptions which should indeed be unclassified (e.g. "no strata description")</p>
+<p>This is also an occasion to note the less obvious information and complications in descriptive logs, compared to earlier categories:</p>
+<ul>
+<li>CALY as a typo for CLAY</li>
+<li>Slang terms and acronyms, e.g. "W.B." perhaps for "Weathered, broken"  </li>
+<li>Quantitative and qualitative attributes such as SAND; 60%, SILTY, FINE 10%, MEDIUM 20% &amp; COARSE, which may be valuable for some types of classification </li>
+</ul>
 
 </div>
 </div>
@@ -1250,7 +1240,7 @@ Name: Description, dtype: object</pre>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Interesting. There is a clear pattern. I know from my prior exposure that "Clayey sands" and "sandy clays" are not that uncommon (and matter a great deal for geo-hydrology).</p>
+<p>Interesting. There is a clear pattern. I know from my prior exposure that "Clayey sands" and "sandy clays" are not that uncommon (and gradations of mixes of sand and clay matter a great deal to estimate hydraulic conductivity).</p>
 
 </div>
 </div>
@@ -1267,7 +1257,8 @@ Name: Description, dtype: object</pre>
 <div class="cell border-box-sizing text_cell rendered">
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This was the initial EDA. Next I'll  probably train a classifier on the major lithology code (or a subset thereof). I am keen to explore multi-label classification, but will ahve to decide whether to populate the secondary lithology code using regexp classification, or find a fully labeled dataset.</p>
+<p>This was the initial EDA. Next I'll  probably train a classifier on the major lithology code (or a subset thereof). I am keen to explore multi-label classification, but will have to decide whether to populate the secondary lithology code using regexp classification, or switch to a fully labelled dataset at some point.</p>
+<p>This first post illustrated the need to have a look at data. This data was already collated and curated, and I have no doubt many people went through a lot of work to get there. But this may not be a fully labelled dataset amenable to be used for training a classifier. At least, not without further data preparation.</p>
 
 </div>
 </div>
