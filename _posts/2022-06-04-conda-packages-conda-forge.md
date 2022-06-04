@@ -101,52 +101,8 @@ Maintainers:
 #### Recipe generated on /home/per202/src/staged-recipes/recipes for refcount ####
 ```
 
-and the output `meta.yaml`  (which is actually a ninja template file) is:
+The output `meta.yaml`  (which is actually a ninja template file), is a good start, however you should revise it a bit rather than accept wholesale
 
-```text
-{% set name = "refcount" %}
-{% set version = "0.9.3" %}
-
-package:
-  name: {{ name|lower }}
-  version: {{ version }}
-
-source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/refcount-{{ version }}.zip
-  sha256: bf8bfabdac6f0d9fe3734f1c1830fda8b9b2d740c90ecf8caf8c2ef3ed9c8442
-
-build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
-  number: 0
-
-requirements:
-  host:
-    - pip
-    - python
-  run:
-    - cffi
-    - python
-
-test:
-  imports:
-    - refcount
-  commands:
-    - pip check
-  requires:
-    - pip
-
-about:
-  home: https://github.com/csiro-hydroinformatics/pyrefcount
-  summary: A Python package for reference counting and interop with native pointers
-  dev_url: https://github.com/csiro-hydroinformatics/pyrefcount
-  license: BSD-3-Clause
-  license_file: LICENSE.txt
-
-extra:
-  recipe-maintainers:
-    - j-m
-```
 
 Mostly fine, however this did not pick up a requirement `cffi >=1.11.5`, and second guessing from reading this gallon.me post, a minimum python version is necessary to get accepted.
 
@@ -160,7 +116,7 @@ requirements:
     - python >=3.6
 ```
 
-Perhaps optional, remove a hard-coded package string in the source url section, to `url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip`
+Perhaps optional, remove a hard-coded package string "refcount "in the source url section.
 
 It is instructive to look at the [existing pull requests on staged-recipes](https://github.com/conda-forge/staged-recipes/pulls). Notably I realise that the github ID extracted by grayskull is not the correct one; I am not the ID [j-m](https://github.com/j-m), unfortunately (could have been judging by history length).
 
@@ -176,7 +132,15 @@ extra:
     - jmp75
 ```
 
-```text
+The end result should be something like:
+
+<!-- NOTE: we need to use a 'raw' section; ninja2 things otherwise mess things up at rendering with Jekyll 
+https://stackoverflow.com/questions/52324134/getting-an-liquid-exception-liquid-syntax-error-while-using-jekyll
+-->
+
+{% highlight yaml %}
+{% raw %}
+
 {% set name = "refcount" %}
 {% set version = "0.9.3" %}
 
@@ -227,7 +191,9 @@ about:
 extra:
   recipe-maintainers:
     - jmp75
-```
+
+{% endraw %}
+{% endhighlight %}
 
 So; ready to submit a pull request? Wait, wait.
 
