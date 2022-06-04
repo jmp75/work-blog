@@ -101,9 +101,9 @@ Maintainers:
 #### Recipe generated on /home/per202/src/staged-recipes/recipes for refcount ####
 ```
 
-and the output `meta.yaml` is:
+and the output `meta.yaml`  (which is actually a ninja template file) is:
 
-```yaml
+```text
 {% set name = "refcount" %}
 {% set version = "0.9.3" %}
 
@@ -176,7 +176,7 @@ extra:
     - jmp75
 ```
 
-```yaml
+```text
 {% set name = "refcount" %}
 {% set version = "0.9.3" %}
 
