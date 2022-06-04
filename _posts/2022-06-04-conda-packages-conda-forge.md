@@ -12,8 +12,7 @@ author: "<a href='https://github.com/jmp75'>J-M</a>"
 # permalink: /codespaces
 ---
 
-
-## Background
+# Background
 
 For years I've been contributing to and maintaining, at work, a [software stack for streamflow forecasting](https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/). It is a stack with a core in C++, but accessible via a C API by users from R, Matlab, Python and so on. A whole article could be written about the design rationale, successes and shortcomings of this stack, and the interplay of people, organisations and technologies in using these tools and how. But this will not be this post.
 
@@ -23,13 +22,13 @@ I've come to appreciate (mostly) conda environments for managing software stacks
 
 A bit picture end point would be a corporate equivalent to a conda-forge channel, with the full software stack available for any employee.
 
-## Baby steps
+# Baby steps
 
 I had a look a few weeks ago at how I'd package a substantial but relatively small C++ code [MOIRAI: Manage C++ Objects's lifetime when exposed through a C API](https://github.com/csiro-hydroinformatics/moirai/tree/conda). This proved a bit premature for reasons I won't detail.
 
 So, let's (re)start with a python-only library, as it happens in the same vein, [refcount](https://github.com/csiro-hydroinformatics/pyrefcount). Astonishingly, there is still no strict equivalent that I can find in conda-forge dedicated to reference counting external pointers. So, can I claim the spot?
 
-## Resources
+# Resources
 
 I started this post thinking first about conda packaging rather than submission _per se_ to conda-forge. Some resources I initially looked at as promising, **but from which I backed away** (for now):
 
@@ -42,9 +41,9 @@ You'll see in the walkthrough below (next section) that I reoriented towards an 
 * [3 simple stept to build a python package for conda-forge](https://gallon.me/3-simple-steps-to-build-a-python-package-for-conda-forge/). This post really got me on a better path.
 * [conda-forge documentation: Contributing packages](https://conda-forge.org/docs/maintainer/adding_pkgs.html#)
 
-## Walkthrough
+# Walkthrough
 
-### First trial: `conda build` locally?
+## First trial: `conda build` locally?
 
 Of course python is necessary and a conda environment a given. I do `. ~/config/baseconda` because I **never** have conda activated by default from `.bashrc`.
 
@@ -56,7 +55,7 @@ You should at least skim through the [concepts](https://docs.conda.io/projects/c
 
 The tutorial [Building conda packages from scratch](https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html) quickly confused me; I was trying to transpose it to `refcount` but this does not look like the right template to start from. The section [editing-the-meta-yaml-file](https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html#editing-the-meta-yaml-file) appears out of sync with the "correct" meta.yaml file. Baffling.
 
-### Preparing a PR to conda-forge/staged-recipes
+## Preparing a PR to conda-forge/staged-recipes
 
 Enter two new resources: [3 simple stept to build a python package for conda-forge](https://gallon.me/3-simple-steps-to-build-a-python-package-for-conda-forge/) and [conda-forge documentation: Contributing packages](https://conda-forge.org/docs/maintainer/adding_pkgs.html#). From these it becomes clear I should use [`grayskull`](https://github.com/conda-incubator/grayskull#introduction) to get a starting point as a `meta.yaml` file
 
@@ -232,7 +231,7 @@ extra:
 
 So; ready to submit a pull request? Wait, wait.
 
-### Building locally
+## Building locally
 
 [test](https://conda-forge.org/docs/maintainer/adding_pkgs.html#test) has a section on Running unit tests. Note that the default conda recipe above has a "pip check", but nothing more. `refcount` unit tests use pytest, and has unit tests; tick that. `refcount` is a pure python package, _but_ it is a package for (mostly) interoperability with native code via a C API. Unit tests do contain some c/c++ code.
 
@@ -342,7 +341,7 @@ Submit the [pull request](https://github.com/conda-forge/staged-recipes/pull/191
 
 ![refcount-conda-forge-pr-submission](../images/refcount-conda-forge-pr-submission.png)
 
-## Conclusion
+# Conclusion
 
 While there were a couple of bumps along the way, this should end up with a positive outcome. If not with refcount on `conda-forge`, I've a better understanding to tackle conda packaging on the rest of the software stack.
 
