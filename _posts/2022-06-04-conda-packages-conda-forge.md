@@ -305,7 +305,7 @@ TEST END: /home/conda/staged-recipes/build_artifacts/noarch/refcount-0.9.4-pyhd8
 
 Submit the [pull request](https://github.com/conda-forge/staged-recipes/pull/19140), and pleasantly:
 
-![refcount-conda-forge-pr-submission](../images/refcount-conda-forge-pr-submission.png)
+![refcount-conda-forge-pr-submission]({{ site.baseurl }}/images/refcount-conda-forge-pr-submission.png "refcount conda forge PR submission")
 
 # Conclusion
 
