@@ -3,7 +3,7 @@ title: "Submitting your first conda package to conda-forge"
 description: Journey in building my first conda package and ending up submitting to conda-forge
 comments: true
 hide: false
-toc: false
+toc: true 
 layout: post
 hide: false
 categories: [recipes, conda, conda-forge]
