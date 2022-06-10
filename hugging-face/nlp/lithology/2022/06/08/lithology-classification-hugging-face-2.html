@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Lithology classification using Hugging Face, part 2 | J-M’s “lab notebook”</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Lithology classification using Hugging Face, part 2" />
+<meta name="author" content="J-M" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Work-related posts for the so-called grey literature." />
+<meta property="og:description" content="Work-related posts for the so-called grey literature." />
+<link rel="canonical" href="https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/08/lithology-classification-hugging-face-2.html" />
+<meta property="og:url" content="https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/08/lithology-classification-hugging-face-2.html" />
+<meta property="og:site_name" content="J-M’s “lab notebook”" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-06-08T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Lithology classification using Hugging Face, part 2" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"J-M"},"dateModified":"2022-06-08T00:00:00-05:00","datePublished":"2022-06-08T00:00:00-05:00","description":"Work-related posts for the so-called grey literature.","headline":"Lithology classification using Hugging Face, part 2","mainEntityOfPage":{"@type":"WebPage","@id":"https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/08/lithology-classification-hugging-face-2.html"},"url":"https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/08/lithology-classification-hugging-face-2.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/work-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jmp75.github.io/work-blog/feed.xml" title="J-M's &quot;lab notebook&quot;" /><link rel="shortcut icon" type="image/x-icon" href="/work-blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/work-blog/">J-M&#39;s &quot;lab notebook&quot;</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/work-blog/about/">About Me</a><a class="page-link" href="/work-blog/search/">Search</a><a class="page-link" href="/work-blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Lithology classification using Hugging Face, part 2</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-06-08T00:00:00-05:00" itemprop="datePublished">
+        Jun 8, 2022
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">J-M</span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      15 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/work-blog/categories/#hugging-face">hugging-face</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/work-blog/categories/#NLP">NLP</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/work-blog/categories/#lithology">lithology</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-justify-center">
+          <div class="px-2">
+
+    <a href="https://github.com/jmp75/work-blog/tree/master/_notebooks/2022-06-08-lithology-classification-hugging-face-2.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/work-blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          
+          
+          
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#About">About </a></li>
+<li class="toc-entry toc-h1"><a href="#Kernel-installation">Kernel installation </a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#Minor-(secondary)-lithology-codes">Minor (secondary) lithology codes </a></li>
+<li class="toc-entry toc-h2"><a href="#Back-to-major-lithology-codes">Back to major lithology codes </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Major-lithology-code-"None"">Major lithology code &quot;None&quot; </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Next">Next </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2022-06-08-lithology-classification-hugging-face-2.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="About">
+<a class="anchor" href="#About" aria-hidden="true"><span class="octicon octicon-link"></span></a>About<a class="anchor-link" href="#About"> </a>
+</h1>
+<p>This is a continuation of <a href="https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/01/lithology-classification-hugging-face.html">Lithology classification using Hugging Face, part 1</a>.</p>
+<p>We saw in the previous post that the Namoi lithology logs data had their primary (major) lithology mostly completed. A substantial proportion had None nevertheless, despite descriptions that looked like they would obviously lead to a categorisation. There were many labels, with a long-tailed frequency histogram.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Kernel-installation">
+<a class="anchor" href="#Kernel-installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Kernel installation<a class="anchor-link" href="#Kernel-installation"> </a>
+</h1>
+<p>Note that mamba seems to not work on <code>conda install -c huggingface -c conda-forge datasets</code>; just returns immediately with no output that I can see. Pity because conda install is taking minutes to solve the environment.</p>
+<div class="highlight"><pre><span></span>conda install --force-reinstall mamba -c conda-forge
+<span class="c1"># led to conflicts! Probably related to my installing grayskull and shyaml recently in the base environment. This seems to prevent the instalation of the latest vesion of mamba</span>
+</pre></div>
+<div class="highlight"><pre><span></span>UnsatisfiableError: The following specifications were found to be incompatible with a past
+explicit spec that is not an explicit spec in this operation (openssl):
+
+  - mamba -&gt; conda[version='4.6.*,&lt;4.13.0|4.6.*|4.7.*,&lt;4.13.0|&gt;=4.7.12,&lt;4.13.0|&gt;=4.8,&lt;4.13.0|&gt;=4.7.12,&lt;4.8']
+  - mamba -&gt; openssl[version='&gt;=1.1.1f,&lt;1.1.2a|&gt;=1.1.1g,&lt;1.1.2a|&gt;=1.1.1h,&lt;1.1.2a|&gt;=1.1.1i,&lt;1.1.2a|&gt;=1.1.1j,&lt;1.1.2a|&gt;=1.1.1k,&lt;1.1.2a|&gt;=1.1.1l,&lt;1.1.2a|&gt;=1.1.1n,&lt;1.1.2a|&gt;=1.1.1o,&lt;1.1.2a']
+  - mamba -&gt; openssl[version='&gt;=1.1.1o,&lt;1.1.2a'] -&gt; ca-certificates
+  - mamba -&gt; pypy3.7[version='&gt;=7.3.7'] -&gt; openssl[version='1.0.*|&gt;=1.0.2o,&lt;1.0.3a|&gt;=1.0.2p,&lt;1.0.3a|&gt;=1.1.1a,&lt;1.1.2a|&gt;=1.1.1e,&lt;1.1.2a|&gt;=3.0.0,&lt;4.0a0|&gt;=3.0.3,&lt;4.0a0|&gt;=3.0.2,&lt;4.0a0|&gt;=1.1.1d,&lt;1.1.2a']
+
+The following specifications were found to be incompatible with each other:
+
+Output in format: Requested package -&gt; Available versions
+</pre></div>
+<p><code>conda remove shyaml grayskull conda-build</code> In the end figured out I needed <code>conda install -c conda-forge conda=4.12.0</code></p>
+<div class="highlight"><pre><span></span>conda create -n hf <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9 -c conda-forge
+conda install --name hf ipykernel matplotlib
+conda activate hf
+python -m ipykernel install --user --name hf --display-name <span class="s2">"Hugging Face"</span>
+conda install -c huggingface -c conda-forge datasets transformers
+</pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># /home/per202/src/learning-notes/ml/fastai/log.md</span>
+<span class="nb">cd</span> /home/per202/src/learning-notes/ml/fastai
+<span class="nv">myenv</span><span class="o">=</span>hf
+mamba install -n <span class="nv">$myenv</span> -c pytorch -c conda-forge --file nbdev.txt
+mamba install -n <span class="nv">$myenv</span> <span class="nv">pytorch</span><span class="o">=</span><span class="m">1</span>.11 -c pytorch -c nvidia -c conda-forge
+mamba install -n <span class="nv">$myenv</span> torchvision torchaudio -c pytorch -c nvidia -c conda-forge
+mamba install -n <span class="nv">$myenv</span> -c conda-forge sentencepiece
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>For the sake of applying HF, can I reduce the number of target labels.</li>
+<li>unbalanced data sets: <a href="https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/">https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/</a> </li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">def</span> <span class="nf">sample_desc_for_code</span><span class="p">(</span><span class="n">major_code</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">is_code</span> <span class="o">=</span> <span class="n">litho_logs</span><span class="p">[</span><span class="n">MAJOR_CODE</span><span class="p">]</span> <span class="o">==</span> <span class="n">major_code</span>
+    <span class="n">coded</span> <span class="o">=</span> <span class="n">litho_logs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">is_code</span><span class="p">][</span><span class="n">DESC</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coded</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sample_desc_for_code</span><span class="p">(</span><span class="s1">'UNKN'</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>134145     (UNKNOWN), NO SAMPLE COLLECTED DUE TO WATER LOSS
+134715    (UNKNOWN); COULD NOT BE LOGGED BECAUSE NO CUTT...
+122303                                          GREY SHALEY
+133856                                              NOMINAL
+134378                                                 None
+133542                                              DRILLER
+122258                                        WATER BEARING
+127916                                         WATER SUPPLY
+133676                                              DRILLER
+134399                                              DRILLER
+134052                                              DRILLER
+128031                         VERY SANDY STONES SOME LARGE
+134140                                       SAMPLE MISSING
+122282                              REDDISH YELLOW VOLCANIC
+133623                                    WHITE CRYSTALLINE
+134505                                              MISSING
+133694                                              DRILLER
+133585                                              DRILLER
+134201                                              MISSING
+134627                                              NO DATA
+133816                                              DRILLER
+133893                                              DRILLER
+134232                                              DRILLER
+133687                                              DRILLER
+133871                                              DRILLER
+133698                                              DRILLER
+134752                                              MISSING
+128077                           WATER BEARING WATER SUPPLY
+122253                                         WATER SUPPLY
+133607                                              DRILLER
+133617                                              DRILLER
+133643                                                 HARD
+134526                                  (UNKNOWN) CORE LOSS
+133709                                        SANDY STREAKS
+123254                                 NOMINAL WATER SUPPLY
+122219                                         WATER SUPPLY
+133525                                              DRILLER
+127799                                         WATER SUPPLY
+133940                                              DRILLER
+124775                              (UNKNOWN) WATER BEARING
+126814                             (UNKNOWN); WATER BEARING
+133965                                              DRILLER
+134074                                              DRILLER
+134395                                              DRILLER
+133970                                              DRILLER
+134262                                              DRILLER
+122407                                         WATER SUPPLY
+144370                                            S/S LT BR
+125023                             (UNKNOWN); WATER BEARING
+133675                                              DRILLER
+Name: Description, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Minor-(secondary)-lithology-codes">
+<a class="anchor" href="#Minor-(secondary)-lithology-codes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Minor (secondary) lithology codes<a class="anchor-link" href="#Minor-(secondary)-lithology-codes"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">labels_kept</span> <span class="o">=</span> <span class="n">df_most_common</span><span class="p">[</span><span class="s1">'token'</span><span class="p">][:</span><span class="mi">17</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">labels_kept</span> <span class="o">=</span> <span class="n">labels_kept</span><span class="p">[</span><span class="n">labels_kept</span> <span class="o">!=</span> <span class="s1">'None'</span><span class="p">]</span>
+<span class="n">labels_kept</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array(['CLAY', 'GRVL', 'SAND', 'SHLE', 'SDSN', 'BSLT', 'TPSL', 'SOIL',
+       'ROCK', 'GRNT', 'SDCY', 'SLSN', 'CGLM', 'MDSN', 'UNKN', 'COAL'],
+      dtype=object)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">kept</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="ow">in</span> <span class="n">labels_kept</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">litho_classes</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">litho_logs_kept</span> <span class="o">=</span> <span class="n">litho_logs</span><span class="p">[</span><span class="n">kept</span><span class="p">]</span>
+<span class="n">litho_logs_kept</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>OBJECTID</th>
+      <th>BoreID</th>
+      <th>HydroCode</th>
+      <th>RefElev</th>
+      <th>RefElevDesc</th>
+      <th>FromDepth</th>
+      <th>ToDepth</th>
+      <th>TopElev</th>
+      <th>BottomElev</th>
+      <th>MajorLithCode</th>
+      <th>MinorLithCode</th>
+      <th>Description</th>
+      <th>Source</th>
+      <th>LogType</th>
+      <th>OgcFidTemp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>70655</th>
+      <td>526412</td>
+      <td>10072593</td>
+      <td>GW031851.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>53.94</td>
+      <td>59.13</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY SANDY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9308381</td>
+    </tr>
+    <tr>
+      <th>7173</th>
+      <td>64072</td>
+      <td>10043001</td>
+      <td>GW001815.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>31.39</td>
+      <td>44.5</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SHLE</td>
+      <td>NaN</td>
+      <td>SHALE</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8732384</td>
+    </tr>
+    <tr>
+      <th>30076</th>
+      <td>197788</td>
+      <td>10152523</td>
+      <td>GW099036.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>181.0</td>
+      <td>228.0</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SHLE</td>
+      <td>NaN</td>
+      <td>SHALE: GREY, FINE</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8870150</td>
+    </tr>
+    <tr>
+      <th>93967</th>
+      <td>701859</td>
+      <td>10105392</td>
+      <td>GW031140.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>0.0</td>
+      <td>8.84</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SOIL</td>
+      <td>NaN</td>
+      <td>SOIL CLAY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9327759</td>
+    </tr>
+    <tr>
+      <th>115538</th>
+      <td>803595</td>
+      <td>10099300</td>
+      <td>GW970770.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>36.6</td>
+      <td>38.1</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SAND</td>
+      <td>NaN</td>
+      <td>SAND; FINE TO COARSE, BROWN</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9435886</td>
+    </tr>
+    <tr>
+      <th>107173</th>
+      <td>762000</td>
+      <td>10122945</td>
+      <td>GW018629.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>72.54</td>
+      <td>74.37</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SDSN</td>
+      <td>NaN</td>
+      <td>SANDSTONE YELLOW HARD</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9389679</td>
+    </tr>
+    <tr>
+      <th>106769</th>
+      <td>760370</td>
+      <td>10111007</td>
+      <td>GW026576.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>65.23</td>
+      <td>71.32</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SDSN</td>
+      <td>NaN</td>
+      <td>SANDSTONE WATER SUPPLY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9388007</td>
+    </tr>
+    <tr>
+      <th>13553</th>
+      <td>114744</td>
+      <td>10116235</td>
+      <td>GW022175.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>37.8</td>
+      <td>39.01</td>
+      <td>None</td>
+      <td>None</td>
+      <td>GRVL</td>
+      <td>NaN</td>
+      <td>GRAVEL FINE-COARSE</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8784472</td>
+    </tr>
+    <tr>
+      <th>142398</th>
+      <td>971715</td>
+      <td>10074454</td>
+      <td>GW901230.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>20.0</td>
+      <td>24.0</td>
+      <td>None</td>
+      <td>None</td>
+      <td>GRVL</td>
+      <td>NaN</td>
+      <td>GRAVEL</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9567221</td>
+    </tr>
+    <tr>
+      <th>9664</th>
+      <td>85061</td>
+      <td>10043586</td>
+      <td>GW011521.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>12.19</td>
+      <td>20.73</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY YELLOW GRAVEL</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8753973</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">sample_major_lithocode</span><span class="p">(</span><span class="n">dframe</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">litho_logs_kept</span><span class="p">[</span><span class="n">litho_logs_kept</span><span class="p">[</span><span class="n">MAJOR_CODE</span><span class="p">]</span> <span class="o">==</span> <span class="n">code</span><span class="p">]</span>
+    <span class="n">replace</span> <span class="o">=</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="n">replace</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sample_major_lithocode</span><span class="p">(</span><span class="n">litho_logs_kept</span><span class="p">,</span> <span class="s1">'CLAY'</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>OBJECTID</th>
+      <th>BoreID</th>
+      <th>HydroCode</th>
+      <th>RefElev</th>
+      <th>RefElevDesc</th>
+      <th>FromDepth</th>
+      <th>ToDepth</th>
+      <th>TopElev</th>
+      <th>BottomElev</th>
+      <th>MajorLithCode</th>
+      <th>MinorLithCode</th>
+      <th>Description</th>
+      <th>Source</th>
+      <th>LogType</th>
+      <th>OgcFidTemp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>106742</th>
+      <td>760246</td>
+      <td>10144429</td>
+      <td>GW030307.1.1</td>
+      <td>279.5</td>
+      <td>NGS</td>
+      <td>54.3</td>
+      <td>72.2</td>
+      <td>225.2</td>
+      <td>207.3</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY LIGHT BROWN GRAVEL</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9387877</td>
+    </tr>
+    <tr>
+      <th>138850</th>
+      <td>950521</td>
+      <td>10147004</td>
+      <td>GW036015.2.2</td>
+      <td>236.0</td>
+      <td>NGS</td>
+      <td>73.15</td>
+      <td>74.676</td>
+      <td>162.85</td>
+      <td>161.324</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY; AS ABOVE, MORE MICACEOUS &amp; FINE GRAVEL (...</td>
+      <td>?? - WC&amp;IC</td>
+      <td>2</td>
+      <td>9543085</td>
+    </tr>
+    <tr>
+      <th>30006</th>
+      <td>197243</td>
+      <td>10049338</td>
+      <td>GW062392.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>63.0</td>
+      <td>64.0</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY SANDY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8869540</td>
+    </tr>
+    <tr>
+      <th>3225</th>
+      <td>29304</td>
+      <td>10142901</td>
+      <td>GW014623.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>22.86</td>
+      <td>23.47</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY SANDY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8696556</td>
+    </tr>
+    <tr>
+      <th>9795</th>
+      <td>86262</td>
+      <td>10121680</td>
+      <td>GW009977.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>39.01</td>
+      <td>42.67</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY YELLOW PUGGY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8755205</td>
+    </tr>
+    <tr>
+      <th>49588</th>
+      <td>427460</td>
+      <td>10067562</td>
+      <td>GW964964.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>11.0</td>
+      <td>14.0</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9199868</td>
+    </tr>
+    <tr>
+      <th>136116</th>
+      <td>943202</td>
+      <td>10055892</td>
+      <td>GW971627.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>14.0</td>
+      <td>20.0</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>GREY WET CLAY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9534634</td>
+    </tr>
+    <tr>
+      <th>5723</th>
+      <td>50788</td>
+      <td>10049974</td>
+      <td>GW010017.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>14.02</td>
+      <td>24.38</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY RED SANDY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8718677</td>
+    </tr>
+    <tr>
+      <th>94938</th>
+      <td>706287</td>
+      <td>10018922</td>
+      <td>GW022845.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>1.22</td>
+      <td>11.58</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9332267</td>
+    </tr>
+    <tr>
+      <th>38277</th>
+      <td>287347</td>
+      <td>10132392</td>
+      <td>GW042735.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>0.75</td>
+      <td>6.0</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8942094</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">balanced_litho_logs</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_major_lithocode</span><span class="p">(</span><span class="n">litho_logs_kept</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">labels_kept</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">balanced_litho_logs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">balanced_litho_logs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">balanced_litho_logs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>OBJECTID</th>
+      <th>BoreID</th>
+      <th>HydroCode</th>
+      <th>RefElev</th>
+      <th>RefElevDesc</th>
+      <th>FromDepth</th>
+      <th>ToDepth</th>
+      <th>TopElev</th>
+      <th>BottomElev</th>
+      <th>MajorLithCode</th>
+      <th>MinorLithCode</th>
+      <th>Description</th>
+      <th>Source</th>
+      <th>LogType</th>
+      <th>OgcFidTemp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>106742</th>
+      <td>760246</td>
+      <td>10144429</td>
+      <td>GW030307.1.1</td>
+      <td>279.5</td>
+      <td>NGS</td>
+      <td>54.3</td>
+      <td>72.2</td>
+      <td>225.2</td>
+      <td>207.3</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY LIGHT BROWN GRAVEL</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>9387877</td>
+    </tr>
+    <tr>
+      <th>138850</th>
+      <td>950521</td>
+      <td>10147004</td>
+      <td>GW036015.2.2</td>
+      <td>236.0</td>
+      <td>NGS</td>
+      <td>73.15</td>
+      <td>74.676</td>
+      <td>162.85</td>
+      <td>161.324</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY; AS ABOVE, MORE MICACEOUS &amp; FINE GRAVEL (...</td>
+      <td>?? - WC&amp;IC</td>
+      <td>2</td>
+      <td>9543085</td>
+    </tr>
+    <tr>
+      <th>30006</th>
+      <td>197243</td>
+      <td>10049338</td>
+      <td>GW062392.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>63.0</td>
+      <td>64.0</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY SANDY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8869540</td>
+    </tr>
+    <tr>
+      <th>3225</th>
+      <td>29304</td>
+      <td>10142901</td>
+      <td>GW014623.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>22.86</td>
+      <td>23.47</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY SANDY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8696556</td>
+    </tr>
+    <tr>
+      <th>9795</th>
+      <td>86262</td>
+      <td>10121680</td>
+      <td>GW009977.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>39.01</td>
+      <td>42.67</td>
+      <td>None</td>
+      <td>None</td>
+      <td>CLAY</td>
+      <td>NaN</td>
+      <td>CLAY YELLOW PUGGY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8755205</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plot_freq</span><span class="p">(</span><span class="n">token_freq</span><span class="p">(</span><span class="n">balanced_litho_logs</span><span class="p">[</span><span class="n">MAJOR_CODE</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;AxesSubplot:xlabel='token'&gt;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA4YAAAJtCAYAAABqh274AAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjUuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy8qNh9FAAAACXBIWXMAAAsTAAALEwEAmpwYAABCWklEQVR4nO3deZgtVX0v7s9X4AIqCjKEGIJgNIiKgkAMisYYRY1KzE8Tr+JEUEy8YjRGg3HCIc7XKM7EIUo0GqNGQBFwQBQMBuMYQY0zV2RUBCIquH5/VDVs2tPn9OnT9O7d632fp5/uqlq996qzT+9dn1pTtdYCAABAv24w7QoAAAAwXYIhAABA5wRDAACAzgmGAAAAnRMMAQAAOicYAgAAdG7zaVdgJe2www5tt912m3Y1AAAApuJzn/vcRa21Hefv7yoY7rbbbjnrrLOmXQ0AAICpqKrvrmu/rqQAAACdEwwBAAA6JxgCAAB0rqsxhgAAwOryi1/8Iueee26uvPLKaVdlTdlqq62yyy67ZIsttlhUecEQAACYmnPPPTfbbLNNdtttt1TVtKuzJrTWcvHFF+fcc8/N7rvvvqjf0ZUUAACYmiuvvDLbb7+9ULiMqirbb7/9RrXCCoYAAMBUCYXLb2P/TQVDAACge0cffXT23HPPHHLIIdOuylQYYwgAAKwaux35oWV9vO+85P6LKvf6178+J5544nXG5F111VXZfPM+IpMWQwAAoGt//ud/nm9961s5+OCDc9Ob3jSHH354DjrooDzqUY/KhRdemAc/+MHZf//9s//+++f0009Pklx88cU56KCDss8+++Txj398bnGLW+Siiy7Kd77zndz+9re/5rFf8YpX5KijjkqSfPOb38x973vf7Lvvvrnb3e6Wc845J0nymMc8Jk960pNyl7vcJbe85S3zr//6r9f8/ste9rLstddeueMd75gjjzwy3/zmN3OnO93pmuPf+MY3su+++27yv0Ef8RcAAGABb3zjG/ORj3wkn/jEJ/La1742xx9/fD796U9n6623zsMf/vA85SlPyYEHHpjvfe97uc997pOzzz47z3ve83LggQfmOc95Tj70oQ/lmGOO2eDzHH744XnjG9+YW9/61jnzzDPzhCc8IR//+MeTJOedd14+/elP55xzzsnBBx+chzzkITnxxBPzb//2bznzzDNzwxveMJdcckludrOb5aY3vWm+8IUvZO+9987b3va2POYxj9nkfwPBEAAAYMLBBx+crbfeOkny0Y9+NF/96levOfaTn/wkl112WU477bS8//3vT5Lc//73z3bbbbfex7z88stzxhln5E/+5E+u2fezn/3smp8f9KAH5QY3uEFue9vb5vzzz7/muQ899NDc8IY3TJLc7GY3S5I89rGPzdve9ra88pWvzHve85589rOf3eRzFgwBAAAm3OhGN7rm51/+8pf5zGc+c01QnLSumT8333zz/PKXv7xme27JiF/+8pfZdttt84UvfGGdz7nlllte83Nr7Zrv63qOBz/4wXne856Xe97zntl3332z/fbbL+7E1sMYQwAAgAUcdNBBee1rX3vN9lywu/vd7553vvOdSZITTzwxP/rRj5Ikv/Zrv5YLLrggF198cX72s5/lhBNOSJLc5CY3ye677573vve9SYbQ98UvfnGDz/3Wt741//M//5MkueSSS5IkW221Ve5zn/vkL/7iL3LooYcuy3kKhgAAAAs4+uijc9ZZZ+UOd7hDbnvb2+aNb3xjkuS5z31uTjvttNzpTnfKySefnF133TVJssUWW+Q5z3lO7nznO+cBD3hAbnOb21zzWO985zvzlre8JXe84x1zu9vdLh/84AfX+9z3ve99c/DBB2e//fbL3nvvnVe84hXXHDvkkENSVTnooIOW5TxrrpmyB/vtt18766yzpl0NAABgdPbZZ2fPPfecdjU22W677ZazzjorO+yww4o83yte8YpceumlecELXrBgmXX921bV51pr+80va4whAADADPnjP/7jfPOb37xmRtPlIBgCAABsou985zsr9lwf+MAHlv0xjTEEAADonGAIAABMVU/znqyUjf03XVQwrKq7V9VxVfX/qqpV1WPmHa+qOqqqflBVP62qU6vqdvPKbFlVr6mqi6rqivHxdplXZruqOraqLh2/jq2qbeeV2bWqjh8f46KqOrqq/tdGnTUAALAqbLXVVrn44ouFw2XUWsvFF1+crbbaatG/s9gxhjdO8pUk7xi/5nt6kqcmeUySryV5TpJTqmqP1tplY5lXJfmjJA9LcnGSVyY5oar2ba1dPZZ5V5Jdk9wvSUvy5iTHJnlgklTVZkk+NP7+3ZJsn+TtSSrJEYs8FwAAYJXYZZddcu655+bCCy+cdlXWlK222iq77LLL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">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span><span class="n">DatasetDict</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">balanced_litho_logs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Dataset({
+    features: ['OBJECTID', 'BoreID', 'HydroCode', 'RefElev', 'RefElevDesc', 'FromDepth', 'ToDepth', 'TopElev', 'BottomElev', 'MajorLithCode', 'MinorLithCode', 'Description', 'Source', 'LogType', 'OgcFidTemp', '__index_level_0__'],
+    num_rows: 160000
+})</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_nm</span> <span class="o">=</span> <span class="s1">'microsoft/deberta-v3-small'</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForSequenceClassification</span><span class="p">,</span><span class="n">AutoTokenizer</span>
+<span class="n">tokz</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_nm</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tokz</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="s1">'CLAY, VERY SANDY'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>['▁C', 'LAY', ',', '▁VERY', '▁S', 'ANDY']</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tokz</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="s1">'clay, very sandy'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>['▁clay', ',', '▁very', '▁sandy']</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">litho_logs_kept</span><span class="p">[</span><span class="n">DESC</span><span class="p">]</span> <span class="o">=</span> <span class="n">litho_logs_kept</span><span class="p">[</span><span class="n">DESC</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/tmp/ipykernel_31571/2802429751.py:1: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  litho_logs_kept[DESC] = litho_logs_kept[DESC].str.lower()
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">litho_logs_kept</span><span class="p">[</span><span class="n">DESC</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0              soil sandy clay
+1         basalt water bearing
+2                      topsoil
+3         gravel water bearing
+4                slippery back
+                  ...         
+144506                    none
+144507                    none
+144508                    none
+144509                    none
+144510                 topsoil
+Name: Description, Length: 123657, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Well, no minor lithology codes, so this data set may not be a good start for multi-label classification. Still, I'll persist with this data set, and reassess later on</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Back-to-major-lithology-codes">
+<a class="anchor" href="#Back-to-major-lithology-codes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Back to major lithology codes<a class="anchor-link" href="#Back-to-major-lithology-codes"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What are the flavour of descriptions leading to the most frequent classes (CLAY, GRVL, etc.), as well as "None"</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">is_clay</span> <span class="o">=</span> <span class="n">litho_logs</span><span class="p">[</span><span class="n">MAJOR_CODE</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'CLAY'</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clay_coded</span> <span class="o">=</span> <span class="n">litho_logs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">is_clay</span><span class="p">][</span><span class="n">DESC</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">clay_coded</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>144320                                                 CLAY
+117387                                                 CLAY
+18630                                                  CLAY
+35565                                       CLAY SOME SANDY
+61997                                                  CLAY
+13533                                  CLAY SANDSTONE BANDS
+117529                                          YELLOW CLAY
+82290                                                  CLAY
+73280                                       CLAY GREY SANDY
+106748                                          CLAY STONEY
+26265                                           CLAY YELLOW
+16456                                                  CLAY
+25032                                                  CLAY
+9911                                                   CLAY
+135852    CLAY, SANDY GRAVELLY, ORANGE BROWN, MEDIUM PLA...
+30596                                                  CLAY
+140698    CLAY, SANDY FAT; RED, DRY-MOIST, MEDIUM CONSIS...
+70267                                                  CLAY
+6534                                            CLAY YELLOW
+69927                                           CLAY GRAVEL
+76476                                            SANDY CLAY
+7329                                            CLAY GRITTY
+51685        CLAY; 40% BROWN, GRAVEL &amp; SAND 60%, MOST 1-3MM
+137385                                                 CLAY
+35816                                                  CLAY
+73972                                                  CLAY
+102333                                     CLAY SOME STONES
+29218                                                  CLAY
+92266                                              RED CLAY
+26151                                            CLAY SANDY
+107456                                            CLAY GREY
+52550     CLAY - LIGHT GREY, EXTREMELY SANDY (FINE TO CO...
+24225                                                  CLAY
+120696                     CLAY; LIGHT GREY, TRACE OF WHITE
+9030                                                   CLAY
+14889                                                  CLAY
+25834                           CLAY LIGHT BROWN GREY SILTY
+44078                                                  CLAY
+114869                                                 CLAY
+109302                                                 CLAY
+38107                                           CLAY PATCHY
+30801                                                  CLAY
+82362                                     CLAY/BROWN ORANGE
+141490                         CLAY; BROWN, PINK, SOME BLUE
+23075                                     CLAY SANDY GRAVEL
+42110                                                  CLAY
+50493                                 CLAY, WHITE SEAM, RED
+90209                                     CLAY - DARK BROWN
+104019                                                 CLAY
+12690                                                  CLAY
+Name: Description, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Nothing too surprising in this, very intuitive, though the tail suggests there may be a few outliers:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">clay_coded</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>144386            CLAY; LIGHT BROWN, SOME LIGHT GREY, SILTY
+144388                                          CLAY; BROWN
+144391                                    CLAY; LIGHT BROWN
+144393                                         CLAY - BROWN
+144394         CLAY - LIGHT BROWN, EXTREMELY SANDY (COARSE)
+144398    CONGLOMERATE - WEATHERED BUT STILL HOLDS TOGET...
+144401                                          CLAY; BROWN
+144402                                          CLAY - GREY
+144488                                                 CLAY
+144503                                                 None
+Name: Description, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Looking at the "sand" code:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">sample_desc_for_code</span><span class="p">(</span><span class="n">major_code</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">is_code</span> <span class="o">=</span> <span class="n">litho_logs</span><span class="p">[</span><span class="n">MAJOR_CODE</span><span class="p">]</span> <span class="o">==</span> <span class="n">major_code</span>
+    <span class="n">coded</span> <span class="o">=</span> <span class="n">litho_logs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">is_code</span><span class="p">][</span><span class="n">DESC</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">coded</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sample_desc_for_code</span><span class="p">(</span><span class="s1">'SAND'</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>72256                         SAND GRAVEL FINE WATER SUPPLY
+109345                                   SAND CLAYEY GRAVEL
+66816                                     SAND WATER SUPPLY
+85097     SAND - 70% UP TO 2MM, GRAVEL 10% 2-5MM, CLAY 2...
+137476    SAND; LIGHT BROWN, MEDIUM TO COARSE, FINE GRAV...
+29946                                     SAND GRAVEL DIRTY
+37012                                COARSE SAND AND GRAVEL
+135985                                                 SAND
+74402              SAND WHITE GREY WELL SORTED WATER SUPPLY
+42422                                           SAND GRAVEL
+41225                                    SAND CLAYEY GRAVEL
+50700                                                  SAND
+33813                      BROWN SAND (VERY FINE TO MEDIUM)
+38452                       SAND GRAVEL MEDIUM WATER SUPPLY
+107707                                     SAND FINE-COARSE
+51759     SAND; 60%, SILTY, FINE 10%, MEDIUM 20% &amp; COARS...
+102234                             SAND GRAVEL WATER SUPPLY
+74640                              SAND GRAVEL WATER SUPPLY
+13123                              SAND GRAVEL WATER SUPPLY
+23110                                                  SAND
+11373                              SAND GRAVEL WATER SUPPLY
+35508                        SAND SILTY GRAVEL WATER SUPPLY
+32744                                           SAND CLAYEY
+67310                                             SAND CLAY
+41813                              SAND GRAVEL WATER SUPPLY
+106457                             SAND GRAVEL WATER SUPPLY
+85591                    SAND AND GRAVEL - CLAYEY AND SILTY
+112156                         SAND, WHITE (VERY VERY FINE)
+111256                   SAND/GRAVEL; FINE TO COARSE, BROWN
+55808     SAND; POORLY GRADED, COARSE, SUBROUNDED, LIGHT...
+91458     SAND, MEDIUM-COARSE; SLIGHTLY SILTY, WET, LOOS...
+61608                              SAND, GRAVEL &amp; LIMESTONE
+96382                                           SAND CLAYEY
+37119          MEDIUM BROWN SAND &amp; GRAVEL SOME LARGE GRAVEL
+118473    SAND; 40% 1/20-1/2MM, 40% 1/2-1MM, 20% 1-3MM, ...
+70703                              SAND GRAVEL WATER SUPPLY
+92920                                            BROWN SAND
+80551     SAND, SILTY; AS ABOVE, TRACE CLAY, ORANGE, LOW...
+25175     COARSE SAND &amp; FINE GRAVEL WITH ANGULAR FRAGMEN...
+38905                               SAND FINE WATER BEARING
+44248                              SAND GRAVEL WATER SUPPLY
+32261                                            SAND DRIFT
+34510                             SAND CLAYEY COARSE GRAVEL
+77431                   SAND AND GRAVEL FINE TO COARSE GREY
+138362                                           SAND BROWN
+103758                   SAND GRAVEL STONES SOME CLAY BANDS
+69238                                           SAND GRAVEL
+143566    SAND &amp; GRAVEL; SAND 50% (FINE 30%, MEDIUM 20%,...
+135131                                                 SAND
+30361                               SAND CLAYEY WELL SORTED
+Name: Description, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Rather straighforward, consistent and and intuitive</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id='Major-lithology-code-"None"'>
+<a class="anchor" href="#Major-lithology-code-" none aria-hidden="true"><span class="octicon octicon-link"></span></a>Major lithology code "None"<a class="anchor-link" href="#Major-lithology-code-%22None%22"> </a>
+</h3>
+<p>This one is likely to be more curly and surprising. Let's see</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sample_desc_for_code</span><span class="p">(</span><span class="s1">'None'</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>131075                            W.B. BROWN SHALE
+127170                      COARSE SAND AND GRAVEL
+126145                                   BLUE CLAY
+126889                         GREY AND BROWN CLAY
+132179                             GREY BROWN CLAY
+130033                            BROWN SANDY CLAY
+123436                                      GRAVEL
+128794                                        CLAY
+128242                        SAND AND FINE GRAVEL
+134156                                        None
+129636                                 W.B. BASALT
+122884                     LIGHT ORANGE SILTY CLAY
+124580                                      SHALES
+128684                                  W.B. SHALE
+131120                             SAND AND GRAVEL
+122690                              RED RIDGE CLAY
+132319                                  BLACK SOIL
+128528                                  BLACK CLAY
+123646                                    MUDSTONE
+129757                                 SAND &amp; CLAY
+124353                             SOFT BROWN CLAY
+131921                                        CLAY
+133208                                 BROWN CLAYS
+132945                                 COARSE SAND
+122956                             SAND AND GRAVEL
+123723                             CALY AND GRAVEL
+122102                                    TOP SOIL
+126455    HARD SANDY BROWN &amp; GREY CLAY WITH STONES
+125637                    SANDY BLUE AND GREY CLAY
+131154                            BROWN SANDY CLAY
+129931                                  RIDGE CLAY
+123557                                  RIDGE CLAY
+124964                             DARK BROWN CLAY
+129391                                  GREY SHALE
+132891                               WATER 0.37 LS
+132006                                  BROWN CLAY
+134673                                         SEP
+123692                                  BROWN CLAY
+126034                          REDDISH BROWN CLAY
+129690             SOFT GINGER/BROWN CLAY &amp; STONES
+125560                            FINE SANDY CLAYS
+126238                             SHALE &amp; (WATER)
+123009                                        SOIL
+124236                                        SOIL
+125814                                  BLUE SHALE
+130474                             RED &amp; GREY CLAY
+127005                                  BROWN CLAY
+134212                                   BROWN AND
+125640                                        SOIL
+127355                                       SHALE
+Name: Description, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Well, it does not require a fully trained geologist to think there should be obvious primary lithology codes for many of these, so why is there "None" for these descriptions?</p>
+<p>Not shown in the 50-odd sample above are descriptions which should indeed be unclassified (e.g. "no strata description")</p>
+<p>This is also an occasion to note the less obvious information and complications in descriptive logs, compared to earlier categories:</p>
+<ul>
+<li>CALY as a typo for CLAY</li>
+<li>Slang terms and acronyms, e.g. "W.B." perhaps for "Weathered, broken"  </li>
+<li>Quantitative and qualitative attributes such as SAND; 60%, SILTY, FINE 10%, MEDIUM 20% &amp; COARSE, which may be valuable for some types of classification </li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sample_desc_for_code</span><span class="p">(</span><span class="s1">'SDSN'</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>9423                                         SANDSTONE SOFT
+117911            SANDSTONE, SILTY; AS ABOVE, QUARTZ (+60%)
+6613                                         SAND ROCK GREY
+20345                                   SANDSTONE GREY HARD
+106885                                            SANDSTONE
+139088           SANDSTONE; DARK GREY, COARSE GRAINED, HARD
+5101                                       SANDSTONE ROTTEN
+26561                                      SANDSTONE YELLOW
+137304                                    SANDSTONE; COARSE
+56627     SANDSTONE; GREY, FINE-MEDIUM GRAINED, MOD WEAK...
+98974                          SANDSTONE WHITE WATER SUPPLY
+87187                                             SANDSTONE
+45141                 SANDSTONE, VERY PALE BROWN, HIGH CLAY
+70015                                      SANDSTONE YELLOW
+29492                                SANDSTONE WATER SUPPLY
+92918                                             SANDSTONE
+83555              SANDSTONE; LIGHT GREY, VERY FINE, STRONG
+136401                                            SANDSTONE
+48201                                             SANDSTONE
+34060     SANDSTONE, YELLOW, MEDIUM GRAINED, HIGH CLAY M...
+63752     SANDSTONE; WHITISH GREY, VERY FINE, ANGULAR, C...
+51878                     SANDSTONE, MEDIUM, WHITISH YELLOW
+59346                                       SANDSTONE, SOFT
+62968          SANDSTONE; OFF-WHITE GREY, VERY FINE, STRONG
+140930                SANDSTONE, LIGHT GREY, SOME FRACTURES
+6394                                              SAND ROCK
+113546                        SANDSTONE - HARD - LIGHT GREY
+49539     SANDSTONE; RED GREY, FINE-MEDIUM GRAINED, FRIA...
+60198                   SANDSTONE; LIGHT GREY, FINE GRAINED
+1366                                              SANDSTONE
+35923               SANDSTONE WEATHERED COARSE WATER SUPPLY
+141556    SANDSTONE, WHITE, IMPREGNATED WITH WATER WASHE...
+10100                                SANDSTONE WATER SUPPLY
+89138     SANDSTONE; OFF-WHITE GREY, MEDIUM-COARSE GRAIN...
+86046                      QUARTZ SANDSTONE; MEDIUM GRAINED
+76366     SANDSTONE, PALE BROWN, FINE-COARSE, LOW CLAY, ...
+46179     SANDSTONE, LIGHTYELLOW/RED BROWN MOTTLED, FINE...
+8613                                              SANDSTONE
+4537                                       SANDSTONE YELLOW
+60506                                             SANDSTONE
+8917                                              SANDSTONE
+1372                                 SANDSTONE WATER SUPPLY
+82975     SANDSTONE; LIGHT GREY, FINE GRAINED, MOD STRON...
+60166                                  SANDSTONE, VERY SOFT
+31674                                       SANDSTONE SHALE
+8397                                              SANDSTONE
+113310       SANDSTONE; OFF-WHITE, FINE GRAINED, MOD STRONG
+27980                                             SANDSTONE
+79933                                SANDSTONE WHITE BROKEN
+33654                               SANDSTONE YELLOW CLAYEY
+Name: Description, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now, what's with the weird numbers as lithology codes?</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sample_desc_for_code</span><span class="p">(</span><span class="s1">'20'</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>130369                           SANDY CLAY; BROWN (COARSE)
+122444                                           CLAY SANDY
+127761                                           CLAY SANDY
+125771                                           SANDY CLAY
+127783                                           CLAY SANDY
+133014                SANDY CLAY AND CLAYEY SAND AND GRAVEL
+124007                              BROWN &amp; GREY SANDY CLAY
+123445     CLAY LT BROWN GREY SANDY, MED-COARSE BROWN BANDS
+122180                                           CLAY SANDY
+127440                                           SANDY CLAY
+131498                                           SANDY CLAY
+127935                                       CLAY RED SANDY
+129304                                           SANDY CLAY
+130614                                          SANDY SHALE
+125543                                           SANDY CLAY
+125149                                           SANDY CLAY
+124971                                SANDY CLAY/GREY BROWN
+123939                                    SANDY CLAY, BROWN
+122392                                           CLAY SANDY
+123999                              BROWN &amp; GREY SANDY CLAY
+129203                                           SANDY LOAM
+127933                                       CLAY RED SANDY
+134474                              SANDY CLAYEY MED. BROWN
+126071                                           SANDY CLAY
+127927                                           CLAY SANDY
+123587                                           CLAY SANDY
+126559                                           SANDY CLAY
+127928                                      CLAY GREY SANDY
+124643                                     SANDY CALY/BROWN
+122555                                           CLAY SANDY
+132628                                           SANDY CLAY
+129853                                           SANDY CLAY
+130187                                           SANDY CLAY
+129057                                           SANDY CLAY
+133300                                           SANDY CLAY
+122535                                           CLAY SANDY
+122732                                           CLAY SANDY
+127977                                    CLAY YELLOW SANDY
+126568                                           SANDY CLAY
+122339                                           CLAY SANDY
+128386                                    SANDY CLAY, BROWN
+128198                                    SANDY CLAY, RIDGE
+125530                                           SANDY CLAY
+126798                                           SANDY CLAY
+122452                                           CLAY SANDY
+123237                                    SANDY BROWN CLAYS
+126510    SANDY CLAY; 40% LIGHT GREY, EXTREMELY SANDY (C...
+132331                                         SANDY GRAVEL
+131807                                           SANDY CLAY
+132895                                           SANDY CLAY
+Name: Description, dtype: object</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Interesting. There is a clear pattern. I know from my prior exposure that "Clayey sands" and "sandy clays" are not that uncommon (and gradations of mixes of sand and clay matter a great deal to estimate hydraulic conductivity).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Next">
+<a class="anchor" href="#Next" aria-hidden="true"><span class="octicon octicon-link"></span></a>Next<a class="anchor-link" href="#Next"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This was the initial EDA. Next I'll  probably train a classifier on the major lithology code (or a subset thereof). I am keen to explore multi-label classification, but will have to decide whether to populate the secondary lithology code using regexp classification, or switch to a fully labelled dataset at some point.</p>
+<p>This first post illustrated the need to have a look at data. This data was already collated and curated, and I have no doubt many people went through a lot of work to get there. But this may not be a fully labelled dataset amenable to be used for training a classifier. At least, not without further data preparation.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="jmp75/work-blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/work-blog/hugging-face/nlp/lithology/2022/06/08/lithology-classification-hugging-face-2.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/work-blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/work-blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/work-blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Work-related posts for the so-called grey literature.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/jmp75" target="_blank" title="jmp75"><svg class="svg-icon grey"><use xlink:href="/work-blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jmp_oz" target="_blank" title="jmp_oz"><svg class="svg-icon grey"><use xlink:href="/work-blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -106,7 +106,20 @@ window.onload = wrap_img;
     </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <h1 id="background">Background</h1>
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#background">Background</a></li>
+<li class="toc-entry toc-h1"><a href="#baby-steps">Baby steps</a></li>
+<li class="toc-entry toc-h1"><a href="#resources">Resources</a></li>
+<li class="toc-entry toc-h1"><a href="#walkthrough">Walkthrough</a>
+<ul>
+<li class="toc-entry toc-h2"><a href="#first-trial-conda-build-locally">First trial: conda build locally?</a></li>
+<li class="toc-entry toc-h2"><a href="#preparing-a-pr-to-conda-forgestaged-recipes">Preparing a PR to conda-forge/staged-recipes</a></li>
+<li class="toc-entry toc-h2"><a href="#building-locally">Building locally</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h1"><a href="#conclusion">Conclusion</a></li>
+</ul><h1 id="background">
+<a class="anchor" href="#background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Background</h1>
 
 <p>For years I’ve been contributing to and maintaining, at work, a <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a>. It is a stack with a core in C++, but accessible via a C API by users from R, Matlab, Python and so on. A whole article could be written about the design rationale, successes and shortcomings of this stack, and the interplay of people, organisations and technologies in using these tools and how. But this will not be this post.</p>
 
@@ -116,32 +129,38 @@ window.onload = wrap_img;
 
 <p>A bit picture end point would be a corporate equivalent to a conda-forge channel, with the full software stack available for any employee.</p>
 
-<h1 id="baby-steps">Baby steps</h1>
+<h1 id="baby-steps">
+<a class="anchor" href="#baby-steps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Baby steps</h1>
 
 <p>I had a look a few weeks ago at how I’d package a substantial but relatively small C++ code <a href="https://github.com/csiro-hydroinformatics/moirai/tree/conda">MOIRAI: Manage C++ Objects’s lifetime when exposed through a C API</a>. This proved a bit premature for reasons I won’t detail.</p>
 
 <p>So, let’s (re)start with a python-only library, as it happens in the same vein, <a href="https://github.com/csiro-hydroinformatics/pyrefcount">refcount</a>. Astonishingly, there is still no strict equivalent that I can find in conda-forge dedicated to reference counting external pointers. So, can I claim the spot?</p>
 
-<h1 id="resources">Resources</h1>
+<h1 id="resources">
+<a class="anchor" href="#resources" aria-hidden="true"><span class="octicon octicon-link"></span></a>Resources</h1>
 
 <p>I started this post thinking first about conda packaging rather than submission <em>per se</em> to conda-forge. Some resources I initially looked at as promising, <strong>but from which I backed away</strong> (for now):</p>
 
 <ul>
   <li><a href="https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html">Building conda packages from scratch</a></li>
   <li><a href="https://python-packaging-tutorial.readthedocs.io/en/latest/conda.html">python packaging tutorials Scipy 2018 Tutorial: The Joy of Packaging - conda packages</a></li>
-  <li><a href="https://github.com/ActivisionGameScience/ags_conda_recipes">Activision Game: A tutorial (+ build recipes) describing how to use conda for C, C++, and python package management</a> outlines well the rationale for packaging in conda, and appears didactic. It appears not to have recent commit, although it is not necessarily a problem.</li>
+  <li>
+<a href="https://github.com/ActivisionGameScience/ags_conda_recipes">Activision Game: A tutorial (+ build recipes) describing how to use conda for C, C++, and python package management</a> outlines well the rationale for packaging in conda, and appears didactic. It appears not to have recent commit, although it is not necessarily a problem.</li>
 </ul>
 
 <p>You’ll see in the walkthrough below (next section) that I reoriented towards an upfront submission to conda-forge:</p>
 
 <ul>
-  <li><a href="https://gallon.me/3-simple-steps-to-build-a-python-package-for-conda-forge/">3 simple stept to build a python package for conda-forge</a>. This post really got me on a better path.</li>
+  <li>
+<a href="https://gallon.me/3-simple-steps-to-build-a-python-package-for-conda-forge/">3 simple stept to build a python package for conda-forge</a>. This post really got me on a better path.</li>
   <li><a href="https://conda-forge.org/docs/maintainer/adding_pkgs.html#">conda-forge documentation: Contributing packages</a></li>
 </ul>
 
-<h1 id="walkthrough">Walkthrough</h1>
+<h1 id="walkthrough">
+<a class="anchor" href="#walkthrough" aria-hidden="true"><span class="octicon octicon-link"></span></a>Walkthrough</h1>
 
-<h2 id="first-trial-conda-build-locally">First trial: <code class="language-plaintext highlighter-rouge">conda build</code> locally?</h2>
+<h2 id="first-trial-conda-build-locally">
+<a class="anchor" href="#first-trial-conda-build-locally" aria-hidden="true"><span class="octicon octicon-link"></span></a>First trial: <code class="language-plaintext highlighter-rouge">conda build</code> locally?</h2>
 
 <p>Of course python is necessary and a conda environment a given. I do <code class="language-plaintext highlighter-rouge">. ~/config/baseconda</code> because I <strong>never</strong> have conda activated by default from <code class="language-plaintext highlighter-rouge">.bashrc</code>.</p>
 
@@ -153,7 +172,8 @@ window.onload = wrap_img;
 
 <p>The tutorial <a href="https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html">Building conda packages from scratch</a> quickly confused me; I was trying to transpose it to <code class="language-plaintext highlighter-rouge">refcount</code> but this does not look like the right template to start from. The section <a href="https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html#editing-the-meta-yaml-file">editing-the-meta-yaml-file</a> appears out of sync with the “correct” meta.yaml file. Baffling.</p>
 
-<h2 id="preparing-a-pr-to-conda-forgestaged-recipes">Preparing a PR to conda-forge/staged-recipes</h2>
+<h2 id="preparing-a-pr-to-conda-forgestaged-recipes">
+<a class="anchor" href="#preparing-a-pr-to-conda-forgestaged-recipes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preparing a PR to conda-forge/staged-recipes</h2>
 
 <p>Enter two new resources: <a href="https://gallon.me/3-simple-steps-to-build-a-python-package-for-conda-forge/">3 simple stept to build a python package for conda-forge</a> and <a href="https://conda-forge.org/docs/maintainer/adding_pkgs.html#">conda-forge documentation: Contributing packages</a>. From these it becomes clear I should use <a href="https://github.com/conda-incubator/grayskull#introduction"><code class="language-plaintext highlighter-rouge">grayskull</code></a> to get a starting point as a <code class="language-plaintext highlighter-rouge">meta.yaml</code> file</p>
 
@@ -283,7 +303,8 @@ https://stackoverflow.com/questions/52324134/getting-an-liquid-exception-liquid-
 
 <p>So; ready to submit a pull request? Wait, wait.</p>
 
-<h2 id="building-locally">Building locally</h2>
+<h2 id="building-locally">
+<a class="anchor" href="#building-locally" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building locally</h2>
 
 <p><a href="https://conda-forge.org/docs/maintainer/adding_pkgs.html#test">test</a> has a section on Running unit tests. Note that the default conda recipe above has a “pip check”, but nothing more. <code class="language-plaintext highlighter-rouge">refcount</code> unit tests use pytest, and has unit tests; tick that. <code class="language-plaintext highlighter-rouge">refcount</code> is a pure python package, <em>but</em> it is a package for (mostly) interoperability with native code via a C API. Unit tests do contain some c/c++ code.</p>
 
@@ -383,9 +404,10 @@ TEST END: /home/conda/staged-recipes/build_artifacts/noarch/refcount-0.9.4-pyhd8
 
 <p>Submit the <a href="https://github.com/conda-forge/staged-recipes/pull/19140">pull request</a>, and pleasantly:</p>
 
-<p><img src="/work-blog/images/refcount-conda-forge-pr-submission.png" alt="refcount-conda-forge-pr-submission" title="refcount conda forge PR submission" /></p>
+<p><img src="/work-blog/images/refcount-conda-forge-pr-submission.png" alt="refcount-conda-forge-pr-submission" title="refcount conda forge PR submission"></p>
 
-<h1 id="conclusion">Conclusion</h1>
+<h1 id="conclusion">
+<a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h1>
 
 <p>While there were a couple of bumps along the way, this should end up with a positive outcome. If not with refcount on <code class="language-plaintext highlighter-rouge">conda-forge</code>, I’ve a better understanding to tackle conda packaging on the rest of the software stack.</p>
 
