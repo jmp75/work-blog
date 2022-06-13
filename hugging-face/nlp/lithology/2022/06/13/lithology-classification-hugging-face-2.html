@@ -9,8 +9,8 @@
 <meta property="og:title" content="Lithology classification using Hugging Face, part 2" />
 <meta name="author" content="J-M" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Work-related posts for the so-called grey literature." />
-<meta property="og:description" content="Work-related posts for the so-called grey literature." />
+<meta name="description" content="Exploring the use of NLP to exploit geologic information. Trying to classify lithologies." />
+<meta property="og:description" content="Exploring the use of NLP to exploit geologic information. Trying to classify lithologies." />
 <link rel="canonical" href="https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html" />
 <meta property="og:url" content="https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html" />
 <meta property="og:site_name" content="J-M’s “lab notebook”" />
@@ -19,7 +19,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Lithology classification using Hugging Face, part 2" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"J-M"},"dateModified":"2022-06-13T00:00:00-05:00","datePublished":"2022-06-13T00:00:00-05:00","description":"Work-related posts for the so-called grey literature.","headline":"Lithology classification using Hugging Face, part 2","mainEntityOfPage":{"@type":"WebPage","@id":"https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html"},"url":"https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"J-M"},"dateModified":"2022-06-13T00:00:00-05:00","datePublished":"2022-06-13T00:00:00-05:00","description":"Exploring the use of NLP to exploit geologic information. Trying to classify lithologies.","headline":"Lithology classification using Hugging Face, part 2","mainEntityOfPage":{"@type":"WebPage","@id":"https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html"},"url":"https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/work-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jmp75.github.io/work-blog/feed.xml" title="J-M's &quot;lab notebook&quot;" /><link rel="shortcut icon" type="image/x-icon" href="/work-blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -74,7 +74,7 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Lithology classification using Hugging Face, part 2</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-06-13T00:00:00-05:00" itemprop="datePublished">
+    <h1 class="post-title p-name" itemprop="name headline">Lithology classification using Hugging Face, part 2</h1><p class="page-description">Exploring the use of NLP to exploit geologic information. Trying to classify lithologies.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-06-13T00:00:00-05:00" itemprop="datePublished">
         Jun 13, 2022
       </time>• 
           <span itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1314,7 +1314,7 @@ Name: Description, dtype: object</pre>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sorted_counts</span> <span class="o">=</span> <span class="n">litho_logs_kept</span><span class="p">[</span><span class="n">MAJOR_CODE</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sorted_counts</span> <span class="o">=</span> <span class="n">litho_logs_kept</span><span class="p">[</span><span class="n">MAJOR_CODE</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
 <span class="n">sorted_counts</span>
 </pre></div>
 
@@ -1330,22 +1330,22 @@ Name: Description, dtype: object</pre>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>BSLT     7894
-CGLM     1233
-CLAY    43526
-COAL     1040
-GRNT     1852
+<pre>CLAY    43526
 GRVL    15824
-MDSN     1207
-ROCK     2549
 SAND    15317
-SDCY     1643
-SDSN     9199
 SHLE    10158
-SLSN     1443
-SOIL     4347
+SDSN     9199
+BSLT     7894
 TPSL     5300
+SOIL     4347
+ROCK     2549
+GRNT     1852
+SDCY     1643
+SLSN     1443
+CGLM     1233
+MDSN     1207
 UNKN     1125
+COAL     1040
 Name: MajorLithCode, dtype: int64</pre>
 </div>
 
@@ -1379,22 +1379,22 @@ Name: MajorLithCode, dtype: int64</pre>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>BSLT    0.063838
-CGLM    0.009971
-CLAY    0.351990
-COAL    0.008410
-GRNT    0.014977
+<pre>CLAY    0.351990
 GRVL    0.127967
-MDSN    0.009761
-ROCK    0.020613
 SAND    0.123867
-SDCY    0.013287
-SDSN    0.074391
 SHLE    0.082147
-SLSN    0.011669
-SOIL    0.035154
+SDSN    0.074391
+BSLT    0.063838
 TPSL    0.042860
+SOIL    0.035154
+ROCK    0.020613
+GRNT    0.014977
+SDCY    0.013287
+SLSN    0.011669
+CGLM    0.009971
+MDSN    0.009761
 UNKN    0.009098
+COAL    0.008410
 Name: MajorLithCode, dtype: float64</pre>
 </div>
 
@@ -1429,10 +1429,10 @@ Name: MajorLithCode, dtype: float64</pre>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([0.93616213, 0.99002887, 0.64801022, 0.99158964, 0.98502309,
-       0.87203312, 0.99023913, 0.97938653, 0.87613317, 0.98671325,
-       0.92560874, 0.91785342, 0.98833062, 0.96484631, 0.95713951,
-       0.99090225])</pre>
+<pre>array([0.64801022, 0.87203312, 0.87613317, 0.91785342, 0.92560874,
+       0.93616213, 0.95713951, 0.96484631, 0.97938653, 0.98502309,
+       0.98671325, 0.98833062, 0.99002887, 0.99023913, 0.99090225,
+       0.99158964])</pre>
 </div>
 
 </div>
@@ -1518,8 +1518,8 @@ Name: MajorLithCode, dtype: float64</pre>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>tensor([0.9362, 0.9900, 0.6480, 0.9916, 0.9850, 0.8720, 0.9902, 0.9794, 0.8761,
-        0.9867, 0.9256, 0.9179, 0.9883, 0.9648, 0.9571, 0.9909],
+<pre>tensor([0.6480, 0.8720, 0.8761, 0.9179, 0.9256, 0.9362, 0.9571, 0.9648, 0.9794,
+        0.9850, 0.9867, 0.9883, 0.9900, 0.9902, 0.9909, 0.9916],
        device='cuda:0')</pre>
 </div>
 
@@ -1892,8 +1892,8 @@ Applying the technique in <a href="https://youtu.be/_BZearw7f0w?list=PLo2EIpI_JM
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>Parameter 'function'=&lt;function tok_func at 0x7f8958312820&gt; of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only showed once. Subsequent hashing failures won't be showed.
-100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 123657/123657 [00:25&lt;00:00, 4925.29ex/s]
+<pre>Parameter 'function'=&lt;function tok_func at 0x7f59b47544c0&gt; of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only showed once. Subsequent hashing failures won't be showed.
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 123657/123657 [00:26&lt;00:00, 4742.25ex/s]
 </pre>
 </div>
 </div>
