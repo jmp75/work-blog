@@ -420,7 +420,7 @@ Library/include/moirai/reference_handle.hpp
 
 <p>I may be in a decent place to submit this to the conda-forge/staged-recipe repository. I may hold off a bit though. First, the unit tests in moirai are not exercised by the meta.yaml file (or build scripts). Second, I may next look at setting up a conda channel to test managing conda dependencies, even if I see <code class="language-plaintext highlighter-rouge">moirai</code> as belonging to conda-forge rather than a private channel. Third, there are probably other things I need to tidy up.</p>
 
-<p>To recapitulate on</p>
+<p>To recapitulate on the essentials out of post:</p>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda create <span class="nt">-n</span> cf <span class="nv">python</span><span class="o">=</span>3.9 mamba <span class="nt">-c</span> conda-forge
 conda activate cf
