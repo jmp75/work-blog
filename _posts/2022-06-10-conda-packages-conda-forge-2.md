@@ -314,7 +314,7 @@ In some respects I had less issues with this conda package than the "pure python
 
 I may be in a decent place to submit this to the conda-forge/staged-recipe repository. I may hold off a bit though. First, the unit tests in moirai are not exercised by the meta.yaml file (or build scripts). Second, I may next look at setting up a conda channel to test managing conda dependencies, even if I see `moirai` as belonging to conda-forge rather than a private channel. Third, there are probably other things I need to tidy up.
 
-To recapitulate on 
+To recapitulate on the essentials out of post:
 
 ```sh
 conda create -n cf python=3.9 mamba -c conda-forge
