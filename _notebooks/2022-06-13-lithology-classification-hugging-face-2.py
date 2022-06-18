@@ -15,6 +15,7 @@
 
 # %% [markdown]
 # # Lithology classification using Hugging Face, part 2
+# > Exploring the use of NLP to exploit geologic information. Trying to classify lithologies.
 #
 # - toc: true
 # - badges: true
@@ -181,9 +182,13 @@ litho_logs_kept.sample(10)
 
 # %%
 labels = ClassLabel(names=labels_kept)
-litho_logs_kept[MAJOR_CODE_INT] = [
+int_labels = np.array([
     labels.str2int(x) for x in litho_logs_kept[MAJOR_CODE].values
-]
+])
+int_labels = int_labels.astype(np.int8) # to mimick chapter3 HF so far as I can see
+
+# %%
+litho_logs_kept[MAJOR_CODE_INT] = int_labels
 
 # %% [markdown] tags=[]
 # ## Class imbalance
@@ -227,7 +232,7 @@ plot_freq(token_freq(balanced_litho_logs[MAJOR_CODE].values, 50))
 #
 
 # %%
-sorted_counts = litho_logs_kept[MAJOR_CODE].value_counts().sort_index()
+sorted_counts = litho_logs_kept[MAJOR_CODE].value_counts()
 sorted_counts
 
 # %%
@@ -301,11 +306,14 @@ model_nm = "microsoft/deberta-v3-small"
 # Now back to the tokenisation story. Note that the local caching may be superflous if you do not encounter the issue just mentioned.
 
 # %%
+max_length = 128
+
+# %%
 p = Path("./tokz_pretrained")
-if p.exists():
-    tokz = AutoTokenizer.from_pretrained(p)
-else:
-    tokz = AutoTokenizer.from_pretrained(model_nm)
+pretrained_model_name_or_path = p if p.exists() else model_nm
+# https://discuss.huggingface.co/t/sentence-transformers-paraphrase-minilm-fine-tuning-error/9612/4
+tokz = AutoTokenizer.from_pretrained(pretrained_model_name_or_path, use_fast=True, max_length=max_length, model_max_length=max_length)
+if not p.exists():
     tokz.save_pretrained("./tokz_pretrained")
 
 # %% [markdown]
@@ -340,9 +348,6 @@ litho_logs_kept_mini.sample(n=10)
 
 # %%
 ds = Dataset.from_pandas(litho_logs_kept_mini)
-
-max_length = 128
-
 
 def tok_func(x):
     return tokz(
@@ -380,12 +385,11 @@ num_labels = len(labels_kept)
 # %%
 # NOTE: the local caching may be superflous
 p = Path("./model_pretrained")
-if p.exists():
-    model = AutoModelForSequenceClassification.from_pretrained(p, num_labels=num_labels)
-else:
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_nm, num_labels=num_labels
-    )
+
+model_name = p if p.exists() else model_nm
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels, max_length=max_length)
+                                                           # label2id=label2id, id2label=id2label).to(device) 
+if not p.exists():
     model.save_pretrained(p)
 
 # %%
@@ -409,6 +413,9 @@ tok_ds
 tok_ds = tok_ds.rename_columns({MAJOR_CODE_INT: "labels"})
 
 # %%
+tok_ds = tok_ds.remove_columns(['Description', '__index_level_0__'])
+
+# %%
 # We want to make sure we work on the GPU, so at least make sure we have torch tensors.
 # Note that HF is supposed to take care of movind data to the GPU if available, so you should not ahve to manually copy the data to the GPU device
 tok_ds.set_format("torch")
@@ -420,6 +427,26 @@ tok_ds.set_format("torch")
 
 # %%
 dds = tok_ds.train_test_split(0.25, seed=42)
+
+# %%
+dds.keys()
+
+# %%
+tok_ds.features['labels'] = labels
+
+# %%
+tok_ds.features
+
+# TODO:
+#     This differs from chapter3 of HF course https://huggingface.co/course/chapter3/4?fw=pt    
+# {'attention_mask': Sequence(feature=Value(dtype='int8', id=None), length=-1, id=None),
+#  'input_ids': Sequence(feature=Value(dtype='int32', id=None), length=-1, id=None),
+#  'labels': ClassLabel(num_classes=2, names=['not_equivalent', 'equivalent'], id=None),
+#  'token_type_ids': Sequence(feature=Value(dtype='int8', id=None), length=-1, id=None)}
+
+# %%
+tok_ds['input_ids'][0]
+
 
 # %%
 # https://huggingface.co/docs/transformers/training
@@ -457,7 +484,7 @@ def compute_metrics(eval_pred):
 
 # %%
 output_dir = "./hf_training"
-batch_size = 128
+batch_size = 64 # 128
 epochs = 5
 lr = 8e-5
 
