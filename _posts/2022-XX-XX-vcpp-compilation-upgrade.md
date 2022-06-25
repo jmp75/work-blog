@@ -20,7 +20,9 @@ This is not a particularly popular topic, but I am posting to at least organise 
 
 # Current status
 
-On Windows, we are relying on vcxproj files. A fair bit of work went into being able to manage switching configurations more easily than via horrendous hard coded paths, which is the baffling default behavior with these files, or at least, was. The supposedly "user-friendly" GUIs to manage project settings foster an unholly mess unless users are on a very tight leash. There are tools in the microsoft ecosystem to manage dependencies and configurations that were note existing 10 years ago. Here [is one, Conan](https://blog.conan.io/2021/02/10/Dependencies-Visual-Studio-C++-property-files.html), essentially doing what I put in place 10 years ago. There is also [vcpkg](https://vcpkg.io/en/index.html) which I looked at a few years back. Be it as it may, we have a legacy that worked for a while, so we are likely to keep using it.
+On Windows, we are relying on vcxproj files. A fair bit of work went into being able to manage switching configurations more easily than via horrendous hard coded paths, which is the baffling default behavior with these files, or at least, was. The supposedly "user-friendly" GUIs to manage project settings foster an unholly mess unless users are on a very tight leash. The Readme at [vcpp-commons](https://github.com/jmp75/vcpp-commons) includes instructions on how to set things up, and how to use it from visual c++ project files.
+
+There are tools in the microsoft ecosystem to manage dependencies and configurations that were not existing 10 years ago. Here [is one, Conan](https://blog.conan.io/2021/02/10/Dependencies-Visual-Studio-C++-property-files.html), essentially doing what I put in place 10 years ago. There is also [vcpkg](https://vcpkg.io/en/index.html) which I looked at a few years back. Be it as it may, we have a legacy that worked for a while, so we are likely to keep using it.
 
 We are using property files (.props files) to manage centrally some definitions, so that our vcxproj files look like:
 
@@ -43,28 +45,198 @@ We are using property files (.props files) to manage centrally some definitions,
   </ItemDefinitionGroup>
 ```
 
-A priori this is independent of the version of compiler used. A priori. 
+A priori this is independent of the version of compiler used. A priori.
 
 ```xml
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<PlatformToolset>v120</PlatformToolset>
 ```
 
-So, is it just a matter of just bulk replacing `ToolsVersion="12.0"`?
+So, is it just a matter of just bulk replacing to `<PlatformToolset>v143</PlatformToolset>`? Even if considering only the purely mechanistic aspect (notwithstanding users), probably not.
 
 ## Dependencies
 
-![]({{ site.baseurl }}/images/swift-library-dependencies-win.png  "swift-library-dependencies-windows")
+the following figure gives an overview of the dependencies of the main DLLs. There are already several versions of the MS C runtimes, which is possible so long as libraries interact in a binary compatible way (C API). Usually, C++ level binary compatibility is not achievable. Never, in practice, so far as I recall.
 
-##
+![]({{ site.baseurl }}/images/swift-library-dependencies-win.png  "swift-library-dependencies-windows")
 
 # High level options
 
 * Give up on compiling using MS VCpp and use the MinGW toolchain
-* 
+* Upgrade the compilation to a newer
 
-This post is a follow-on with, perhaps, a second submission to conda-forge, this time not of a python package but a C++ library.
+* netcdf: does this need to be stuck to msvcr100.dll (not that it is much of a problem)
+* boost: while boost is largely header only, it has a few libraries. These need to be brought to the same version of VCPP.
 
-I'll try to package a relatively small C++ codebase [MOIRAI: Manage C++ objects lifetime when exposed through a C API](https://github.com/csiro-hydroinformatics/moirai). While dealing with very similar needs as refcount (reference counting and memory management), there is no explicit dependency between them.
+* Move to use `cmake` to manage compilations, exactly as we do on Linux.
+* Set up a CI/CD for compilation on windows.
+* Automation of the migration to various versions of MSVCPP.
+
+# Plan
+
+Mibrate to 2017 (vcpp v14.x)
+
+# Log
+
+I already have visual studio installed.
+
+Install ms build tools for visual studio 2017
+
+https://www.boost.org/doc/libs/1_79_0/more/getting_started/windows.html
+
+** Visual Studio 2017 Developer Command Prompt v15.0
+
+c:\src\tmp>7z x boost_1_79_0.7z
+
+seventy odd thousands of files, so it takes a fair bit of time.
+
+```text
+Building Boost.Build engine
+LOCALAPPDATA=C:\Users\per202\AppData\Local
+Found with vswhere C:\Program Files\Microsoft Visual Studio\2022\Professional
+Found with vswhere C:\Program Files\Microsoft Visual Studio\2022\Professional
+###
+### Using 'vc143' toolset.
+###
+```
+
+```bat
+mkdir c:\tmp\boost
+b2.exe  --prefix=c:\tmp\boost
+```
+
+```text
+c:/src/tmp/boost_1_79_0/tools/build/src/build\targets.jam:617: in start-building from module targets
+error: Recursion in main target references
+error: the following target are being built currently:
+error: ./forward -> ./stage -> ./stage-proper -> ***libs/filesystem/build/stage*** -> libs/filesystem/build/stage-dependencies -> libs/log/build/stage -> libs/log/build/stage-dependencies -> ***libs/filesystem/build/stage***
+```
+
+Go for the prebuilt windows binaries then...
+
+
+
+https://www.boost.org/users/download/
+
+https://sourceforge.net/projects/boost/files/boost-binaries/1.79.0/boost_1_79_0-msvc-14.1-64.exe/download
+
+
+```bat
+set vcpp_ver=14.1
+set boost_ver=1_79_0
+set vcpp_ver_s=141
+
+set src_root_dir=C:\local\boost_%boost_ver%
+set src_lib_dir=%src_root_dir%\lib64-msvc-%vcpp_ver%
+set src_header_dir=%src_root_dir%\boost
+
+set dest_root_dir=C:\local
+set dest_dbg_root_dir=C:\localdev
+set dest_lib_dir=%dest_root_dir%\libs\64
+set dest_dbg_lib_dir=%dest_dbg_root_dir%\libs\64
+set dest_header_dir=%dest_root_dir%\include
+:: Cleanup or backup?
+
+mkdir %dest_lib_dir%
+
+set COPYOPTIONS=/Y /R /D
+
+xcopy %src_lib_dir%\boost_chrono-vc%vcpp_ver_s%* %dest_lib_dir%\  %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_date_time-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_filesystem-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_system-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_thread-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_regex-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+
+xcopy %src_lib_dir%\libboost_chrono-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_date_time-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_filesystem-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_system-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_thread-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_regex-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+
+mkdir %dest_header_dir%
+mv %src_header_dir% %dest_header_dir%\
+```
+
+Try to compile moirai with later vcpp. 
+
+Open project with msvstudio 2022. Offers to upgrade the win sdk to a couple of versions. Am wary of not using the very latest 10.0.19xxxx which may be too recent. Choosing 10.0.17763.0. Platform toolset to v141
+
+```xml
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <PlatformToolset>v141</PlatformToolset>
+```
+
+Compiles.
+
+
+netCDF
+
+https://docs.unidata.ucar.edu/netcdf-c/current/winbin.html  appears vcpp 2017. 
+https://downloads.unidata.ucar.edu/netcdf-c/4.9.0/netCDF4.9.0-NC4-64.exe
+
+It appears to run on top of v140 platform tools. OK. Try. May see if we can compile from source with v141 target.
+
+```bat
+xcopy C:\tmp\netcdf\bin\*.dll %dest_lib_dir%\ %COPYOPTIONS%
+xcopy C:\tmp\netcdf\lib\*.lib %dest_lib_dir%\ %COPYOPTIONS%
+
+mkdir %dest_header_dir%\netcdf
+xcopy C:\tmp\netcdf\include\*.h %dest_header_dir%\netcdf\ %COPYOPTIONS%
+```
+
+jsoncpp
+
+Getting my fork, concise-project file. 
+
+```xml
+    <PlatformToolset>v141</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+```
+
+Does the trick. Note that without `WindowsTargetPlatformVersion` in the project file, this failed to compile.
+
+Now, how do I automate the building of these? TODO perhaps streamline the powershell script to deal with jsoncpp too. Even if likely very infrequent.
+
+```bat
+set jsoncpp_srcdir=C:\src\jsoncpp
+set jsoncpp_builddir=%jsoncpp_srcdir%\makefiles\custom\x64
+xcopy %jsoncpp_builddir%\Release\jsoncpp.dll %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %jsoncpp_builddir%\Release\jsoncpp.lib %dest_lib_dir%\ %COPYOPTIONS%
+:: Debug also needed, likely. Know of very odd crashes when mixing debug/nondebug in the past. May not be the case anymore. 
+
+mkdir %dest_dbg_lib_dir%
+xcopy %jsoncpp_builddir%\Debug\jsoncpp.dll %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %jsoncpp_builddir%\Debug\jsoncpp.lib %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %jsoncpp_builddir%\Debug\jsoncpp.pdb %dest_dbg_lib_dir%\ %COPYOPTIONS%
+
+set robocopy_opt=/MIR /MT:1 /R:2 /NJS /NJH /NFL /NDL /XX
+robocopy %jsoncpp_srcdir%\include\json %dest_header_dir%\json  %robocopy_opt%
+```
+
+```bat
+set yamlcpp_srcdir=C:\src\yaml-cpp
+set yamlcpp_builddir=%yamlcpp_srcdir%\vsproj\x64
+xcopy %yamlcpp_builddir%\Release\yaml-cpp.dll %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %yamlcpp_builddir%\Release\yaml-cpp.lib %dest_lib_dir%\ %COPYOPTIONS%
+:: Debug also needed, likely. Know of very odd crashes when mixing debug/nondebug in the past. May not be the case anymore. 
+xcopy %yamlcpp_builddir%\Debug\yaml-cpp.dll %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %yamlcpp_builddir%\Debug\yaml-cpp.lib %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %yamlcpp_builddir%\Debug\yaml-cpp.pdb %dest_dbg_lib_dir%\ %COPYOPTIONS%
+
+robocopy %yamlcpp_srcdir%\include\yaml-cpp %dest_header_dir%\yaml-cpp  %robocopy_opt%
+```
+
+Now on to datatypes. All good. 
+
+deploylocal.ps from here on, normally. 
+
+Note: was expecting catch.hpp to be missing. But no. So, are the tests not compiling? may be disabled in the solution. 
+
+```bat
+robocopy C:\src\config-utils\catch\include\catch %dest_header_dir%\catch  %robocopy_opt%
+```
+
 
 # Market review
 
