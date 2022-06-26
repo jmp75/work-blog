@@ -11,17 +11,16 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Research paths to set up an enterprise-wide private conda channel" />
 <meta property="og:description" content="Research paths to set up an enterprise-wide private conda channel" />
-<link rel="canonical" href="https://jmp75.github.io/work-blog/conda/conda-channel/2022/06/18/conda-channels-prep-work.html" />
-<meta property="og:url" content="https://jmp75.github.io/work-blog/conda/conda-channel/2022/06/18/conda-channels-prep-work.html" />
+<link rel="canonical" href="https://jmp75.github.io/work-blog/drafts/2022-06-XX-conda-channels-local-channel.html" />
+<meta property="og:url" content="https://jmp75.github.io/work-blog/drafts/2022-06-XX-conda-channels-local-channel.html" />
 <meta property="og:site_name" content="J-M’s “lab notebook”" />
 <meta property="og:image" content="https://docs.conda.io/en/latest/_images/conda_logo.svg" />
-<meta property="og:type" content="article" />
-<meta property="article:published_time" content="2022-06-18T00:00:00-05:00" />
+<meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="twitter:image" content="https://docs.conda.io/en/latest/_images/conda_logo.svg" />
 <meta property="twitter:title" content="Setting up a private conda channel - part 1" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"<a href='https://github.com/jmp75'>J-M</a>"},"dateModified":"2022-06-18T00:00:00-05:00","datePublished":"2022-06-18T00:00:00-05:00","description":"Research paths to set up an enterprise-wide private conda channel","headline":"Setting up a private conda channel - part 1","image":"https://docs.conda.io/en/latest/_images/conda_logo.svg","mainEntityOfPage":{"@type":"WebPage","@id":"https://jmp75.github.io/work-blog/conda/conda-channel/2022/06/18/conda-channels-prep-work.html"},"url":"https://jmp75.github.io/work-blog/conda/conda-channel/2022/06/18/conda-channels-prep-work.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"<a href='https://github.com/jmp75'>J-M</a>"},"description":"Research paths to set up an enterprise-wide private conda channel","headline":"Setting up a private conda channel - part 1","image":"https://docs.conda.io/en/latest/_images/conda_logo.svg","url":"https://jmp75.github.io/work-blog/drafts/2022-06-XX-conda-channels-local-channel.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/work-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jmp75.github.io/work-blog/feed.xml" title="J-M's &quot;lab notebook&quot;" /><link rel="shortcut icon" type="image/x-icon" href="/work-blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -76,15 +75,15 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Setting up a private conda channel - part 1</h1><p class="page-description">Research paths to set up an enterprise-wide private conda channel</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-06-18T00:00:00-05:00" itemprop="datePublished">
-        Jun 18, 2022
+    <h1 class="post-title p-name" itemprop="name headline">Setting up a private conda channel - part 1</h1><p class="page-description">Research paths to set up an enterprise-wide private conda channel</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="" itemprop="datePublished">
+        
       </time>• 
           <span itemprop="author" itemscope itemtype="http://schema.org/Person">
             <span class="p-author h-card" itemprop="name"><a href='https://github.com/jmp75'>J-M</a></span></span>
        • <span class="read-time" title="Estimated read time">
     
     
-      2 min read
+      3 min read
     
 </span></p>
 
@@ -112,13 +111,16 @@ window.onload = wrap_img;
 <li class="toc-entry toc-h2"><a href="#reusing-conda-forge">Reusing conda-forge?</a></li>
 <li class="toc-entry toc-h2"><a href="#commercial-offerings">Commercial offerings</a></li>
 <li class="toc-entry toc-h2"><a href="#other">Other</a></li>
+<li class="toc-entry toc-h2"><a href="#stocktake">Stocktake</a></li>
+<li class="toc-entry toc-h2"><a href="#plan">Plan</a></li>
+<li class="toc-entry toc-h2"><a href="#setting-up-a-file-based-local-channel">Setting up a file based local channel</a></li>
 </ul>
 </li>
-<li class="toc-entry toc-h1"><a href="#stocktake">Stocktake</a></li>
+<li class="toc-entry toc-h1"><a href="#wrapping-up">Wrapping up</a></li>
 </ul><h1 id="background">
 <a class="anchor" href="#background" aria-hidden="true"><span class="octicon octicon-link"></span></a>Background</h1>
 
-<p>I have a <a href="https://jmp75.github.io/work-blog/recipes/conda/conda-forge/c++/2022/06/10/conda-packages-conda-forge-2.html">conda package for a compiled native library (moirai)</a>. While it may be in a position to be submitted to conda-forge, I will also be interested at some point in setting up “my” own conda channel, with a view to distribute packages on my enterprise intranet. I may as well use that library <code class="language-plaintext highlighter-rouge">moirai</code> to test setting up a custom conda channel.</p>
+<p>I have a <a href="https://jmp75.github.io/work-blog/recipes/conda/conda-forge/c++/2022/06/10/conda-packages-conda-forge-2.html">conda package for compiled native libraries</a>. While it may be in a position to be submitted to conda-forge, I will also be interested at some point in setting up “my” own conda channel, with a view to distribute packages on my enterprise intranet.</p>
 
 <p>This post will be a review of the possible ways to do this.</p>
 
@@ -165,17 +167,85 @@ window.onload = wrap_img;
 
 <p>By the way one <strong>misleading</strong> thing if you google “How do I set up a conda channel?”: the erronously titled video <a href="https://www.youtube.com/watch?v=O_gHgjJ4Fc4">How to create new channel in Anaconda (python)</a> is actually demonstrating the creation of a conda environment. Skip.</p>
 
-<h1 id="stocktake">
-<a class="anchor" href="#stocktake" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stocktake</h1>
+<h2 id="stocktake">
+<a class="anchor" href="#stocktake" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stocktake</h2>
 
-<p>The first impression is that there is not a clear, single path to standing up your own conda channel over HTTP(S), no turn-key solution. The closest may be the github repo <a href="https://github.com/DanielBok/private-conda-repo">Private Conda Repository</a>.</p>
+<p>The first impression is that there is not a clear, single path to standing up your own conda channel over HTTP(S), no turnkey solution. The closest may be the github repo <a href="https://github.com/DanielBok/private-conda-repo">Private Conda Repository</a>.</p>
 
-<p>A first plan for the next steps, presumably next posts, are:</p>
+<h2 id="plan">
+<a class="anchor" href="#plan" aria-hidden="true"><span class="octicon octicon-link"></span></a>Plan</h2>
 
-<ul>
-  <li>First, set up a file based channel following the conda documentation for <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/create-custom-channels.html">creating custom channels</a>.</li>
-  <li>Second, try to use <a href="https://github.com/DanielBok/private-conda-repo">PCR: Private Conda Repository</a>.</li>
-</ul>
+<p>First, set up a file based channel following the conda doc for <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/create-custom-channels.html">creating custom channels</a>. Second, try to use <a href="https://github.com/DanielBok/private-conda-repo">PCR: Private Conda Repository</a>.</p>
+
+<p>The rest of this post will be whatever is done before dinner…</p>
+
+<h2 id="setting-up-a-file-based-local-channel">
+<a class="anchor" href="#setting-up-a-file-based-local-channel" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up a file based local channel</h2>
+
+<p>So, trying to apply <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks">creating custom channels</a> to the moirai library. The document is hardly a tutorial since it pops references to <code class="language-plaintext highlighter-rouge">package-1.0-0.tar.bz2</code> out of nowhere. Unless you are already familiar enough with conda-build, this leaves the reader puzzled. Anyway.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda <span class="nb">env </span>list
+conda activate cf <span class="c"># as per a previous post</span>
+which conda-build
+</code></pre></div></div>
+
+<p><a href="https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html">Building conda packages from scratch</a></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> ~/src/tmp/moirai/recipe
+<span class="nb">cd</span> ~/src/tmp/moirai/recipe
+<span class="c"># git@github.com:jmp75/staged-recipes.git</span>
+<span class="nb">cp</span> ~/src/staged-recipes/recipes/moirai/<span class="k">*</span> ./
+<span class="nb">ls</span>
+</code></pre></div></div>
+
+<p>returns <code class="language-plaintext highlighter-rouge">bld.bat  build.sh  meta.yaml</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">conda build .</code> results in <code class="language-plaintext highlighter-rouge">PermissionError: [Errno 13] Permission denied: '/home/conda'</code>. This is rather poor form for a default behavior.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> ~/src/tmp/moirai/pkgtarball/
+conda build <span class="nt">--build-only</span> <span class="nt">--output-folder</span> ~/src/tmp/moirai/pkgtarball <span class="nb">.</span>
+</code></pre></div></div>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>conda.CondaError: Unable to create prefix directory '/home/conda/staged-recipes/build_artifacts/moirai_1655544194767/_h_env_placehold_LOTSOFTHESEPLACEHOLD_placehold_placehold_placehold_plac'.
+Check that you have sufficient permissions.
+</code></pre></div></div>
+
+<p>Seriously? Leave my <code class="language-plaintext highlighter-rouge">/home</code> directory alone.</p>
+
+<p>Looking at <a href="https://github.com/conda/conda-build/issues/1331">this issue</a> (not quite the same context), I am trying just in case:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> ~/src/tmp/moirai/pkgtarball/
+conda build <span class="nt">--build-only</span> <span class="nt">--output-folder</span> ~/src/tmp/moirai/pkgtarball <span class="nt">--croot</span> ~/src/tmp/moirai/build <span class="nb">.</span>
+</code></pre></div></div>
+
+<p>My hopes were not very high, but thankfully this seem to complete:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Total time: 0:01:57.9
+CPU usage: sys=0:00:00.2, user=0:00:13.2
+Maximum memory usage observed: 675.3M
+Total disk usage observed (not including envs): 5.2K
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">cd ../pkgtarball/ ; ls</code> shows:</p>
+
+<p><code class="language-plaintext highlighter-rouge">channeldata.json  icons  index.html  linux-64  noarch</code></p>
+
+<p>but <code class="language-plaintext highlighter-rouge">ls linux-64</code> returns <code class="language-plaintext highlighter-rouge">current_repodata.json  current_repodata.json.bz2  index.html  repodata_from_packages.json  repodata_from_packages.json.bz2  repodata.json  repodata.json.bz2</code>. Where is the expected file <code class="language-plaintext highlighter-rouge">moirai-1.1-h27087fc_0.tar.bz2</code>?</p>
+
+<p>```sh
+cd ~/src/tmp/moirai/pkgtarball
+other_arch=”osx-64 linux-32 win-32 win-64 all”
+for f in $other_arch ; do
+  mkdir -p $f; 
+done</p>
+
+<p>f=all
+conda convert –platform $f ~/anaconda/conda-bld/linux-64/click-7.0-py37_0.tar.bz2 -o outputdir/</p>
+
+<p>conda convert –platform all ~/anaconda/conda-bld/linux-64/click-7.0-py37_0.tar.bz2 -o outputdir/</p>
+
+<h1 id="wrapping-up">
+<a class="anchor" href="#wrapping-up" aria-hidden="true"><span class="octicon octicon-link"></span></a>Wrapping up</h1>
 
   </div><!-- from https://github.com/utterance/utterances -->
 <script src="https://utteranc.es/client.js"
@@ -185,7 +255,7 @@ window.onload = wrap_img;
         theme="github-light"
         crossorigin="anonymous"
         async>
-</script><a class="u-url" href="/work-blog/conda/conda-channel/2022/06/18/conda-channels-prep-work.html" hidden></a>
+</script><a class="u-url" href="/work-blog/drafts/2022-06-XX-conda-channels-local-channel.html" hidden></a>
 </article>
 
       </div>
