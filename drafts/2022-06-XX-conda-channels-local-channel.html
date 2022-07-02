@@ -83,7 +83,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      3 min read
+      4 min read
     
 </span></p>
 
@@ -203,6 +203,8 @@ which conda-build
 <p><code class="language-plaintext highlighter-rouge">conda build .</code> results in <code class="language-plaintext highlighter-rouge">PermissionError: [Errno 13] Permission denied: '/home/conda'</code>. This is rather poor form for a default behavior.</p>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> ~/src/tmp/moirai/pkgtarball/
+<span class="c"># cd ~/src/tmp/moirai/recipe fails ??? First tried</span>
+<span class="nb">cd</span> ~/src/tmp/moirai/
 conda build <span class="nt">--build-only</span> <span class="nt">--output-folder</span> ~/src/tmp/moirai/pkgtarball <span class="nb">.</span>
 </code></pre></div></div>
 
@@ -232,17 +234,37 @@ Total disk usage observed (not including envs): 5.2K
 
 <p>but <code class="language-plaintext highlighter-rouge">ls linux-64</code> returns <code class="language-plaintext highlighter-rouge">current_repodata.json  current_repodata.json.bz2  index.html  repodata_from_packages.json  repodata_from_packages.json.bz2  repodata.json  repodata.json.bz2</code>. Where is the expected file <code class="language-plaintext highlighter-rouge">moirai-1.1-h27087fc_0.tar.bz2</code>?</p>
 
-<p>```sh
-cd ~/src/tmp/moirai/pkgtarball
-other_arch=”osx-64 linux-32 win-32 win-64 all”
-for f in $other_arch ; do
-  mkdir -p $f; 
-done</p>
+<p>try abain, marginally different option (I don’t get how the upload would occur anyway)</p>
 
-<p>f=all
-conda convert –platform $f ~/anaconda/conda-bld/linux-64/click-7.0-py37_0.tar.bz2 -o outputdir/</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> ~/src/tmp/moirai/pkgtarball/
+<span class="nb">cd</span> ~/src/tmp/moirai <span class="c"># NOTE: not recipe. May make a difference. Confused by prior attempt</span>
+conda build <span class="nt">--no-anaconda-upload</span> <span class="nt">--output-folder</span> ~/src/tmp/moirai/pkgtarball <span class="nt">--croot</span> ~/src/tmp/moirai/build <span class="nb">.</span>  <span class="o">&gt;</span> log.txt 2&gt;&amp;1
+</code></pre></div></div>
 
-<p>conda convert –platform all ~/anaconda/conda-bld/linux-64/click-7.0-py37_0.tar.bz2 -o outputdir/</p>
+<p>This time it looks like there is something out. Maybe I misunderstood the effect of <code class="language-plaintext highlighter-rouge">--build-only</code>…</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> ~/src/tmp/moirai/pkgtarball
+<span class="nb">ls </span>linux-64/
+<span class="c"># current_repodata.json      index.html                     repodata_from_packages.json      repodata.json</span>
+<span class="c"># current_repodata.json.bz2  moirai-1.1-h3fd9d12_0.tar.bz2  repodata_from_packages.json.bz2  repodata.json.bz2</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> ~/src/tmp/moirai/pkgtarball
+<span class="nv">other_arch</span><span class="o">=</span><span class="s2">"osx-64 linux-32 win-32 win-64 all"</span>
+<span class="k">for </span>f <span class="k">in</span> <span class="nv">$other_arch</span> <span class="p">;</span> <span class="k">do
+  </span><span class="nb">mkdir</span> <span class="nt">-p</span> <span class="nv">$f</span><span class="p">;</span> 
+<span class="k">done
+
+</span><span class="nb">cd</span> ~/src/tmp/moirai/pkgtarball
+<span class="nv">f</span><span class="o">=</span>all
+<span class="nb">mkdir</span> <span class="nt">-p</span> ./outputdir/
+conda convert <span class="nt">--platform</span> <span class="nv">$f</span> ./linux-64/moirai-1.1-h3fd9d12_0.tar.bz2 <span class="nt">-o</span> ./outputdir/
+</code></pre></div></div>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WARNING: Package moirai-1.1-h3fd9d12_0.tar.bz2 contains C extensions; skipping conversion. Use -f to force conversion.
+</code></pre></div></div>
+
+<p>Well, at least this is correct. So how to I build for a different architecture? the section “Converting a package for use on all platforms” is implicitely only for python-only code.</p>
 
 <h1 id="wrapping-up">
 <a class="anchor" href="#wrapping-up" aria-hidden="true"><span class="octicon octicon-link"></span></a>Wrapping up</h1>
