@@ -87,6 +87,8 @@ returns `bld.bat  build.sh  meta.yaml`
 
 ```sh
 mkdir -p ~/src/tmp/moirai/pkgtarball/
+# cd ~/src/tmp/moirai/recipe fails ??? First tried
+cd ~/src/tmp/moirai/
 conda build --build-only --output-folder ~/src/tmp/moirai/pkgtarball .
 ```
 
@@ -119,6 +121,23 @@ Total disk usage observed (not including envs): 5.2K
 
 but `ls linux-64` returns `current_repodata.json  current_repodata.json.bz2  index.html  repodata_from_packages.json  repodata_from_packages.json.bz2  repodata.json  repodata.json.bz2`. Where is the expected file `moirai-1.1-h27087fc_0.tar.bz2`?
 
+try abain, marginally different option (I don't get how the upload would occur anyway)
+
+```sh
+mkdir -p ~/src/tmp/moirai/pkgtarball/
+cd ~/src/tmp/moirai # NOTE: not recipe. May make a difference. Confused by prior attempt
+conda build --no-anaconda-upload --output-folder ~/src/tmp/moirai/pkgtarball --croot ~/src/tmp/moirai/build .  > log.txt 2>&1
+```
+
+This time it looks like there is something out. Maybe I misunderstood the effect of `--build-only`...
+
+```sh
+cd ~/src/tmp/moirai/pkgtarball
+ls linux-64/
+# current_repodata.json      index.html                     repodata_from_packages.json      repodata.json
+# current_repodata.json.bz2  moirai-1.1-h3fd9d12_0.tar.bz2  repodata_from_packages.json.bz2  repodata.json.bz2
+```
+
 ```sh
 cd ~/src/tmp/moirai/pkgtarball
 other_arch="osx-64 linux-32 win-32 win-64 all"
@@ -126,9 +145,16 @@ for f in $other_arch ; do
   mkdir -p $f; 
 done
 
+cd ~/src/tmp/moirai/pkgtarball
 f=all
-conda convert --platform $f ~/anaconda/conda-bld/linux-64/click-7.0-py37_0.tar.bz2 -o outputdir/
+mkdir -p ./outputdir/
+conda convert --platform $f ./linux-64/moirai-1.1-h3fd9d12_0.tar.bz2 -o ./outputdir/
+```
 
-conda convert --platform all ~/anaconda/conda-bld/linux-64/click-7.0-py37_0.tar.bz2 -o outputdir/
+```text
+WARNING: Package moirai-1.1-h3fd9d12_0.tar.bz2 contains C extensions; skipping conversion. Use -f to force conversion.
+```
+
+Well, at least this is correct. So how to I build for a different architecture? the section "Converting a package for use on all platforms" is implicitely only for python-only code.
 
 # Wrapping up
