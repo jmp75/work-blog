@@ -133,7 +133,7 @@ set dest_dbg_lib_dir=%dest_dbg_root_dir%\libs\64
 set dest_header_dir=%dest_root_dir%\include
 :: Cleanup or backup?
 
-mkdir %dest_lib_dir%
+if not exist %dest_lib_dir% mkdir %dest_lib_dir%
 
 set COPYOPTIONS=/Y /R /D
 
@@ -153,7 +153,7 @@ xcopy %src_lib_dir%\libboost_regex-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
 
 :: header files
 mkdir %dest_header_dir%
-mv %src_header_dir% %dest_header_dir%\
+move %src_header_dir% %dest_header_dir%\
 ```
 
 ## Moirai
@@ -183,7 +183,7 @@ It appears to run on top of the v140 platform tools.That's OK since this is a C 
 xcopy C:\tmp\netcdf\bin\*.dll %dest_lib_dir%\ %COPYOPTIONS%
 xcopy C:\tmp\netcdf\lib\*.lib %dest_lib_dir%\ %COPYOPTIONS%
 
-mkdir %dest_header_dir%\netcdf
+if not exist %dest_header_dir%\netcdf mkdir %dest_header_dir%\netcdf
 xcopy C:\tmp\netcdf\include\*.h %dest_header_dir%\netcdf\ %COPYOPTIONS%
 ```
 
