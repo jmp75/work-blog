@@ -37,3 +37,12 @@ https://github.com/conda-forge/staged-recipes/blob/main/.azure-pipelines/azure-p
 maybe https://silentinstallhq.com/visual-studio-build-tools-2017-silent-install-how-to-guide/
 
 
+## Getting a pipeline to work
+
+Reusing swift_pat as per what was set up for Debian build
+Bitbucket - User "Manage Account" - Personal access tokens - permissions are read projects and read repositories. Note that the key will be readonly once at creation. You may want to save it to a secure location.
+
+https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html
+
+https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables
+
