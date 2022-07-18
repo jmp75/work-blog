@@ -34,7 +34,14 @@ The setup for checking out source code should be pretty similar to that already 
 Not really easy to locate a suitable recipe. I don't relish the prospect of building a yaml file from scratch 
 https://github.com/conda-forge/staged-recipes/blob/main/.azure-pipelines/azure-pipelines-win.yml
 
-maybe https://silentinstallhq.com/visual-studio-build-tools-2017-silent-install-how-to-guide/
+https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
+
+maybe https://silentinstallhq.com/visual-studio-build-tools-2017-silent-install-how-to-guide/  Nah, actually just morve to 2019 toolchain.
+
+https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md
+
+https://github.com/marian-nmt/marian-dev/blob/master/azure-pipelines.yml
+
 
 
 ## Getting a pipeline to work
@@ -46,3 +53,9 @@ https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-93951549
 
 https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables
 
+### Third party precompiled data
+
+```bat
+curl -o libs_third_party.7z https://cloudstor.aarnet.edu.au/plus/s/GdV0QmFISDHrwPG/download
+
+Idea: is it possible to use J Lerat's caching?
