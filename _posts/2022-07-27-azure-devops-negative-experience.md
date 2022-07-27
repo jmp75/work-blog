@@ -62,11 +62,11 @@ Create this new feed, **setting the scope to the project**, which is recommended
 
 ![]({{ site.baseurl }}/images/az-publish-artifacts/azure_feed_creation_002.png "azure_feed_creation_002")
 
-By default, the permission list created for the new feed is as below. Note that the `organisation_name Build Service (project_name)` user or group has the role `Collaborator` by default. This may be the key stumbling block users trip over.
+By default, the permission list created for the new feed is as below. Note that the `[project_name] Build Service ([organisation_name])` user or group has the role `Collaborator` by default. This may be the key stumbling block users trip over.
 
 ![]({{ site.baseurl }}/images/az-publish-artifacts/003.png "003")
 
-As I write, you cannot change the role; you have to remove the `organisation_name Build Service (project_name)` user or group and add it again with the `Contributor` role.
+As I write, you cannot change the role; you have to remove the `[project_name] Build Service ([organisation_name])` user or group and add it again with the `Contributor` role.
 
 ![]({{ site.baseurl }}/images/az-publish-artifacts/007.png "007")
 
