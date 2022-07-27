@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>A whinge about Azure Devops | J-M’s “lab notebook”</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="A whinge about Azure Devops" />
+<meta name="author" content="<a href='https://github.com/jmp75'>J-M</a>" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A bumpy ride trying to do a relatively simple thing, publish packages from a build pipeline." />
+<meta property="og:description" content="A bumpy ride trying to do a relatively simple thing, publish packages from a build pipeline." />
+<link rel="canonical" href="https://jmp75.github.io/work-blog/azure/devops/microsoft/2022/07/27/azure-devops-negative-experience.html" />
+<meta property="og:url" content="https://jmp75.github.io/work-blog/azure/devops/microsoft/2022/07/27/azure-devops-negative-experience.html" />
+<meta property="og:site_name" content="J-M’s “lab notebook”" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-07-27T00:00:00-05:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A whinge about Azure Devops" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"<a href='https://github.com/jmp75'>J-M</a>"},"dateModified":"2022-07-27T00:00:00-05:00","datePublished":"2022-07-27T00:00:00-05:00","description":"A bumpy ride trying to do a relatively simple thing, publish packages from a build pipeline.","headline":"A whinge about Azure Devops","mainEntityOfPage":{"@type":"WebPage","@id":"https://jmp75.github.io/work-blog/azure/devops/microsoft/2022/07/27/azure-devops-negative-experience.html"},"url":"https://jmp75.github.io/work-blog/azure/devops/microsoft/2022/07/27/azure-devops-negative-experience.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/work-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jmp75.github.io/work-blog/feed.xml" title="J-M's &quot;lab notebook&quot;" /><link rel="shortcut icon" type="image/x-icon" href="/work-blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/work-blog/">J-M&#39;s &quot;lab notebook&quot;</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/work-blog/about/">About Me</a><a class="page-link" href="/work-blog/search/">Search</a><a class="page-link" href="/work-blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">A whinge about Azure Devops</h1><p class="page-description">A bumpy ride trying to do a relatively simple thing, publish packages from a build pipeline.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-07-27T00:00:00-05:00" itemprop="datePublished">
+        Jul 27, 2022
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name"><a href='https://github.com/jmp75'>J-M</a></span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      5 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/work-blog/categories/#Azure">Azure</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/work-blog/categories/#devops">devops</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/work-blog/categories/#Microsoft">Microsoft</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#getting-a-pipeline-to-publish-a-package-in-a-project-feed">Getting a pipeline to publish a package in a project feed</a></li>
+<li class="toc-entry toc-h2"><a href="#a-minimal-working-example">A minimal, working example</a></li>
+<li class="toc-entry toc-h2"><a href="#parting-words">Parting words</a></li>
+</ul><p><em>Foreword: You’ll find a minimal working example towards the end of the post, if you want to skip the rants and googling tribulations</em></p>
+
+<p>How was your day?</p>
+
+<p>Today, Azure Devops took five-ish hours of my life I’ll never get back. Not for the first time. I’ll try to keep expletive out of this post.</p>
+
+<p>I’ve been using Azure Devops for about a year to set up build and deployment pipelines. Not on a regular basis, but several instances. This week I am trying to finalise a new build pipeline. And I feel like venting some frustration. It may make some other sufferers feel less alone. Earlier this week I had a training webinar on taking on board UX (user experience) techniques in our work, implicitely for the delivery of digital products. This adds irony to my resentment against Microsoft for landing Azure Devops where it stands.</p>
+
+<p>I don’t have the time or energy to capture in compelling details all the frustrations or puzzlements in this post. After another week more than I would have liked to spend on it, Azure Devops feels obtuse, alienating, unpleasant. I have not tried many other similar offering recently, so I don’t know if the grass is greener over the fence. And I doubt it.</p>
+
+<p>Today’s tribulations.</p>
+
+<h2 id="getting-a-pipeline-to-publish-a-package-in-a-project-feed">
+<a class="anchor" href="#getting-a-pipeline-to-publish-a-package-in-a-project-feed" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting a pipeline to publish a package in a project feed</h2>
+
+<p>I was putting the final step of a long-running build pipeline (C++, R), to publish an artifact using the task <code class="language-plaintext highlighter-rouge">UniversalPackages@0</code> in the <code class="language-plaintext highlighter-rouge">azure-pipeline.yml</code>. And I had managed to do that in another pipeline some months ago. After bumping into an issue of my making (need to create a new feed in the project to host these artifacts), I end up with the glorious error message:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nl">"@t"</span><span class="p">:</span><span class="s2">"2022-07-26T10:22:42.4886223Z"</span><span class="p">,</span><span class="nl">"@m"</span><span class="p">:</span><span class="s2">"An error occurred on the service. User 'aaaaaaaa-2efe-46ec-b780-ffffffffffff' lacks permission to complete this action. You need to have 'AddPackage'."</span><span class="p">,</span><span class="nl">"@i"</span><span class="p">:</span><span class="s2">"bbbbbbbb"</span><span class="p">,</span><span class="nl">"@l"</span><span class="p">:</span><span class="s2">"Error"</span><span class="p">,</span><span class="nl">"SourceContext"</span><span class="p">:</span><span class="s2">"ArtifactTool.Program"</span><span class="p">,</span><span class="nl">"UtcTimestamp"</span><span class="p">:</span><span class="s2">"2022-07-26 10:22:42.488Z"</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>“You”? Who? Me? Who is user ‘aaaaaaaa-2efe-46ec-b780-ffffffffffff’? Is it me? I am admin in this organisation, and owner of the pipeline.</p>
+
+<p>And on with the wild goose chase.</p>
+
+<p>First port of call, compare every setting to the other, working pipeline. I notice that the group <code class="language-plaintext highlighter-rouge">Project Collection Build Service (my-az-organisation)</code> is not present with a contributor Role. Fix that.</p>
+
+<p>Nope, still the same. (<em>Later, Looking back, I must have missed something in the feed permission list (Collaborator vs. Contributor role)</em>)</p>
+
+<p>Help! Google.</p>
+
+<p><a href="https://stackoverflow.com/questions/58780741/azure-devops-user-lacks-permission-to-complete-this-action-you-need-to-have-a">This StackOverflow thread</a> has hints about needing to add a <code class="language-plaintext highlighter-rouge">Build Service</code> with a Contributor role. There are also references at needing to go to an “…” button to change an allowed scope, but as of 2022 the user interface has changed. Other posts such as <a href="https://stackoverflow.com/questions/57154296/azure-devops-publishing-to-own-feed-suddenly-results-in-403-forbidden">this</a> and <a href="https://stackoverflow.com/questions/71206808/setting-azure-build-permissions-to-push-to-shared-feed">this</a> suggest there is no shortage of confusion besides myself.</p>
+
+<p>In the Microsoft documentation maze <a href="https://docs.microsoft.com/en-au/azure/devops/pipelines/process/access-tokens?view=azure-devops&amp;tabs=yaml#manage-build-service-account-permissions">Manage build service account permissions</a> is the wrong place to look at. <a href="https://docs.microsoft.com/en-us/azure/devops/artifacts/feeds/feed-permissions?view=azure-devops#configure-feed-settings">Configure feed settings</a> is the right place, but despite not being incorrect it is too generic and unhelpful for many users who just want a specific, working recipe for their use case.</p>
+
+<p>In the end I managed to find a recipe after setting a minimal example from scratch.</p>
+
+<h2 id="a-minimal-working-example">
+<a class="anchor" href="#a-minimal-working-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>A minimal, working example</h2>
+
+<p>Since at least the user interface has changed since the 2019 Stack Overflow posts:</p>
+
+<p><strong>Caution</strong>: these screen captures below are taken from an Azure Devops organisation where the name of the single project in that organisation is the same as the organisation. These are blacked out, but you can see it partly. This stems from my employer’s policies. Not something I can do anything about, but not the best context for explanation. In your case your organisation name and project name may differ, and probably should to avoid confusion.</p>
+
+<p>First, create the new feed in the artifact section. If you already have a feed, I am not sure.</p>
+
+<p><img src="/work-blog/images/az-publish-artifacts/artifacts-section.png" alt="" title="artifacts-section"></p>
+
+<p>Create this new feed, <strong>setting the scope to the project</strong>, which is recommended anyway. This is important for subsequent permission settings: if you choose <code class="language-plaintext highlighter-rouge">organisation</code>, this example may not pan out. The visibility option may not matter for this example, but am not sure.</p>
+
+<p><img src="/work-blog/images/az-publish-artifacts/azure_feed_creation_002.png" alt="" title="azure_feed_creation_002"></p>
+
+<p>By default, the permission list created for the new feed is as below. Note that the <code class="language-plaintext highlighter-rouge">organisation_name Build Service (project_name)</code> user or group has the role <code class="language-plaintext highlighter-rouge">Collaborator</code> by default. This may be the key stumbling block users trip over.</p>
+
+<p><img src="/work-blog/images/az-publish-artifacts/003.png" alt="" title="003"></p>
+
+<p>As I write, you cannot change the role; you have to remove the <code class="language-plaintext highlighter-rouge">organisation_name Build Service (project_name)</code> user or group and add it again with the <code class="language-plaintext highlighter-rouge">Contributor</code> role.</p>
+
+<p><img src="/work-blog/images/az-publish-artifacts/007.png" alt="" title="007"></p>
+
+<p>With that in place, the following pipeline works:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">trigger</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="s">main</span>
+
+<span class="na">resources</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">repo</span><span class="pi">:</span> <span class="s">self</span>
+
+<span class="na">variables</span><span class="pi">:</span>
+  <span class="na">tag</span><span class="pi">:</span> <span class="s1">'</span><span class="s">$(Build.BuildId)'</span>
+
+<span class="c1"># to get a custom '$(Build.BuildNumber)', and 'r' is a counter reset to 1 every change of the major/minor versions</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s1">'</span><span class="s">0.1.$(Rev:r)'</span>
+
+<span class="na">stages</span><span class="pi">:</span>
+<span class="pi">-</span> <span class="na">stage</span><span class="pi">:</span> <span class="s">Build</span>
+  <span class="na">displayName</span><span class="pi">:</span> <span class="s">Build packages</span>
+  <span class="na">jobs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">job</span><span class="pi">:</span> <span class="s">Build</span>
+    <span class="na">displayName</span><span class="pi">:</span> <span class="s">Build packages</span>
+    <span class="na">pool</span><span class="pi">:</span>
+      <span class="na">vmImage</span><span class="pi">:</span> <span class="s">windows-2019</span>
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">checkout</span><span class="pi">:</span> <span class="s">self</span>
+    <span class="pi">-</span> <span class="na">script</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">mkdir $(Build.ArtifactStagingDirectory)\release </span>
+        <span class="s">cd $(Build.ArtifactStagingDirectory)\release</span>
+        <span class="s">echo "test" &gt; blah.txt</span>
+      <span class="na">displayName</span><span class="pi">:</span> <span class="s1">'</span><span class="s">create</span><span class="nv"> </span><span class="s">mock</span><span class="nv"> </span><span class="s">artifact'</span>
+    <span class="pi">-</span> <span class="na">task</span><span class="pi">:</span> <span class="s">UniversalPackages@0</span>
+      <span class="na">displayName</span><span class="pi">:</span> <span class="s">Publish output bundle</span>
+      <span class="na">inputs</span><span class="pi">:</span>
+        <span class="na">command</span><span class="pi">:</span> <span class="s">publish</span>
+        <span class="na">publishDirectory</span><span class="pi">:</span> <span class="s1">'</span><span class="s">$(Build.ArtifactStagingDirectory)\release'</span>
+        <span class="na">vstsFeedPublish</span><span class="pi">:</span> <span class="s1">'</span><span class="s">OD222236-DigWaterAndLandscapes/sandpit_win'</span>
+        <span class="na">vstsFeedPackagePublish</span><span class="pi">:</span> <span class="s1">'</span><span class="s">sandpit_win'</span>
+        <span class="na">versionOption</span><span class="pi">:</span> <span class="s">custom</span>
+        <span class="na">versionPublish</span><span class="pi">:</span> <span class="s1">'</span><span class="s">$(Build.BuildNumber)'</span>
+        <span class="na">packagePublishDescription</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Test</span><span class="nv"> </span><span class="s">package</span><span class="nv"> </span><span class="s">publication'</span>
+</code></pre></div></div>
+
+<h2 id="parting-words">
+<a class="anchor" href="#parting-words" aria-hidden="true"><span class="octicon octicon-link"></span></a>Parting words</h2>
+
+<p>This was but one illustration of the inadequate UX with Azure Devops. Looking back on this one, this is a relatively simple and common use case, and after the fact I feel I should have second-guessed the settings. But I and visibly many others have been derailed and confused by the process, trying to find a didactic example to work from by similarity. It seem that the Microsoft documentation draws you into having to absorb a web of overly complicated and abstract concepts that are overwhelming unless you are a full-time devops.</p>
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="jmp75/work-blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/work-blog/azure/devops/microsoft/2022/07/27/azure-devops-negative-experience.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/work-blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/work-blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/work-blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Work-related posts for the so-called grey literature.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/jmp75" target="_blank" title="jmp75"><svg class="svg-icon grey"><use xlink:href="/work-blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jmp_oz" target="_blank" title="jmp_oz"><svg class="svg-icon grey"><use xlink:href="/work-blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
