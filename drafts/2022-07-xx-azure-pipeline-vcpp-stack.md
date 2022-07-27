@@ -43,6 +43,9 @@ https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019
 https://github.com/marian-nmt/marian-dev/blob/master/azure-pipelines.yml
 
 
+Building the R tarballs on a Linux (easier, perhaps). How do I download them in another pipeline to build on windows?
+
+[Trigger Build Task](https://marketplace.visualstudio.com/items?itemName=benjhuser.tfs-extensions-build-tasks)
 
 ## Getting a pipeline to work
 
@@ -57,5 +60,26 @@ https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=a
 
 ```bat
 curl -o libs_third_party.7z https://cloudstor.aarnet.edu.au/plus/s/GdV0QmFISDHrwPG/download
-
+```
 Idea: is it possible to use J Lerat's caching?
+
+## Troubleshooting
+
+```
+{"@t":"2022-07-26T10:22:42.4886223Z","@m":"An error occurred on the service. User '9fa77fd6-2efe-46ec-b780-0a181276deff' lacks permission to complete this action. You need to have 'AddPackage'.","@i":"1f83248f","@l":"Error","SourceContext":"ArtifactTool.Program","UtcTimestamp":"2022-07-26 10:22:42.488Z"}
+```
+
+Comparing with another pipeline that works:
+Project Collection Build Service (blahblah) is not present with a contributor Role
+
+Also more to read.
+https://stackoverflow.com/questions/58780741/azure-devops-user-lacks-permission-to-complete-this-action-you-need-to-have-a
+
+https://stackoverflow.com/questions/57154296/azure-devops-publishing-to-own-feed-suddenly-results-in-403-forbidden
+
+https://stackoverflow.com/questions/71206808/setting-azure-build-permissions-to-push-to-shared-feed
+
+Add to confusion: my employer provides setup where the organisation and the project use the same name. Our proOD222236-DigWaterAndLandscapes
+
+Looking for "..." buttons to access settings, which appear no longer available. 
+
