@@ -157,4 +157,4 @@ mkdocs gh-deploy --clean --site-dir _build/html --config-file mkdocs.yml
 
 Some rough corners left, but it largely works:
 
-[!["uchronia-c-api-doxybook2.png"]({{ site.baseurl }}/doxybook2/uchronia-c-api-doxybook2.png "uchronia-c-api-doxybook2.png")](https://csiro-hydroinformatics.github.io/uchronia-ts-doc)
+[!["uchronia-c-api-doxybook2.png"]({{ site.baseurl }}/images/doxybook2/uchronia-c-api-doxybook2.png "uchronia-c-api-doxybook2.png")](https://csiro-hydroinformatics.github.io/uchronia-ts-doc)
