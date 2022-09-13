@@ -126,3 +126,12 @@ I come across the [WebAssembly System Interface - WASI](https://wasi.dev/). Its 
 * [Compiling an Existing C Module to WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/existing_C_to_wasm)
 * The Rust community seems to be quite actively interested in WASM
 * [Bytecode Alliance](https://bytecodealliance.org/)
+
+Updates:
+
+* [https://tpiros.dev/blog/bring-your-cplusplus-application-to-the-web-with-web-assembly/](https://tpiros.dev/blog/bring-your-cplusplus-application-to-the-web-with-web-assembly/)
+* [https://medium.com/@tdeniffel/pragmatic-compiling-from-c-to-webassembly-a-guide-a496cc5954b8](https://medium.com/@tdeniffel/pragmatic-compiling-from-c-to-webassembly-a-guide-a496cc5954b8)
+* [https://github.com/WebAssembly/tool-conventions/blob/main/DynamicLinking.md](https://github.com/WebAssembly/tool-conventions/blob/main/DynamicLinking.md)
+* [https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone#create-a-dynamic-library](https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone#create-a-dynamic-library)
+* [https://www.infoworld.com/article/3619608/13-hot-language-projects-riding-webassembly.html](https://www.infoworld.com/article/3619608/13-hot-language-projects-riding-webassembly.html)
+* [https://leaningtech.com/cheerp-2-7-compile-c-to-webassembly-plus-javascript/](https://leaningtech.com/cheerp-2-7-compile-c-to-webassembly-plus-javascript/)
