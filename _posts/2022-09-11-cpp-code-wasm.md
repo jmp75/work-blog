@@ -52,7 +52,7 @@ emcmake $CM
 I get:
 
 ```text
-CMake Error at /home/per202/src/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake:136 (message):
+CMake Error at /home/xxxyyy/src/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake:136 (message):
   System LLVM compiler cannot be used to build with Emscripten! Check
   Emscripten's LLVM toolchain location in .emscripten configuration file, and
   make sure to point CMAKE_C_COMPILER to where emcc is located.  (was
@@ -74,7 +74,7 @@ emcmake cmake -DCMAKE_MODULE_PATH=/usr/local/share/cmake/Modules/ -DCMAKE_BUILD_
 Nope, still not, same message. Well, how about trying to "point CMAKE_C_COMPILER to where emcc is located"?
 
 ```sh
-emcmake cmake -DCMAKE_CXX_COMPILER=/home/per202/src/emsdk/upstream/emscripten/em++ -DCMAKE_C_COMPILER=/home/per202/src/emsdk/upstream/emscripten/emcc -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_MODULE_PATH=/usr/local/share/cmake/Modules/ -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON ..
+emcmake cmake -DCMAKE_CXX_COMPILER=/home/xxxyyy/src/emsdk/upstream/emscripten/em++ -DCMAKE_C_COMPILER=/home/xxxyyy/src/emsdk/upstream/emscripten/emcc -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_MODULE_PATH=/usr/local/share/cmake/Modules/ -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON ..
 ```
 
 Surprise, it works. Albeit with a warning.
@@ -119,7 +119,7 @@ But, really, shared libraries not supported? Google a bit.
 
 I come across the [WebAssembly System Interface - WASI](https://wasi.dev/). Its documentation page [Writing WebAssembly - C/C++](https://docs.wasmtime.dev/wasm-c.html) and [LLVM - WebAssembly lld port](https://lld.llvm.org/WebAssembly.html) make me think that shared libraries. Noting that _flags related to dynamic linking, such `-shared` and `--export-dynamic` are not yet stable and are expected to change behavior in the future_.
 
-## Other resources for next steps
+## Appendix: other resources for next steps
 
 * Very interested in [Porting libffi to pure WebAssembly](https://www.tweag.io/blog/2022-03-17-libffi-wasm32/), and also the company profile of the author.
 * [minimal-cmake-emscripten-project](https://github.com/adevaykin/minimal-cmake-emscripten-project)
@@ -127,7 +127,7 @@ I come across the [WebAssembly System Interface - WASI](https://wasi.dev/). Its 
 * The Rust community seems to be quite actively interested in WASM
 * [Bytecode Alliance](https://bytecodealliance.org/)
 
-Updates:
+**Updates**
 
 * [https://tpiros.dev/blog/bring-your-cplusplus-application-to-the-web-with-web-assembly/](https://tpiros.dev/blog/bring-your-cplusplus-application-to-the-web-with-web-assembly/)
 * [https://medium.com/@tdeniffel/pragmatic-compiling-from-c-to-webassembly-a-guide-a496cc5954b8](https://medium.com/@tdeniffel/pragmatic-compiling-from-c-to-webassembly-a-guide-a496cc5954b8)
@@ -135,3 +135,54 @@ Updates:
 * [https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone#create-a-dynamic-library](https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone#create-a-dynamic-library)
 * [https://www.infoworld.com/article/3619608/13-hot-language-projects-riding-webassembly.html](https://www.infoworld.com/article/3619608/13-hot-language-projects-riding-webassembly.html)
 * [https://leaningtech.com/cheerp-2-7-compile-c-to-webassembly-plus-javascript/](https://leaningtech.com/cheerp-2-7-compile-c-to-webassembly-plus-javascript/)
+* [Add a simple example about how to build your own C++ Pyodide package](https://github.com/pyodide/pyodide/issues/2711)
+* [openssl in pyodide](https://github.com/pyodide/pyodide/blob/main/packages/openssl/meta.yaml) may be informative as to interop.
+
+More 2022-09-17:
+
+* [https://emscripten.org/docs/compiling/Dynamic-Linking.html](https://emscripten.org/docs/compiling/Dynamic-Linking.html). Basically, the question is how I use this in a cmakelists. Any starting point?
+* May not address shared modules, but well written: [https://peterdn.com/post/2020/12/31/building-c-and-cpp-libraries-for-webassembly/ ](https://peterdn.com/post/2020/12/31/building-c-and-cpp-libraries-for-webassembly/ )
+* small but didactic: [https://medium.com/@arora.aashish/webassembly-dynamic-linking-1644c9f40c8c](https://medium.com/@arora.aashish/webassembly-dynamic-linking-1644c9f40c8c)
+* [https://docs.wasmtime.dev/tutorial-create-hello-world.html](https://docs.wasmtime.dev/tutorial-create-hello-world.html)
+* [https://madewithwebassembly.com/](https://madewithwebassembly.com/)
+* [https://github.com/emscripten-core/emscripten/issues/17245](https://github.com/emscripten-core/emscripten/issues/17245)
+
+This [issue from Thorsten Beier](https://github.com/emscripten-core/emscripten/issues/15276), QuantStack crowd I believe.
+
+**Further experimentations:**
+
+```sh
+emcmake cmake \
+  -DCMAKE_CXX_COMPILER=/home/xxxyyy/src/emsdk/upstream/emscripten/em++ \
+  -DCMAKE_C_COMPILER=/home/xxxyyy/src/emsdk/upstream/emscripten/emcc \
+  -DCMAKE_PREFIX_PATH=/usr/local \
+  -DCMAKE_MODULE_PATH=/usr/local/share/cmake/Modules \
+  -DCMAKE_INSTALL_PREFIX=/home/xxxyyy/tmp \
+  -DCMAKE_PROJECT_INCLUDE=moirai_emscripten.cmake \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_SHARED_LIBS=ON .. 
+
+
+emmake make VERBOSE=yes
+
+```
+
+```text
+error: undefined symbol: clone_handle_b_in_domain_a (referenced by top-level compiled C/C++ code)
+warning: _clone_handle_b_in_domain_a may need to be added to EXPORTED_FUNCTIONS if it arrives from a system library
+```
+
+moirai_emscripten.cmake has, borrowed from something in pyodide (geos)
+
+```cmake
+set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
+set(CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS "-s EXPORT_ALL=1 -s SIDE_MODULE=1")
+set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS "-s EXPORT_ALL=1 -s SIDE_MODULE=1")
+set(CMAKE_STRIP FALSE)  # used by default in pybind11 on .so modules
+```
+
+but any of the .so files e.g. `emnm libmoirai_test_lib_a.so` returns libmoirai_test_lib_a.so: no symbols
+
+Issue [CMake SHARED library with Emscripten toolchain is not supported](https://github.com/emscripten-core/emscripten/issues/17804) may hold clues regarding multi-target cmakes.
+
+[emcmake: SIDE_MODULE can't find another SIDE_MODULE when link](https://github.com/emscripten-core/emscripten/issues/17354)
