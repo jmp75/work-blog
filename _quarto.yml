@@ -5,11 +5,14 @@ website:
   title: "J-M’s ‘lab notebook’"
   navbar:
     right:
-      - about.qmd
+      - text: "About"
+        href: about.qmd
       - icon: github
         href: https://github.com/jmp75
       - icon: twitter
         href: https://twitter.com/jmp_oz
+  page-footer:
+    left: "© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0."
 format:
   html:
     theme: darkly

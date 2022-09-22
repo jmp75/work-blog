@@ -3,7 +3,7 @@ title: "J-M's 'lab notebook'"
 image: profile_01.png
 about:
   template: jolla
-  # image-width: 10em
+  image-width: 40em
   image-shape: rectangle
   links:
     - icon: twitter
@@ -18,8 +18,12 @@ about:
 
 ---
 
-Peer reviewed publications is not the sole repository of useful information.
+Because peer reviewed publication is not the sole vehicle for useful content.
 
 Also, [Why you (yes, you) should blog](https://medium.com/@racheltho/why-you-yes-you-should-blog-7d2544ac1045).
 
-[Workplace profile](https://people.csiro.au/P/J/Jean-Michel-Perraud)
+My [workplace profile](https://people.csiro.au/P/J/Jean-Michel-Perraud)
+
+## Source
+
+This blog site is built from [this github repository](https://github.com/jmp75/work-blog/) with [Quarto](https://quarto.org/quarto.png)
