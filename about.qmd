@@ -1,0 +1,23 @@
+---
+title: "J-M's 'lab notebook'"
+image: profile.png
+about:
+  template: jolla
+  links:
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/jmp_oz
+    # - icon: linkedin
+    #   text: LinkedIn
+    #   href: https://linkedin.com
+    - icon: github
+      text: Github
+      href: https://github.com/jmp75
+
+---
+
+Peer reviewed publications is not the sole repository of useful information.
+
+Also, [Why you (yes, you) should blog](https://medium.com/@racheltho/why-you-yes-you-should-blog-7d2544ac1045).
+
+[Workplace profile](https://people.csiro.au/P/J/Jean-Michel-Perraud)

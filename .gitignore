@@ -1,0 +1,22 @@
+_site/
+.*
+
+
+*.swp
+~*
+*~
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+*.xml
+vendor
+_notebooks/.ipynb_checkpoints
+# Local Netlify folder
+.netlify
+.tweet-cache
+__pycache__
+
+.vscode
+
+/.quarto/

@@ -1,0 +1,19 @@
+project:
+  type: website
+
+website:
+  title: "J-M’s ‘lab notebook’"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/jmp75
+      - icon: twitter
+        href: https://twitter.com/jmp_oz
+format:
+  html:
+    theme: slate
+    css: styles.css
+
+
+
