@@ -1,0 +1,21 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/2022-09-11-cpp-code-wasm.html",
+      "/posts/2022-09-03-c-api-wrapper-generation.html",
+      "/posts/2022-08-22-doxygen-doxybook-mkdocs.html",
+      "/posts/2022-08-09-python-profiling-interop.html",
+      "/posts/2022-07-31-azure-pipeline-vcpp-stack.html",
+      "/posts/2022-07-27-azure-devops-negative-experience.html",
+      "/posts/2022-07-03-lithology-classification-hugging-face-3.html",
+      "/posts/2022-06-26-vcpp-compilation-upgrade.html",
+      "/posts/2022-06-18-conda-channels-prep-work.html",
+      "/posts/2022-06-13-lithology-classification-hugging-face-2.html",
+      "/posts/2022-06-10-conda-packages-conda-forge-2.html",
+      "/posts/2022-06-04-conda-packages-conda-forge.html",
+      "/posts/2022-06-01-lithology-classification-hugging-face.html",
+      "/posts/2022-05-28-hydstra-rest-data.html"
+    ]
+  }
+]

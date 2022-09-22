@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-06-18">
+<meta name="description" content="Research paths to set up an enterprise-wide private conda channel">
+
+<title>J-M’s ‘lab notebook’ - Setting up a private conda channel - part 1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Setting up a private conda channel - part 1</h1>
+                  <div>
+        <div class="description">
+          Research paths to set up an enterprise-wide private conda channel
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">conda</div>
+                <div class="quarto-category">conda-channel</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="https://github.com/jmp75">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 18, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a>
+  <ul class="collapse">
+  <li><a href="#conda-documentation" id="toc-conda-documentation" class="nav-link" data-scroll-target="#conda-documentation">conda documentation</a></li>
+  <li><a href="#fast.ai" id="toc-fast.ai" class="nav-link" data-scroll-target="#fast.ai">fast.ai</a></li>
+  <li><a href="#reusing-conda-forge" id="toc-reusing-conda-forge" class="nav-link" data-scroll-target="#reusing-conda-forge">Reusing conda-forge?</a></li>
+  <li><a href="#commercial-offerings" id="toc-commercial-offerings" class="nav-link" data-scroll-target="#commercial-offerings">Commercial offerings</a></li>
+  <li><a href="#other" id="toc-other" class="nav-link" data-scroll-target="#other">Other</a></li>
+  </ul></li>
+  <li><a href="#stocktake" id="toc-stocktake" class="nav-link" data-scroll-target="#stocktake">Stocktake</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>I have a <a href="https://jmp75.github.io/work-blog/recipes/conda/conda-forge/c++/2022/06/10/conda-packages-conda-forge-2.html">conda package for a compiled native library (moirai)</a>. While it may be in a position to be submitted to conda-forge, I will also be interested at some point in setting up “my” own conda channel, with a view to distribute packages on my enterprise intranet. I may as well use that library <code>moirai</code> to test setting up a custom conda channel.</p>
+<p>This post will be a review of the possible ways to do this.</p>
+</section>
+<section id="resources" class="level1">
+<h1>Resources</h1>
+<section id="conda-documentation" class="level2">
+<h2 class="anchored" data-anchor-id="conda-documentation">conda documentation</h2>
+<p>The main conda documentation has sections on <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-channels.html">managing channels</a> and <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/create-custom-channels.html">creating custom channels</a>.</p>
+</section>
+<section id="fast.ai" class="level2">
+<h2 class="anchored" data-anchor-id="fast.ai">fast.ai</h2>
+<p>Jeremy Howard has written the post <a href="https://www.fast.ai/2021/07/15/fastconda/">“fastchan, a new conda mini-distribution”</a>. It is a good read giving the rationale for setting up this channel. The repo of the <a href="https://github.com/fastai/fastconda">conda channel ‘fastconda’</a> has some elements of pipelines but may be a good starting point for channels hosted by Anaconda. I am not sure I can repurpose this for a private channel.</p>
+</section>
+<section id="reusing-conda-forge" class="level2">
+<h2 class="anchored" data-anchor-id="reusing-conda-forge">Reusing conda-forge?</h2>
+<p>Since I intuit that a process similar to that of conda-forge could be what is emulated internally, an option may be to upfront borrow from the <a href="https://conda-forge.org/docs/">conda-forge documentation</a></p>
+<p>The workhorse of conda-forge appears to be <a href="https://conda-forge.org/docs/user/ci-skeleton.html">using conda-smithy to manage your CI</a>, though that section actually rather confused me at the first read. The github <a href="https://github.com/conda-forge/conda-smithy">readme of conda-smithy</a> may be a better starting point.</p>
+<p>https://github.com/conda-forge/astra-toolbox-feedstock is a recently accepted recipe. Likely a good template to study for the swift stack.</p>
+</section>
+<section id="commercial-offerings" class="level2">
+<h2 class="anchored" data-anchor-id="commercial-offerings">Commercial offerings</h2>
+<ul>
+<li>At an enterprise level it may be better to use <a href="https://server-docs.anaconda.com/en/latest/index.html">Anaconda Server</a> rather than cook up something. I probably cannot afford the time to trial standing one up, but my IM&amp;T business unit may look at it. In particular, if there are use cases for sophisticated user based access controls, “free” solutions may not be up to scratch nor to scale.</li>
+<li>Anaconda cloud thingy</li>
+<li>Channel on anaconda.org</li>
+</ul>
+</section>
+<section id="other" class="level2">
+<h2 class="anchored" data-anchor-id="other">Other</h2>
+<ul>
+<li><a href="https://support.esri.com/en/technical-article/000014951">How To: Set up a local Conda channel for installing the ArcGIS Python API</a></li>
+<li><a href="https://sionwilliams.com/posts/2019-02-04_conda_channel/">Building a Private Conda Channel</a></li>
+<li><a href="https://gist.github.com/piyushrpt/765b4c9e5ec231cadeb78675a11cf71d">Setting up a feedstock from scratch</a></li>
+<li>The github repo <a href="https://github.com/DanielBok/private-conda-repo">Private Conda Repository</a> may be a good first step.</li>
+</ul>
+<p>By the way one <strong>misleading</strong> thing if you google “How do I set up a conda channel?”: the erronously titled video <a href="https://www.youtube.com/watch?v=O_gHgjJ4Fc4">How to create new channel in Anaconda (python)</a> is actually demonstrating the creation of a conda environment. Skip.</p>
+</section>
+</section>
+<section id="stocktake" class="level1">
+<h1>Stocktake</h1>
+<p>The first impression is that there is not a clear, single path to standing up your own conda channel over HTTP(S), no turn-key solution. The closest may be the github repo <a href="https://github.com/DanielBok/private-conda-repo">Private Conda Repository</a>.</p>
+<p>A first plan for the next steps, presumably next posts, are:</p>
+<ul>
+<li>First, set up a file based channel following the conda documentation for <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/create-custom-channels.html">creating custom channels</a>.</li>
+<li>Second, try to use <a href="https://github.com/DanielBok/private-conda-repo">PCR: Private Conda Repository</a>.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

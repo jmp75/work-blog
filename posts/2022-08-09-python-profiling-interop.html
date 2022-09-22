@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-08-09">
+<meta name="description" content="Finding a runtime hotspot in a software stack with Python and, potentially, c++">
+
+<title>J-M’s ‘lab notebook’ - Runtime profiling of python bindings for a C/C++ library</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Runtime profiling of python bindings for a C/C++ library</h1>
+                  <div>
+        <div class="description">
+          Finding a runtime hotspot in a software stack with Python and, potentially, c++
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">C++</div>
+                <div class="quarto-category">Python</div>
+                <div class="quarto-category">performance</div>
+                <div class="quarto-category">runtime</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>J-M </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 9, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#python-profilers" id="toc-python-profilers" class="nav-link" data-scroll-target="#python-profilers">Python profilers</a></li>
+  <li><a href="#runtime-profiling" id="toc-runtime-profiling" class="nav-link" data-scroll-target="#runtime-profiling">Runtime profiling</a>
+  <ul class="collapse">
+  <li><a href="#creating-synthethic-hydrologic-model" id="toc-creating-synthethic-hydrologic-model" class="nav-link" data-scroll-target="#creating-synthethic-hydrologic-model">Creating synthethic hydrologic model</a></li>
+  <li><a href="#using-notebooks-time" id="toc-using-notebooks-time" class="nav-link" data-scroll-target="#using-notebooks-time">Using notebook’s <code>%%time</code></a></li>
+  <li><a href="#profiling" id="toc-profiling" class="nav-link" data-scroll-target="#profiling">Profiling</a></li>
+  <li><a href="#performance-tuning" id="toc-performance-tuning" class="nav-link" data-scroll-target="#performance-tuning">Performance tuning</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="images/cProfile_20220809.png" title="Profiling python code with cProfile" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">Profiling python code with cProfile</figcaption><p></p>
+</figure>
+</div>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>A <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a> consists of a C++ modelling engine, accessible via a C API from various interactive language bindings including python. I have not done some benchmark performance profiling for a while on this stack. I expect the C++ core to be pretty much as good as it was 8 years ago, but as I bed down some of the python bindings, I notice some lags when interacting. This is not a surprise, and I expect these to be either in python code, or perhaps at the boundary with the C API. This intuition needs to be confirmed by objective measurements.</p>
+<p>It is one of these things that are rarely a blocker for quite a while, but a bit of instrumentation and performance tuning improves the user experience, a little bit every day. Also, some use cases where substantial stochastic data is generated in Python and passed to the C++ core would be very penalised by inefficiencies in Python or Python/C interoperability code.</p>
+<p><strong>Foreword</strong>: in the case below, we do not need to profile C++ code <em>per se</em> after all, so if this is what you are after specifically. Read on for the Python side of the story.</p>
+</section>
+<section id="python-profilers" class="level1">
+<h1>Python profilers</h1>
+<p><a href="https://www.infoworld.com/article/3600993/9-fine-libraries-for-profiling-python-code.html">9 fine libraries for profiling python code</a> is a recent article, as I write. Of these, Palanteer is interesting in its mixed mode profiling capabilities (Python and C++). I’ll have to explore it, perhaps not just yet though. A priori the <code>cProfiler</code> coming with the Python base library is all I need for this immediate use case.</p>
+</section>
+<section id="runtime-profiling" class="level1">
+<h1>Runtime profiling</h1>
+<p>I will skip on the details of the imported libraries here.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xarray <span class="im">as</span> xr</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> swift2.simulation <span class="im">import</span> create_subarea_simulation, create_catchment</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># etc. etc, other imports</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="creating-synthethic-hydrologic-model" class="level2">
+<h2 class="anchored" data-anchor-id="creating-synthethic-hydrologic-model">Creating synthethic hydrologic model</h2>
+<p>The overall purpose of the exercise will be to measure performance under various conditions: model structure, size, time steps, etc. We will not do all that in this post; suffice to say we define a set of functions to create synthetic model setups. We do not show the full definitions. To give a flavour</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> cinterop.timeseries <span class="im">import</span> mk_hourly_xarray_series</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_pulses(nTimeSteps, start) : <span class="cf">return</span> mk_hourly_xarray_series( createPulse(nTimeSteps, <span class="fl">5.0</span>, <span class="dv">48</span>), start)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_uniform(nTimeSteps, start) : <span class="cf">return</span> mk_hourly_xarray_series( createUniform(nTimeSteps, <span class="fl">1.0</span>), start)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> set_test_input(ms:<span class="st">'Simulation'</span>, subAreaName:<span class="st">'str'</span>, rainVarName, petVarName, rain_ts, pet_ts):</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    p_id <span class="op">=</span> mk_full_data_id(<span class="st">'subarea'</span>, subAreaName, rainVarName)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    e_id <span class="op">=</span> mk_full_data_id(<span class="st">'subarea'</span>, subAreaName, petVarName)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    ms.play_input( rain_ts, p_id)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    ms.play_input( pet_ts, e_id)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># def create_line_system(n_time_steps, n_links, rain_varname = "P", pet_varname = "E", area_km2 = 1):</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># et caetera    </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We are now ready to create our catchment simulation. Before we plunge into <code>cProfiler</code> let’s use a simpler way to assess the runtime from notebooks:</p>
+</section>
+<section id="using-notebooks-time" class="level2">
+<h2 class="anchored" data-anchor-id="using-notebooks-time">Using notebook’s <code>%%time</code></h2>
+<p>Let’s create a setup with 15 subareas, hourly time step over 10 years.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n_time_step <span class="op">=</span> <span class="dv">10</span> <span class="op">*</span> <span class="dv">365</span> <span class="op">*</span> <span class="dv">24</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ms <span class="op">=</span> create_line_system(n_time_step, <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 888 ms, sys: 8.94 ms, total: 897 ms
+Wall time: 897 ms</code></pre>
+</div>
+</div>
+<p>Well, this was only the create of the baseline model, not even execution, and this already takes close to a second. Granted, there are a fair few hours in a decade. Still, a whole second!</p>
+<p>What about the simulation runtime? Let’s parameterise minimally to avoid possible artefacts, and execute.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> swift2.doc_helper <span class="im">import</span> configure_hourly_gr4j, get_free_params</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>configure_hourly_gr4j(ms)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> create_parameteriser(<span class="st">'Generic subarea'</span>, get_free_params(<span class="st">"GR4J"</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>p.apply_sys_config(ms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Double check we are indeed running hourly over 10 years:</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ms.get_simulation_span()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>{'start': datetime.datetime(1989, 1, 1, 0, 0),
+ 'end': datetime.datetime(1998, 12, 29, 23, 0),
+ 'time step': 'hourly'}</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ms.exec_simulation()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 314 ms, sys: 691 µs, total: 315 ms
+Wall time: 314 ms</code></pre>
+</div>
+</div>
+<p>This is actually quite good, and “unexpectedly” less than the model creation itself. This is actually not all that surprising. All of the model execution happens in C++ land. The model setup involves much more operations in python.</p>
+<p>Let’s look at an operation exchanging data from the C++ engine for display in Python. The model simulation has some of its states receiving input time series:</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ms.get_played_varnames()[:<span class="dv">6</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>['subarea.1.E',
+ 'subarea.1.P',
+ 'subarea.10.E',
+ 'subarea.10.P',
+ 'subarea.11.E',
+ 'subarea.11.P']</code></pre>
+</div>
+</div>
+<p>Let’s see what happens in the retrieval of one of these input time series:</p>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ts <span class="op">=</span> ms.get_played(<span class="st">"subarea.1.E"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 441 ms, sys: 106 µs, total: 441 ms
+Wall time: 440 ms</code></pre>
+</div>
+</div>
+<p>This is substantial; more than the native execution over a catchment with 15 subareas. So:</p>
+<ul>
+<li>Can we identify the hotspot(s)?</li>
+<li>Can we do something to improve it.</li>
+</ul>
+</section>
+<section id="profiling" class="level2">
+<h2 class="anchored" data-anchor-id="profiling">Profiling</h2>
+<p>Enter <code>cProfile</code>, as we will stick with this in this post. Adapting some of the sample code shown in the <a href="https://docs.python.org/3/library/profile.html">Python documentation on profilers</a></p>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cProfile</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pstats, io</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>pr <span class="op">=</span> cProfile.Profile()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>pr.enable()</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>ts <span class="op">=</span> ms.get_played(<span class="st">"subarea.1.E"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>pr.disable()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> io.StringIO()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>sortby <span class="op">=</span> pstats.SortKey.CUMULATIVE</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>ps <span class="op">=</span> pstats.Stats(pr, stream<span class="op">=</span>s).sort_stats(sortby)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will print only the top 5 % of the list of function calls, and see if we can spot the likely hotspot</p>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ps.print_stats(<span class="fl">.05</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(s.getvalue())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         6137 function calls (5964 primitive calls) in 0.445 seconds
+
+   Ordered by: cumulative time
+   List reduced from 588 to 29 due to restriction &lt;0.05&gt;
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        2    0.000    0.000    0.445    0.222 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/IPython/core/interactiveshell.py:3361(run_code)
+        2    0.000    0.000    0.445    0.222 {built-in method builtins.exec}
+        1    0.000    0.000    0.445    0.445 /tmp/ipykernel_34182/2688031072.py:4(&lt;cell line: 4&gt;)
+        1    0.000    0.000    0.445    0.445 /home/per202/src/swift/bindings/python/swift2/swift2/classes.py:471(get_played)
+        1    0.000    0.000    0.445    0.445 /home/per202/src/swift/bindings/python/swift2/swift2/play_record.py:190(get_played)
+        1    0.000    0.000    0.444    0.444 /home/per202/src/swift/bindings/python/swift2/swift2/internal.py:94(internal_get_played_tts)
+        1    0.000    0.000    0.444    0.444 /home/per202/src/datatypes/bindings/python/uchronia/uchronia/data_set.py:10(get_multiple_time_series_from_provider)
+        1    0.000    0.000    0.444    0.444 /home/per202/src/datatypes/bindings/python/uchronia/uchronia/internals.py:69(internal_get_multiple_time_series)
+        1    0.000    0.000    0.441    0.441 /home/per202/src/datatypes/bindings/python/uchronia/uchronia/internals.py:76(&lt;listcomp&gt;)
+        1    0.000    0.000    0.441    0.441 /home/per202/src/datatypes/bindings/python/uchronia/uchronia/internals.py:74(f)
+        1    0.000    0.000    0.441    0.441 /home/per202/src/datatypes/bindings/python/uchronia/uchronia/internals.py:79(internal_get_single_model_time_series)
+        1    0.002    0.002    0.441    0.441 /home/per202/src/swift/bindings/python/swift2/swift2/wrap/swift_wrap_custom.py:216(get_played_pkg)
+        1    0.000    0.000    0.438    0.438 /home/per202/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/cffi/marshal.py:386(geom_to_xarray_time_series)
+        1    0.000    0.000    0.368    0.368 /home/per202/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/cffi/marshal.py:367(ts_geom_to_even_time_index)
+        1    0.000    0.000    0.368    0.368 /home/per202/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/timeseries.py:22(create_even_time_index)
+        1    0.368    0.368    0.368    0.368 /home/per202/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/timeseries.py:25(&lt;listcomp&gt;)
+       16    0.000    0.000    0.071    0.004 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/dataarray.py:365(__init__)
+        1    0.000    0.000    0.070    0.070 /home/per202/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/cffi/marshal.py:356(create_ensemble_series)
+        9    0.000    0.000    0.070    0.008 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/variable.py:74(as_variable)
+        1    0.000    0.000    0.070    0.070 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/dataarray.py:90(_infer_coords_and_dims)
+       36    0.000    0.000    0.070    0.002 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/variable.py:181(as_compatible_data)
+    35/31    0.060    0.002    0.060    0.002 {built-in method numpy.asarray}
+        1    0.000    0.000    0.009    0.009 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/variable.py:172(_possibly_convert_objects)
+        1    0.000    0.000    0.009    0.009 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/pandas/core/series.py:323(__init__)
+        2    0.000    0.000    0.009    0.005 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/pandas/core/construction.py:470(sanitize_array)
+        2    0.000    0.000    0.009    0.005 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/pandas/core/construction.py:695(_try_cast)
+        1    0.000    0.000    0.009    0.009 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/pandas/core/dtypes/cast.py:1466(maybe_infer_to_datetimelike)
+        2    0.000    0.000    0.006    0.003 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/pandas/core/arrays/datetimes.py:1994(_sequence_to_dt64ns)
+        1    0.000    0.000    0.006    0.006 /home/per202/miniconda/envs/hydrofc/lib/python3.9/site-packages/pandas/core/dtypes/cast.py:1499(try_datetime)
+
+
+</code></pre>
+</div>
+</div>
+<p>in a file rcpp-interop-commons/bindings/python/cinterop/cinterop/timeseries.py the function <code>create_even_time_index</code> appears to be where a lengthy operation occurs. More precisely, when this function does a list comprehension (<code>listcomp</code>). Note that I infer this because in the <code>cumtime</code> (cumulative time) column there is a drop from 0.396 ms for <code>listcomp</code> to 0.071 for the rest of the operations under this function. I think this is the right way to interpret it in this case, but it may not be the case in other profiling context.</p>
+<p>The code for <code>create_even_time_index</code> is at <a href="https://github.com/csiro-hydroinformatics/rcpp-interop-commons/blob/f7dff4b83d8f01a8ae71e16fb903b80fa4f23f5d/bindings/python/cinterop/cinterop/timeseries.py#L22">this permalink</a></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_even_time_index(start:ConvertibleToTimestamp, time_step_seconds:<span class="bu">int</span>, n:<span class="bu">int</span>) <span class="op">-&gt;</span> List:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> as_timestamp(start)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    delta_t <span class="op">=</span> np.timedelta64(time_step_seconds, <span class="st">'s'</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [start <span class="op">+</span> delta_t <span class="op">*</span> i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>[start + delta_t * i for i in range(n)]</code> is the bulk of the time, .396 out of a total 0.477 ms.</p>
+<p>This list is created as the basis for a time index for the creation of the <code>xarray</code> object returned by the overall <code>get_played</code> function. So, is there a faster way to create this time series index?</p>
+</section>
+<section id="performance-tuning" class="level2">
+<h2 class="anchored" data-anchor-id="performance-tuning">Performance tuning</h2>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> pd.Timestamp(year<span class="op">=</span><span class="dv">2000</span>, month<span class="op">=</span><span class="dv">1</span>, day<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>n<span class="op">=</span> <span class="dv">24</span><span class="op">*</span><span class="dv">365</span><span class="op">*</span><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_index_creation(start, n:<span class="bu">int</span>) <span class="op">-&gt;</span> List:</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> as_timestamp(start)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    time_step_seconds <span class="op">=</span> <span class="dv">3600</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    delta_t <span class="op">=</span> np.timedelta64(time_step_seconds, <span class="st">'s'</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [start <span class="op">+</span> delta_t <span class="op">*</span> i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> test_index_creation(start, n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 352 ms, sys: 562 µs, total: 353 ms
+Wall time: 351 ms</code></pre>
+</div>
+</div>
+<p><code>start</code> is a pandas <code>Timestamp</code>, and we add to it an object of type <code>np.timedelta64</code> 87600 times. I doubt this is the main issue, but let’s operate in numpy types as much as we can by converting the pd.Timestamp once:</p>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>start</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>Timestamp('2000-01-01 00:00:00')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>start.to_datetime64()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>numpy.datetime64('2000-01-01T00:00:00.000000000')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_index_creation(start, n:<span class="bu">int</span>) <span class="op">-&gt;</span> List:</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> as_timestamp(start).to_datetime64()</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    time_step_seconds <span class="op">=</span> <span class="dv">3600</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    delta_t <span class="op">=</span> np.timedelta64(time_step_seconds, <span class="st">'s'</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [start <span class="op">+</span> delta_t <span class="op">*</span> i <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> test_index_creation(start, n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 293 ms, sys: 8.48 ms, total: 301 ms
+Wall time: 300 ms</code></pre>
+</div>
+</div>
+<p>This is actually more of an improvement than I anticipated. OK. What else can we do?</p>
+<p>Pandas has the helpful <a href="https://pandas.pydata.org/docs/user_guide/timeseries.html">Time series / date functionality</a> page in its documentation. The function from which we started is generic, but for important cases such as hourly and daily time steps, there are options to use the <code>freq</code> argument to the <code>date_range</code> function</p>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>pd.date_range(start, periods<span class="op">=</span>n, freq<span class="op">=</span><span class="st">"H"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 242 µs, sys: 686 µs, total: 928 µs
+Wall time: 520 µs</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>DatetimeIndex(['2000-01-01 00:00:00', '2000-01-01 01:00:00',
+               '2000-01-01 02:00:00', '2000-01-01 03:00:00',
+               '2000-01-01 04:00:00', '2000-01-01 05:00:00',
+               '2000-01-01 06:00:00', '2000-01-01 07:00:00',
+               '2000-01-01 08:00:00', '2000-01-01 09:00:00',
+               ...
+               '2009-12-28 14:00:00', '2009-12-28 15:00:00',
+               '2009-12-28 16:00:00', '2009-12-28 17:00:00',
+               '2009-12-28 18:00:00', '2009-12-28 19:00:00',
+               '2009-12-28 20:00:00', '2009-12-28 21:00:00',
+               '2009-12-28 22:00:00', '2009-12-28 23:00:00'],
+              dtype='datetime64[ns]', length=87600, freq='H')</code></pre>
+</div>
+</div>
+<p>It is two order of magnitude faster… Definitely worth a re-engineering of the features in the <code>timeseries.py</code> we started from.</p>
+<p>This probably does not solve the issue for many other cases (irregular time steps, e.g.&nbsp;monthly), but there are many cases where we could benefit. The <a href="https://pandas.pydata.org/docs/reference/api/pandas.date_range.html?highlight=date_range">date_range documentation</a> specifies that an arbitrary <a href="https://pandas.pydata.org/docs/reference/api/pandas.tseries.offsets.DateOffset.html">DateOffset</a> to its <code>freq</code> argument (<code>freq: str or DateOffset, default ‘D’</code>). How efficient is this operation on our 87600 data points?</p>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>d_offset <span class="op">=</span> pd.tseries.offsets.DateOffset(minutes<span class="op">=</span><span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>start <span class="op">+</span> d_offset</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>Timestamp('2000-01-01 00:15:00')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>pd.date_range(start, periods<span class="op">=</span>n, freq<span class="op">=</span>d_offset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 1.5 s, sys: 1.32 ms, total: 1.5 s
+Wall time: 1.5 s</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>DatetimeIndex(['2000-01-01 00:00:00', '2000-01-01 00:15:00',
+               '2000-01-01 00:30:00', '2000-01-01 00:45:00',
+               '2000-01-01 01:00:00', '2000-01-01 01:15:00',
+               '2000-01-01 01:30:00', '2000-01-01 01:45:00',
+               '2000-01-01 02:00:00', '2000-01-01 02:15:00',
+               ...
+               '2002-07-01 09:30:00', '2002-07-01 09:45:00',
+               '2002-07-01 10:00:00', '2002-07-01 10:15:00',
+               '2002-07-01 10:30:00', '2002-07-01 10:45:00',
+               '2002-07-01 11:00:00', '2002-07-01 11:15:00',
+               '2002-07-01 11:30:00', '2002-07-01 11:45:00'],
+              dtype='datetime64[ns]', length=87600, freq='&lt;DateOffset: minutes=15&gt;')</code></pre>
+</div>
+</div>
+<p>It looks like in this case this is actually a fair bit slower than my original implementation. Interesting. And using <code>start.to_datetime64()</code> makes no difference too.</p>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>This demonstrated a relatively simple, but real case where <code>cProfiler</code> helps alleviate usually small but pervasive runtime inefficiencies. In this case, so far we have not needed to look close to the Python/C interoperability layer. The key bottleneck was pure python. I envisage I may post something later on looking at trickier situation.</p>
+<p>To be honest, I did second guess a few things upfront. But the <code>cProfiler</code> and simpler <code>%%time</code> brought at least confirmation and sometimes useful, conter-intuitive insight. “You cannot manage what you cannot measure” as the saying goes.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-06-01">
+<meta name="description" content="Exploring the use of NLP to exploit geologic information. Get to know your data.">
+
+<title>J-M’s ‘lab notebook’ - Lithology classification using Hugging Face, part 1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Lithology classification using Hugging Face, part 1</h1>
+                  <div>
+        <div class="description">
+          Exploring the use of NLP to exploit geologic information. Get to know your data.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">hugging-face</div>
+                <div class="quarto-category">NLP</div>
+                <div class="quarto-category">lithology</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>J-M </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 1, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#about" id="toc-about" class="nav-link active" data-scroll-target="#about">About</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#getting-acquainted-with-data" id="toc-getting-acquainted-with-data" class="nav-link" data-scroll-target="#getting-acquainted-with-data">Getting acquainted with data</a>
+  <ul class="collapse">
+  <li><a href="#major-primary-lithology-codes" id="toc-major-primary-lithology-codes" class="nav-link" data-scroll-target="#major-primary-lithology-codes">Major (primary) lithology codes</a></li>
+  <li><a href="#minor-secondary-lithology-codes" id="toc-minor-secondary-lithology-codes" class="nav-link" data-scroll-target="#minor-secondary-lithology-codes">Minor (secondary) lithology codes</a></li>
+  <li><a href="#back-to-major-lithology-codes" id="toc-back-to-major-lithology-codes" class="nav-link" data-scroll-target="#back-to-major-lithology-codes">Back to major lithology codes</a>
+  <ul class="collapse">
+  <li><a href="#major-lithology-code-none" id="toc-major-lithology-code-none" class="nav-link" data-scroll-target="#major-lithology-code-none">Major lithology code “None”</a></li>
+  </ul></li>
+  <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="about" class="level1">
+<h1>About</h1>
+<p>This is (perhaps) the start of a series of posts on using natural language processing for lithology classification. I hope to explore multi-label classification in subsequent posts.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://earthresources.vic.gov.au/__data/assets/image/0008/456704/drill_core_library_1.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Courtesy of https://earthresources.vic.gov.au</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>I’ve been attending virtually the latest Deep Learning course run by <a href="https://jeremy.fast.ai">Jeremy Howard</a> (See the <a href="https://forums.fast.ai">fast.ai forum</a> for pointers to past courses). Part of the experience can be to find “homeworks”. I traditionally work with point time series data, and it would have been a Pavlov reflex for me to get a use case with this type of data.</p>
+<p>However in one of the lessons Jeremy used <a href="https://huggingface.co/">Hugging Face</a> <a href="https://huggingface.co/docs/transformers/index">Transformers</a> applied to the Kaggle competition <a href="https://www.kaggle.com/competitions/us-patent-phrase-to-phrase-matching">U.S. Patent Phrase to Phrase Matching</a>. At some point he made a comment about how much NLP progressed over the recent years, and how much potential value creation there was in this.</p>
+<p>I do not follow closely NLP research, and am not knowledgeable enough to agree or not, but got an inkling of the potential value a few years back when working on a <a href="https://github.com/csiro-hydrogeology/pyela">python package for exploratory lithology analysis</a>, for groundwater characterisation. Lithology is “the study of the general physical characteristics of rocks”. Drilling core soil samples is not cheap; existing records are valuable.</p>
+<p>Sections of a core sample drill can be described with sentences such as:</p>
+<ul>
+<li>topsoil</li>
+<li>shale, slippery back, green seams</li>
+<li>sandstone alluvium water bearing</li>
+<li>gravel red very clayey water supply</li>
+<li>sandstone, red/pale brown, fine-coarse, white clay bands, brownish yellow bands, pebbles (16.9-16.98m)</li>
+<li>fill; orange-brown, dry, loose, pebbles to 2.5cm, heterogeneous</li>
+<li>clay; light brown, strongly cohesive, contains silicate &amp; carbonate clasts to coarse sand size, no clay smell.</li>
+</ul>
+<p>You would have an inkling that the prose of the writer (the “driller”) can vary in style and detail. One typical use case is to determine the primary and (optionally) secondary lithologies of a record, as it strongly influences how fast water can flow underground. “gravel red very clayey” is on the easier side of the spectrum of difficulty: “gravel” as a primary lithology and “clay” as a secondary lithology (assuming these are valid classes for the context). It can get much trickier to classify of course, and certainly expensive if done very manually. Automating this classification process opens the possibility of an iterative process towards a sound lithology classification fit for purpose.</p>
+<p>I co-authored a conference presentation “Comparing regular expression and deep learning methods for the classification of descriptive lithology” (Page 161 of the <a href="https://mssanz.org.au/modsim2019/abstracts.html">MODSIM 2019 book of abstracts</a> if you are curious). With all the caveats of a study made on very limited resources, I was surprised by how well NLP performed overall to train and test on a human-labeled dataset.</p>
+<p>I am not working on this domain during paid hours these days, but feel like revisiting this for a bit over the course.</p>
+</section>
+<section id="getting-acquainted-with-data" class="level1">
+<h1>Getting acquainted with data</h1>
+<p>Arbitrarily, I downloaded data for the <a href="https://www.awe.gov.au/water/cewo/catchment/namoi">Namoi catchment</a> from the <a href="http://www.bom.gov.au/water/groundwater/explorer/map.shtml">Australian Groundwater Explorer</a>. While I am not totally new to the domain, I genuinely do need to explore this data from scratch. This will probably be at least the rest of this post.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fn <span class="op">=</span>  Path(<span class="st">'~'</span>).expanduser() <span class="op">/</span> <span class="st">"data/ela/shp_namoi_river/NGIS_LithologyLog.csv"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The types of a few columns lead to warnings: let’s force them to ‘str’ here. I do not anticipate using the depth records for now.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>litho_logs <span class="op">=</span> pd.read_csv(fn, dtype<span class="op">=</span>{<span class="st">'FromDepth'</span>: <span class="bu">str</span>, <span class="st">'ToDepth'</span>: <span class="bu">str</span>, <span class="st">'MajorLithCode'</span>: <span class="bu">str</span>, <span class="st">'MinorLithCode'</span>: <span class="bu">str</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>So how does this data look like?</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>litho_logs.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>OBJECTID</th>
+      <th>BoreID</th>
+      <th>HydroCode</th>
+      <th>RefElev</th>
+      <th>RefElevDesc</th>
+      <th>FromDepth</th>
+      <th>ToDepth</th>
+      <th>TopElev</th>
+      <th>BottomElev</th>
+      <th>MajorLithCode</th>
+      <th>MinorLithCode</th>
+      <th>Description</th>
+      <th>Source</th>
+      <th>LogType</th>
+      <th>OgcFidTemp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>14</td>
+      <td>10045588</td>
+      <td>GW003048.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>0.0</td>
+      <td>1.22</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SOIL</td>
+      <td>NaN</td>
+      <td>SOIL SANDY CLAY</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8666163</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>15</td>
+      <td>10045588</td>
+      <td>GW003048.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>19.51</td>
+      <td>28.65</td>
+      <td>None</td>
+      <td>None</td>
+      <td>BSLT</td>
+      <td>NaN</td>
+      <td>BASALT WATER BEARING</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8666164</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>28</td>
+      <td>10060509</td>
+      <td>GW006968.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>0.0</td>
+      <td>3.66</td>
+      <td>None</td>
+      <td>None</td>
+      <td>TPSL</td>
+      <td>NaN</td>
+      <td>TOPSOIL</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8666177</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>29</td>
+      <td>10060509</td>
+      <td>GW006968.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>33.53</td>
+      <td>34.75</td>
+      <td>None</td>
+      <td>None</td>
+      <td>GRVL</td>
+      <td>NaN</td>
+      <td>GRAVEL WATER BEARING</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8666178</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>30</td>
+      <td>10060509</td>
+      <td>GW006968.1.1</td>
+      <td>None</td>
+      <td>UNK</td>
+      <td>48.77</td>
+      <td>51.82</td>
+      <td>None</td>
+      <td>None</td>
+      <td>SHLE</td>
+      <td>NaN</td>
+      <td>SLIPPERY BACK</td>
+      <td>UNK</td>
+      <td>1</td>
+      <td>8666179</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>A MajorLithoCode column appears to be populated, so this may be suitable for training a classifier. I have no idea (or forgot) how these lithology codes have been derived and what the corpus of labels is.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(litho_logs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>144518</code></pre>
+</div>
+</div>
+<p>For the sake of conciseness I will point-blank reuse the text processing utilities in the ela package, without any explanation of the setup (ela comes with many dependencies from NLP to 3d vis that can be tricky to install).</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ela.textproc <span class="im">import</span> token_freq, plot_freq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>MAJOR_CODE<span class="op">=</span><span class="st">'MajorLithCode'</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>MINOR_CODE<span class="op">=</span><span class="st">'MinorLithCode'</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>DESC<span class="op">=</span><span class="st">'Description'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="major-primary-lithology-codes" class="level2">
+<h2 class="anchored" data-anchor-id="major-primary-lithology-codes">Major (primary) lithology codes</h2>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>litho_classes<span class="op">=</span>litho_logs[MAJOR_CODE].values</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_most_common<span class="op">=</span> token_freq(litho_classes, <span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plot_freq(df_most_common)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>&lt;AxesSubplot:xlabel='token'&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="2022-06-01-lithology-classification-hugging-face_files/figure-html/cell-10-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>This is a long-tailed distribution; quite a few labels. The limit to 4 characters labels suggest a form of controlled vocabulary. The numbers 20, 19, 23, 8, 1 look odd. “None” is an artefact though not misleading, quite a few records are such that no major lithology could be attributed.</p>
+</section>
+<section id="minor-secondary-lithology-codes" class="level2">
+<h2 class="anchored" data-anchor-id="minor-secondary-lithology-codes">Minor (secondary) lithology codes</h2>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>litho_classes<span class="op">=</span>litho_logs[MINOR_CODE].values</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_most_common<span class="op">=</span> token_freq(litho_classes, <span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>plot_freq(df_most_common)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>&lt;AxesSubplot:xlabel='token'&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="2022-06-01-lithology-classification-hugging-face_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Well, no minor lithology codes, so this data set may not be a good start for multi-label classification. Still, I’ll persist with this data set, and reassess later on</p>
+</section>
+<section id="back-to-major-lithology-codes" class="level2">
+<h2 class="anchored" data-anchor-id="back-to-major-lithology-codes">Back to major lithology codes</h2>
+<p>What are the flavour of descriptions leading to the most frequent classes (CLAY, GRVL, etc.), as well as “None”</p>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>is_clay <span class="op">=</span> litho_logs[MAJOR_CODE] <span class="op">==</span> <span class="st">'CLAY'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>clay_coded <span class="op">=</span> litho_logs.loc[is_clay][DESC]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">123</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>clay_coded.sample(n<span class="op">=</span><span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>144320                                                 CLAY
+117387                                                 CLAY
+18630                                                  CLAY
+35565                                       CLAY SOME SANDY
+61997                                                  CLAY
+13533                                  CLAY SANDSTONE BANDS
+117529                                          YELLOW CLAY
+82290                                                  CLAY
+73280                                       CLAY GREY SANDY
+106748                                          CLAY STONEY
+26265                                           CLAY YELLOW
+16456                                                  CLAY
+25032                                                  CLAY
+9911                                                   CLAY
+135852    CLAY, SANDY GRAVELLY, ORANGE BROWN, MEDIUM PLA...
+30596                                                  CLAY
+140698    CLAY, SANDY FAT; RED, DRY-MOIST, MEDIUM CONSIS...
+70267                                                  CLAY
+6534                                            CLAY YELLOW
+69927                                           CLAY GRAVEL
+76476                                            SANDY CLAY
+7329                                            CLAY GRITTY
+51685        CLAY; 40% BROWN, GRAVEL &amp; SAND 60%, MOST 1-3MM
+137385                                                 CLAY
+35816                                                  CLAY
+73972                                                  CLAY
+102333                                     CLAY SOME STONES
+29218                                                  CLAY
+92266                                              RED CLAY
+26151                                            CLAY SANDY
+107456                                            CLAY GREY
+52550     CLAY - LIGHT GREY, EXTREMELY SANDY (FINE TO CO...
+24225                                                  CLAY
+120696                     CLAY; LIGHT GREY, TRACE OF WHITE
+9030                                                   CLAY
+14889                                                  CLAY
+25834                           CLAY LIGHT BROWN GREY SILTY
+44078                                                  CLAY
+114869                                                 CLAY
+109302                                                 CLAY
+38107                                           CLAY PATCHY
+30801                                                  CLAY
+82362                                     CLAY/BROWN ORANGE
+141490                         CLAY; BROWN, PINK, SOME BLUE
+23075                                     CLAY SANDY GRAVEL
+42110                                                  CLAY
+50493                                 CLAY, WHITE SEAM, RED
+90209                                     CLAY - DARK BROWN
+104019                                                 CLAY
+12690                                                  CLAY
+Name: Description, dtype: object</code></pre>
+</div>
+</div>
+<p>Nothing too surprising in this, very intuitive, though the tail suggests there may be a few outliers:</p>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>clay_coded.tail(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>144386            CLAY; LIGHT BROWN, SOME LIGHT GREY, SILTY
+144388                                          CLAY; BROWN
+144391                                    CLAY; LIGHT BROWN
+144393                                         CLAY - BROWN
+144394         CLAY - LIGHT BROWN, EXTREMELY SANDY (COARSE)
+144398    CONGLOMERATE - WEATHERED BUT STILL HOLDS TOGET...
+144401                                          CLAY; BROWN
+144402                                          CLAY - GREY
+144488                                                 CLAY
+144503                                                 None
+Name: Description, dtype: object</code></pre>
+</div>
+</div>
+<p>Looking at the “sand” code:</p>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sample_desc_for_code(major_code, n<span class="op">=</span><span class="dv">50</span>, seed<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    is_code <span class="op">=</span> litho_logs[MAJOR_CODE] <span class="op">==</span> major_code</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    coded <span class="op">=</span> litho_logs.loc[is_code][DESC]</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> seed <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        np.random.seed(seed)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> coded.sample(n<span class="op">=</span><span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>sample_desc_for_code(<span class="st">'SAND'</span>, seed<span class="op">=</span><span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>72256                         SAND GRAVEL FINE WATER SUPPLY
+109345                                   SAND CLAYEY GRAVEL
+66816                                     SAND WATER SUPPLY
+85097     SAND - 70% UP TO 2MM, GRAVEL 10% 2-5MM, CLAY 2...
+137476    SAND; LIGHT BROWN, MEDIUM TO COARSE, FINE GRAV...
+29946                                     SAND GRAVEL DIRTY
+37012                                COARSE SAND AND GRAVEL
+135985                                                 SAND
+74402              SAND WHITE GREY WELL SORTED WATER SUPPLY
+42422                                           SAND GRAVEL
+41225                                    SAND CLAYEY GRAVEL
+50700                                                  SAND
+33813                      BROWN SAND (VERY FINE TO MEDIUM)
+38452                       SAND GRAVEL MEDIUM WATER SUPPLY
+107707                                     SAND FINE-COARSE
+51759     SAND; 60%, SILTY, FINE 10%, MEDIUM 20% &amp; COARS...
+102234                             SAND GRAVEL WATER SUPPLY
+74640                              SAND GRAVEL WATER SUPPLY
+13123                              SAND GRAVEL WATER SUPPLY
+23110                                                  SAND
+11373                              SAND GRAVEL WATER SUPPLY
+35508                        SAND SILTY GRAVEL WATER SUPPLY
+32744                                           SAND CLAYEY
+67310                                             SAND CLAY
+41813                              SAND GRAVEL WATER SUPPLY
+106457                             SAND GRAVEL WATER SUPPLY
+85591                    SAND AND GRAVEL - CLAYEY AND SILTY
+112156                         SAND, WHITE (VERY VERY FINE)
+111256                   SAND/GRAVEL; FINE TO COARSE, BROWN
+55808     SAND; POORLY GRADED, COARSE, SUBROUNDED, LIGHT...
+91458     SAND, MEDIUM-COARSE; SLIGHTLY SILTY, WET, LOOS...
+61608                              SAND, GRAVEL &amp; LIMESTONE
+96382                                           SAND CLAYEY
+37119          MEDIUM BROWN SAND &amp; GRAVEL SOME LARGE GRAVEL
+118473    SAND; 40% 1/20-1/2MM, 40% 1/2-1MM, 20% 1-3MM, ...
+70703                              SAND GRAVEL WATER SUPPLY
+92920                                            BROWN SAND
+80551     SAND, SILTY; AS ABOVE, TRACE CLAY, ORANGE, LOW...
+25175     COARSE SAND &amp; FINE GRAVEL WITH ANGULAR FRAGMEN...
+38905                               SAND FINE WATER BEARING
+44248                              SAND GRAVEL WATER SUPPLY
+32261                                            SAND DRIFT
+34510                             SAND CLAYEY COARSE GRAVEL
+77431                   SAND AND GRAVEL FINE TO COARSE GREY
+138362                                           SAND BROWN
+103758                   SAND GRAVEL STONES SOME CLAY BANDS
+69238                                           SAND GRAVEL
+143566    SAND &amp; GRAVEL; SAND 50% (FINE 30%, MEDIUM 20%,...
+135131                                                 SAND
+30361                               SAND CLAYEY WELL SORTED
+Name: Description, dtype: object</code></pre>
+</div>
+</div>
+<p>Rather straighforward, consistent and and intuitive</p>
+<section id="major-lithology-code-none" class="level3">
+<h3 class="anchored" data-anchor-id="major-lithology-code-none">Major lithology code “None”</h3>
+<p>This one is likely to be more curly and surprising. Let’s see</p>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>sample_desc_for_code(<span class="st">'None'</span>, seed<span class="op">=</span><span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>131075                            W.B. BROWN SHALE
+127170                      COARSE SAND AND GRAVEL
+126145                                   BLUE CLAY
+126889                         GREY AND BROWN CLAY
+132179                             GREY BROWN CLAY
+130033                            BROWN SANDY CLAY
+123436                                      GRAVEL
+128794                                        CLAY
+128242                        SAND AND FINE GRAVEL
+134156                                        None
+129636                                 W.B. BASALT
+122884                     LIGHT ORANGE SILTY CLAY
+124580                                      SHALES
+128684                                  W.B. SHALE
+131120                             SAND AND GRAVEL
+122690                              RED RIDGE CLAY
+132319                                  BLACK SOIL
+128528                                  BLACK CLAY
+123646                                    MUDSTONE
+129757                                 SAND &amp; CLAY
+124353                             SOFT BROWN CLAY
+131921                                        CLAY
+133208                                 BROWN CLAYS
+132945                                 COARSE SAND
+122956                             SAND AND GRAVEL
+123723                             CALY AND GRAVEL
+122102                                    TOP SOIL
+126455    HARD SANDY BROWN &amp; GREY CLAY WITH STONES
+125637                    SANDY BLUE AND GREY CLAY
+131154                            BROWN SANDY CLAY
+129931                                  RIDGE CLAY
+123557                                  RIDGE CLAY
+124964                             DARK BROWN CLAY
+129391                                  GREY SHALE
+132891                               WATER 0.37 LS
+132006                                  BROWN CLAY
+134673                                         SEP
+123692                                  BROWN CLAY
+126034                          REDDISH BROWN CLAY
+129690             SOFT GINGER/BROWN CLAY &amp; STONES
+125560                            FINE SANDY CLAYS
+126238                             SHALE &amp; (WATER)
+123009                                        SOIL
+124236                                        SOIL
+125814                                  BLUE SHALE
+130474                             RED &amp; GREY CLAY
+127005                                  BROWN CLAY
+134212                                   BROWN AND
+125640                                        SOIL
+127355                                       SHALE
+Name: Description, dtype: object</code></pre>
+</div>
+</div>
+<p>Well, it does not require a fully trained geologist to think there should be obvious primary lithology codes for many of these, so why is there “None” for these descriptions?</p>
+<p>Not shown in the 50-odd sample above are descriptions which should indeed be unclassified (e.g.&nbsp;“no strata description”)</p>
+<p>This is also an occasion to note the less obvious information and complications in descriptive logs, compared to earlier categories:</p>
+<ul>
+<li>CALY as a typo for CLAY</li>
+<li>Slang terms and acronyms, e.g.&nbsp;“W.B.” perhaps for “Weathered, broken”<br>
+</li>
+<li>Quantitative and qualitative attributes such as SAND; 60%, SILTY, FINE 10%, MEDIUM 20% &amp; COARSE, which may be valuable for some types of classification</li>
+</ul>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sample_desc_for_code(<span class="st">'SDSN'</span>, seed<span class="op">=</span><span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>9423                                         SANDSTONE SOFT
+117911            SANDSTONE, SILTY; AS ABOVE, QUARTZ (+60%)
+6613                                         SAND ROCK GREY
+20345                                   SANDSTONE GREY HARD
+106885                                            SANDSTONE
+139088           SANDSTONE; DARK GREY, COARSE GRAINED, HARD
+5101                                       SANDSTONE ROTTEN
+26561                                      SANDSTONE YELLOW
+137304                                    SANDSTONE; COARSE
+56627     SANDSTONE; GREY, FINE-MEDIUM GRAINED, MOD WEAK...
+98974                          SANDSTONE WHITE WATER SUPPLY
+87187                                             SANDSTONE
+45141                 SANDSTONE, VERY PALE BROWN, HIGH CLAY
+70015                                      SANDSTONE YELLOW
+29492                                SANDSTONE WATER SUPPLY
+92918                                             SANDSTONE
+83555              SANDSTONE; LIGHT GREY, VERY FINE, STRONG
+136401                                            SANDSTONE
+48201                                             SANDSTONE
+34060     SANDSTONE, YELLOW, MEDIUM GRAINED, HIGH CLAY M...
+63752     SANDSTONE; WHITISH GREY, VERY FINE, ANGULAR, C...
+51878                     SANDSTONE, MEDIUM, WHITISH YELLOW
+59346                                       SANDSTONE, SOFT
+62968          SANDSTONE; OFF-WHITE GREY, VERY FINE, STRONG
+140930                SANDSTONE, LIGHT GREY, SOME FRACTURES
+6394                                              SAND ROCK
+113546                        SANDSTONE - HARD - LIGHT GREY
+49539     SANDSTONE; RED GREY, FINE-MEDIUM GRAINED, FRIA...
+60198                   SANDSTONE; LIGHT GREY, FINE GRAINED
+1366                                              SANDSTONE
+35923               SANDSTONE WEATHERED COARSE WATER SUPPLY
+141556    SANDSTONE, WHITE, IMPREGNATED WITH WATER WASHE...
+10100                                SANDSTONE WATER SUPPLY
+89138     SANDSTONE; OFF-WHITE GREY, MEDIUM-COARSE GRAIN...
+86046                      QUARTZ SANDSTONE; MEDIUM GRAINED
+76366     SANDSTONE, PALE BROWN, FINE-COARSE, LOW CLAY, ...
+46179     SANDSTONE, LIGHTYELLOW/RED BROWN MOTTLED, FINE...
+8613                                              SANDSTONE
+4537                                       SANDSTONE YELLOW
+60506                                             SANDSTONE
+8917                                              SANDSTONE
+1372                                 SANDSTONE WATER SUPPLY
+82975     SANDSTONE; LIGHT GREY, FINE GRAINED, MOD STRON...
+60166                                  SANDSTONE, VERY SOFT
+31674                                       SANDSTONE SHALE
+8397                                              SANDSTONE
+113310       SANDSTONE; OFF-WHITE, FINE GRAINED, MOD STRONG
+27980                                             SANDSTONE
+79933                                SANDSTONE WHITE BROKEN
+33654                               SANDSTONE YELLOW CLAYEY
+Name: Description, dtype: object</code></pre>
+</div>
+</div>
+<p>Now, what’s with the weird numbers as lithology codes?</p>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>sample_desc_for_code(<span class="st">'20'</span>, seed<span class="op">=</span><span class="dv">123</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>130369                           SANDY CLAY; BROWN (COARSE)
+122444                                           CLAY SANDY
+127761                                           CLAY SANDY
+125771                                           SANDY CLAY
+127783                                           CLAY SANDY
+133014                SANDY CLAY AND CLAYEY SAND AND GRAVEL
+124007                              BROWN &amp; GREY SANDY CLAY
+123445     CLAY LT BROWN GREY SANDY, MED-COARSE BROWN BANDS
+122180                                           CLAY SANDY
+127440                                           SANDY CLAY
+131498                                           SANDY CLAY
+127935                                       CLAY RED SANDY
+129304                                           SANDY CLAY
+130614                                          SANDY SHALE
+125543                                           SANDY CLAY
+125149                                           SANDY CLAY
+124971                                SANDY CLAY/GREY BROWN
+123939                                    SANDY CLAY, BROWN
+122392                                           CLAY SANDY
+123999                              BROWN &amp; GREY SANDY CLAY
+129203                                           SANDY LOAM
+127933                                       CLAY RED SANDY
+134474                              SANDY CLAYEY MED. BROWN
+126071                                           SANDY CLAY
+127927                                           CLAY SANDY
+123587                                           CLAY SANDY
+126559                                           SANDY CLAY
+127928                                      CLAY GREY SANDY
+124643                                     SANDY CALY/BROWN
+122555                                           CLAY SANDY
+132628                                           SANDY CLAY
+129853                                           SANDY CLAY
+130187                                           SANDY CLAY
+129057                                           SANDY CLAY
+133300                                           SANDY CLAY
+122535                                           CLAY SANDY
+122732                                           CLAY SANDY
+127977                                    CLAY YELLOW SANDY
+126568                                           SANDY CLAY
+122339                                           CLAY SANDY
+128386                                    SANDY CLAY, BROWN
+128198                                    SANDY CLAY, RIDGE
+125530                                           SANDY CLAY
+126798                                           SANDY CLAY
+122452                                           CLAY SANDY
+123237                                    SANDY BROWN CLAYS
+126510    SANDY CLAY; 40% LIGHT GREY, EXTREMELY SANDY (C...
+132331                                         SANDY GRAVEL
+131807                                           SANDY CLAY
+132895                                           SANDY CLAY
+Name: Description, dtype: object</code></pre>
+</div>
+</div>
+<p>Interesting. There is a clear pattern. I know from my prior exposure that “Clayey sands” and “sandy clays” are not that uncommon (and gradations of mixes of sand and clay matter a great deal to estimate hydraulic conductivity).</p>
+</section>
+</section>
+<section id="next" class="level2">
+<h2 class="anchored" data-anchor-id="next">Next</h2>
+<p>This was the initial EDA. Next I’ll probably train a classifier on the major lithology code (or a subset thereof). I am keen to explore multi-label classification, but will have to decide whether to populate the secondary lithology code using regexp classification, or switch to a fully labelled dataset at some point.</p>
+<p>This first post illustrated the need to have a look at data. This data was already collated and curated, and I have no doubt many people went through a lot of work to get there. But this may not be a fully labelled dataset amenable to be used for training a classifier. At least, not without further data preparation.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

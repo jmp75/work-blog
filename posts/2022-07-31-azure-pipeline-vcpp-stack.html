@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-07-31">
+<meta name="description" content="Azure devops pipeline for a software stack with c++, Python and R packages across multiple repositories.">
+
+<title>J-M’s ‘lab notebook’ - Azure devops CI pipeline for hydrologic forecasting software</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Azure devops CI pipeline for hydrologic forecasting software</h1>
+                  <div>
+        <div class="description">
+          Azure devops pipeline for a software stack with c++, Python and R packages across multiple repositories.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">recipes</div>
+                <div class="quarto-category">VCPP</div>
+                <div class="quarto-category">C++</div>
+                <div class="quarto-category">Debian</div>
+                <div class="quarto-category">Windows</div>
+                <div class="quarto-category">Python packaging</div>
+                <div class="quarto-category">R packaging</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="https://github.com/jmp75">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 31, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#pipeline-inputs-and-outputs" id="toc-pipeline-inputs-and-outputs" class="nav-link" data-scroll-target="#pipeline-inputs-and-outputs">Pipeline inputs and outputs</a>
+  <ul class="collapse">
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">Outputs</a></li>
+  <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">Inputs</a></li>
+  </ul></li>
+  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <ul class="collapse">
+  <li><a href="#pipelines-code-repositories" id="toc-pipelines-code-repositories" class="nav-link" data-scroll-target="#pipelines-code-repositories">Pipelines code repositories</a></li>
+  <li><a href="#build-platforms" id="toc-build-platforms" class="nav-link" data-scroll-target="#build-platforms">Build platforms</a></li>
+  <li><a href="#checking-out-source-code" id="toc-checking-out-source-code" class="nav-link" data-scroll-target="#checking-out-source-code">Checking out source code</a>
+  <ul class="collapse">
+  <li><a href="#using-personal-access-tokens-pat" id="toc-using-personal-access-tokens-pat" class="nav-link" data-scroll-target="#using-personal-access-tokens-pat">Using Personal Access Tokens (PAT)</a></li>
+  <li><a href="#a-gotcha-with-bitbucket-pats" id="toc-a-gotcha-with-bitbucket-pats" class="nav-link" data-scroll-target="#a-gotcha-with-bitbucket-pats">A gotcha with Bitbucket PATs</a></li>
+  </ul></li>
+  <li><a href="#building-c-code" id="toc-building-c-code" class="nav-link" data-scroll-target="#building-c-code">Building C++ code</a>
+  <ul class="collapse">
+  <li><a href="#linux" id="toc-linux" class="nav-link" data-scroll-target="#linux">Linux</a></li>
+  <li><a href="#windows" id="toc-windows" class="nav-link" data-scroll-target="#windows">Windows</a></li>
+  </ul></li>
+  <li><a href="#unit-tests" id="toc-unit-tests" class="nav-link" data-scroll-target="#unit-tests">Unit tests</a></li>
+  <li><a href="#python-wheels-r-package-tarballs" id="toc-python-wheels-r-package-tarballs" class="nav-link" data-scroll-target="#python-wheels-r-package-tarballs">Python wheels, R package tarballs</a>
+  <ul class="collapse">
+  <li><a href="#bash-on-windows-in-azure-pipelines-a-gotcha-with-backslash-directories" id="toc-bash-on-windows-in-azure-pipelines-a-gotcha-with-backslash-directories" class="nav-link" data-scroll-target="#bash-on-windows-in-azure-pipelines-a-gotcha-with-backslash-directories">Bash on windows in Azure Pipelines: a gotcha with backslash directories</a></li>
+  </ul></li>
+  <li><a href="#azure-artifacts" id="toc-azure-artifacts" class="nav-link" data-scroll-target="#azure-artifacts">Azure Artifacts</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a>
+  <ul class="collapse">
+  <li><a href="#other-possibilities" id="toc-other-possibilities" class="nav-link" data-scroll-target="#other-possibilities">Other possibilities</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="images/azure/pipeline_hydrofc.png" title="Azure pipeline run" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">Azure pipeline run</figcaption><p></p>
+</figure>
+</div>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>For years I’ve been contributing to and maintaining, at work, a <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a>. Recently I explored <a href="https://jmp75.github.io/work-blog/recipes/vcpp/c++/2022/06/26/vcpp-compilation-upgrade.html">updating the compilation to a more recent Microsoft visual c++ compiler</a> in another post.</p>
+<p>This post is an overview of the process to set up a build pipeline on Azure Devops. Given the fairly complicated codebase dealt with, quite a few technical aspects will be touched on, but not in great details for the sake of keeping it a blog post rather than a full report.</p>
+</section>
+<section id="pipeline-inputs-and-outputs" class="level1">
+<h1>Pipeline inputs and outputs</h1>
+<section id="outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs">Outputs</h2>
+<ul>
+<li>Debian packages for installing C++ pre-compiled libraries and header files</li>
+<li>Windows DLLs of these C++ pre-compiled libraries, compiled with Microsoft Visual C++ 2019.</li>
+<li>Python wheels of packages accessing these C++ libraries</li>
+<li>R packages accessing these C++ libraries. Source tarballs for Linux, and binary packages for Windows</li>
+<li>Matlab functions accessing these C++ libraries</li>
+</ul>
+<p>Conda packages are an option for later - see appendix.</p>
+<p>The outputs of this/these pipelines is used for installation as described for instance in <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/blob/master/doc/install_windows.md">these instructions</a></p>
+</section>
+<section id="inputs" class="level2">
+<h2 class="anchored" data-anchor-id="inputs">Inputs</h2>
+<p>These C++, Python and R packages are in the following source code repositories.</p>
+<ul>
+<li>Third party libraries: boost libraries, netcdf, yaml-cpp and jsoncpp, threadpool, Catch headers.
+<ul>
+<li><a href="https://boost.org">Boost C++</a></li>
+<li><a href="https://www.unidata.ucar.edu/software/netcdf">netCDF4</a></li>
+<li><a href="https://github.com/csiro-hydroinformatics/yaml-cpp">yaml-cpp</a></li>
+<li><a href="https://github.com/csiro-hydroinformatics/jsoncpp">jsoncpp</a></li>
+<li><a href="https://github.com/csiro-hydroinformatics/threadpool">threadpool</a></li>
+</ul></li>
+<li>Open source repositories with generic capabilities:
+<ul>
+<li><a href="https://github.com/csiro-hydroinformatics/rcpp-interop-commons">rcpp-interop-commons</a>: supporting C API interoperability with Python, R, etc.</li>
+<li><a href="https://github.com/csiro-hydroinformatics/moirai">moirai</a>: Manage C++ Objects’s lifetime when exposed through a C API</li>
+<li><a href="https://github.com/csiro-hydroinformatics/pyrefcount">pyrefcount</a>: Reference counting facilities for Python</li>
+<li><a href="https://github.com/csiro-hydroinformatics/wila">wila</a>: C++ header-only metaheuristics optimisation</li>
+<li><a href="https://github.com/csiro-hydroinformatics/config-utils">config-utils</a></li>
+<li><a href="https://github.com/csiro-hydroinformatics/efts">efts</a></li>
+<li><a href="https://github.com/csiro-hydroinformatics/efts-python">efts-python</a></li>
+<li><a href="https://github.com/csiro-hydroinformatics/mhplot">mhplot</a>: R visualisation for metaheuristics optimisation</li>
+<li><a href="https://github.com/csiro-hydroinformatics/uchronia-time-series">uchronia-time-series</a>: time series handling for ensembles simulations and forecasts in C++</li>
+</ul></li>
+<li>Closed source, domain specific:
+<ul>
+<li>swift: Streamflow Water Information Forecasting Tools</li>
+<li>FoGSS: A model for generated forecast guided stochastic scenarios of monthly streamflows out to 12 months</li>
+<li>A repository with semi-automated build scripts</li>
+</ul></li>
+</ul>
+<p>Another repository worth mentioning even if I do not envisage it being used is <a href="https://github.com/csiro-hydroinformatics/c-api-wrapper-generation">c-api-wrapper-generation</a>. It contains some fairly sophisticated capabilities for generating language bindings on top of C APIs.</p>
+</section>
+</section>
+<section id="walkthrough" class="level1">
+<h1>Walkthrough</h1>
+<section id="pipelines-code-repositories" class="level2">
+<h2 class="anchored" data-anchor-id="pipelines-code-repositories">Pipelines code repositories</h2>
+<p>A clone of the the azure devops pipelines described in this post are now mirrored at:</p>
+<ul>
+<li><a href="https://github.com/csiro-hydroinformatics/hydro-forecast-linux-pipeline">hydro-forecast-linux-pipeline</a></li>
+<li><a href="https://github.com/csiro-hydroinformatics/hydro-forecast-windows-pipeline">hydro-forecast-windows-pipeline</a></li>
+</ul>
+</section>
+<section id="build-platforms" class="level2">
+<h2 class="anchored" data-anchor-id="build-platforms">Build platforms</h2>
+<p>For Linux I actually ended up building a Debian docker image on top of the <code>ubuntu-latest</code> image Azure Devops offers. This was partly an arbitrary choice (habits, and starting by reusing another pipeline).</p>
+<p>For Windows, the <a href="https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md">windows-2019</a> image is more or less a given. Note that if I had chosen to, or had to, build with an older compiler version (for example, Python and conda on Windows I believe is at least recommending the 2017 toolchain currently), installing the Microsoft build toolchain would have been needed.</p>
+</section>
+<section id="checking-out-source-code" class="level2">
+<h2 class="anchored" data-anchor-id="checking-out-source-code">Checking out source code</h2>
+<p>There is a description of how to <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/multi-repo-checkout?view=azure-devops">check out multiple repositories in your pipeline</a>, which I may move to in the future but frankly felt cumbersome when I gave it a try, for that many repositories. Besides, I am starting from existing build scripts (bash or DOS) which I have an incentive to reuse.</p>
+<p>Which brings us to dealing safely with checking out closed source code, requiring authentication.</p>
+<section id="using-personal-access-tokens-pat" class="level3">
+<h3 class="anchored" data-anchor-id="using-personal-access-tokens-pat">Using Personal Access Tokens (PAT)</h3>
+<p><strong>Disclaimer</strong>: I believe the following recipe to be in line with best practices, but it is up to you to decide.</p>
+<p>When googling for the documentation, <a href="https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate">Use personal access tokens</a> tends to be what you land on, but this is more confusing than helpful. <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&amp;tabs=yaml%2Cbatch#secret-variables">Set secret variables</a> contains the key recipe to set up a secret PAT and pass it on to a pipeline task. Assuming you already have a PAT that you defined in a pipeline variable <code>SWIFT_PAT</code>, for which you checked <code>Keep this value secret</code>, you need to map this value to pass it to the script checking out source code:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">    - </span><span class="fu">script</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>        call dos-setup.bat</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        call checkout.bat</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">SWIFT_PAT_ENV_VAR</span><span class="kw">:</span><span class="at"> $(SWIFT_PAT)</span><span class="co"> # the recommended way to map to an env variable</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">        # </span><span class="al">NOTE</span><span class="co">: you cannot have the same name:</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">        # SWIFT_PAT: $(SWIFT_PAT) # &lt;-- fails with a circular definition issue.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In your checkout.bat script you can retrieve <code>set MY_PAT=%SWIFT_PAT_ENV_VAR%</code> and use it as part of the URL portion e.g.&nbsp;<code>set MY_BITBUCKET_URL_ROOT=https://%YOUR_USERNAME%:%MY_PAT%@bitbucket.csiro.au/scm</code></p>
+</section>
+<section id="a-gotcha-with-bitbucket-pats" class="level3">
+<h3 class="anchored" data-anchor-id="a-gotcha-with-bitbucket-pats">A gotcha with Bitbucket PATs</h3>
+<p>if your closed source code is on Bitbucket, the bitbucket documentation <a href="https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html">HTTP access tokens</a> is quite clear, but fails to document something. Bitbucket PAT generation tends to create them with slash characters “/” which is a special character for URLs so it <a href="https://stackoverflow.com/a/57732424/2752565">needs to be replace with “%2F”</a> before you use it as a value for your Azure Pipeline, otherwise you end up with an invalid URL error when checking out. Note also that <code>%2</code> is fraught when used in DOS scripts, but if you use the recipe above, you should not come across an issue with this.</p>
+</section>
+</section>
+<section id="building-c-code" class="level2">
+<h2 class="anchored" data-anchor-id="building-c-code">Building C++ code</h2>
+<section id="linux" class="level3">
+<h3 class="anchored" data-anchor-id="linux">Linux</h3>
+<p>Compilation on Linux is performed using <code>cmake</code>. The pipeline is not calling <code>cmake</code> and <code>make</code> commands directly, but building debian packages. One purpose of this build pipeline is to produce binary installable packages. It took me a fair bit of trial and error, two years ago, to find a suitable working recipe for Debian packaging of “my” libraries. There is documentation and plenty of examples out there, but plenty of variances in how it is done. An example can be found <a href="https://github.com/csiro-hydroinformatics/moirai/tree/experimental/debian">in the Moirai repository</a>, and the pipeline build commands are in <a href="https://github.com/csiro-hydroinformatics/hydro-forecast-linux-pipeline/blob/main/packages/build_debian_pkgs.sh">build_debian_pkgs.sh</a>.</p>
+</section>
+<section id="windows" class="level3">
+<h3 class="anchored" data-anchor-id="windows">Windows</h3>
+<p>Compilation is done using microsoft visual c++ 2019, using visual studio solution files. Years ago, after enough frustrations invikig MSBuild.exe from DOS scripts, I moved to using powershell. Currently I am using the powershell <a href="https://github.com/deadlydog/Invoke-MsBuild">Invoke-MsBuild</a> as a third party tool to invoke compilation, rather than mdsbuild.exe directly. This is a nifty basis to build my own powershell module (not open source yet), with <code>cmdlet</code>s such as:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Install<span class="op">-</span>SharedLibsMultiCfg <span class="op">-</span>Solutions <span class="va">$lvlTwoSlns</span> <span class="op">-</span>LibsDirs <span class="va">$libsDirs</span> <span class="op">-</span>BuildPlatforms <span class="va">$buildPlatforms</span> <span class="op">-</span>BuildMode <span class="va">$buildMode</span> <span class="op">-</span>ToolsVersion <span class="va">$toolsVersion</span> <span class="op">-</span>LibNames <span class="va">$lvlTwoLibnames</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>which is roughly an equivalent of <code>make &amp;&amp; make install</code> on Linux. The script for the step is <a href="https://github.com/csiro-hydroinformatics/hydro-forecast-windows-pipeline/blob/main/build-stack.ps1">build-stack.ps1</a>, and the bulk of the runtime in the pipeline.</p>
+</section>
+</section>
+<section id="unit-tests" class="level2">
+<h2 class="anchored" data-anchor-id="unit-tests">Unit tests</h2>
+<p>All C++ unit tests are run on the Windows platform. (Debian to follow soon). There are some lessons learnt in setting these up in a pipeline, but for now most of the code remains closed source and may be explored in another post.</p>
+</section>
+<section id="python-wheels-r-package-tarballs" class="level2">
+<h2 class="anchored" data-anchor-id="python-wheels-r-package-tarballs">Python wheels, R package tarballs</h2>
+<p>The python package involved are “pure python” by design, and the wheels built are platform-agnostic and built only once on Linux (<a href="https://github.com/csiro-hydroinformatics/hydro-forecast-linux-pipeline/blob/main/packages/build_python_pkgs.sh">build_python_pkgs.sh</a>). Most packages do deal a lot with interoperability with native libraries with a C API, but this is done via cffi as a runtime step.</p>
+<p>R source packages can be built on either platform. Except R Windows binary packages, which are much preferable for Windows. <a href="https://github.com/csiro-hydroinformatics/hydro-forecast-linux-pipeline/blob/main/packages/build_r_pkgs.sh">build_r_pkgs.sh</a> for the Linux pipeline builds these, also building tutorials (“vignettes”) which are contributing to the testing regime, notably for the interoperability with the native libraries of the stack.</p>
+<p>I decided not to build the R tarballs on Windows, but try instead to downloadm, from the Window pipeline, the last output resulting the Linux pipeline. Partly for the sake of gaining know-how. I ended up with way more confusion and frustration with this than I anticipated, as reflected in my <a href="https://stackoverflow.com/a/73136309/2752565">stackoverflow answer</a> and <a href="https://jmp75.github.io/work-blog/azure/devops/microsoft/2022/07/27/azure-devops-negative-experience.html">previous blog post</a>.</p>
+<p>Downloading the artifact from Windows is still done via a shell script <a href="https://github.com/csiro-hydroinformatics/hydro-forecast-windows-pipeline/blob/main/fetch-pkgs.sh">fetch-pkgs.sh</a>. The script is run mapping a <code>AZURE_DEVOPS_EXT_PAT</code> environment variable. The rather stunted <a href="https://docs.microsoft.com/en-us/azure/devops/cli/log-in-via-pat">Sign in with a personal access token (PAT)</a> page somewhat explains why this is used.</p>
+<section id="bash-on-windows-in-azure-pipelines-a-gotcha-with-backslash-directories" class="level3">
+<h3 class="anchored" data-anchor-id="bash-on-windows-in-azure-pipelines-a-gotcha-with-backslash-directories">Bash on windows in Azure Pipelines: a gotcha with backslash directories</h3>
+<p>This is an occasion to point to an annoyance of backslashes as directory separators on Windows. I had defined a pipeline variable <code>linux_packages_dir: $(Build.ArtifactStagingDirectory)\swift_linux</code>, which would have been something like <code>D:\a\s\a\swift_linux</code>. In the script of a pipeline task <code>task: Bash@3</code>, if you use the variable evaluation <code>$(linux_packages_dir)</code> you loose the backslash separators. I had to rebuild the path and replace with forward slashes using the environment variable <code>BUILD_ARTIFACTSTAGINGDIRECTORY</code>, which is adding to the entropy.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>          # using $(linux_packages_dir) here fails; dir separators are lost.</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>          # linux_packages_dir=$(linux_packages_dir)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>          # linux_packages_fwd_dir="${linux_packages_dir//\\//}"</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>          # instead have to do:</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>          linux_packages_fwd_dir="${BUILD_ARTIFACTSTAGINGDIRECTORY//\\//}/swift_linux"</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>          ./fetch-pkgs.sh ${linux_packages_fwd_dir}</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">AZURE_DEVOPS_EXT_PAT</span><span class="kw">:</span><span class="at"> $(AZ_ARTIFACT_DL_PAT)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="azure-artifacts" class="level2">
+<h2 class="anchored" data-anchor-id="azure-artifacts">Azure Artifacts</h2>
+<p>Outputs are published as collections of files in a “Universal Package”. I have (had - may have changed) not found in the azure devops API way to query the artifacts for the version without downloading the whole artifact. A workaround is to publish two packages: a small one with the version number, and the real artifact.</p>
+<p>To get a custom <code>$(Build.BuildNumber)</code>, and <code>r</code> is a counter reset to 1 every change of the major/minor versions, use <code>name: '0.1.$(Rev:r)'</code> on your pipeline. Then the publishing tasks can be:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> UniversalPackages@0</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> Publish output bundle</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">command</span><span class="kw">:</span><span class="at"> publish</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">publishDirectory</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.ArtifactStagingDirectory)\release'</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">vstsFeedPublish</span><span class="kw">:</span><span class="at"> </span><span class="st">'my_project_name/hydro_forecast_win'</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">vstsFeedPackagePublish</span><span class="kw">:</span><span class="at"> </span><span class="st">'swift_win'</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">versionOption</span><span class="kw">:</span><span class="at"> custom</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">versionPublish</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.BuildNumber)'</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">packagePublishDescription</span><span class="kw">:</span><span class="at"> </span><span class="st">'Windows packages for swift and co.'</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> UniversalPackages@0</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> Publish output bundle version</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">command</span><span class="kw">:</span><span class="at"> publish</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">publishDirectory</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.ArtifactStagingDirectory)\version'</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">vstsFeedPublish</span><span class="kw">:</span><span class="at"> </span><span class="st">'my_project_name/hydro_forecast_win'</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">vstsFeedPackagePublish</span><span class="kw">:</span><span class="at"> </span><span class="st">'swift_win_version'</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">versionOption</span><span class="kw">:</span><span class="at"> custom</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">versionPublish</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.BuildNumber)'</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">packagePublishDescription</span><span class="kw">:</span><span class="at"> </span><span class="st">'Version number for windows swift and co. bundle'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>While the level of overall build streamlining was always adequate for this software stack, previous pipelines run on Jenkins could not be maintained. Azure Devops appearing to be the main corporate standard, we’ve trialed setting up Azure pipelines. Despite some notable user frustrations with the Azure Devops environment, its peculiarities and access arrangements, this should have substantial dividends to expand the user base and enable new projects.</p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<section id="other-possibilities" class="level2">
+<h2 class="anchored" data-anchor-id="other-possibilities">Other possibilities</h2>
+<ul>
+<li>I have explored using conda packaging to distribute the whole software stack. This appears feasible but is a leap I am not ready to do for several reasons (time, resources and confirmed user demands being the main ones). There is a substantial learning curve, technical and in terms of governance of a private conda channel.</li>
+<li>Caching some of the downloaded test data and third party libraries.</li>
+<li>Publishing a linux debian docker image ready to use as a baseline.</li>
+</ul>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<p>URLs which may or may not have influenced this work:</p>
+<ul>
+<li><a href="https://github.com/conda-forge/staged-recipes/blob/main/.azure-pipelines/azure-pipelines-win.yml">Conda-forge default azure pipeline</a></li>
+<li><a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&amp;tabs=yaml">azure devops pipeline variables</a></li>
+<li><a href="https://silentinstallhq.com/visual-studio-build-tools-2017-silent-install-how-to-guide">visual-studio-build-tools-2017-silent-install</a> may be handy if 2017 builds are needed e.g for conda.</li>
+<li><a href="https://github.com/actions/virtual-environments/blob/main/images/win/Windows2019-Readme.md">Windows2019 image environment</a></li>
+<li><a href="https://github.com/marian-nmt/marian-dev/blob/master/azure-pipelines.yml">Azure pipelines for Marian NMT</a></li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=benjhuser.tfs-extensions-build-tasks">Trigger Build Task</a></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-06-26">
+<meta name="description" content="Moving a legacy Visual C++ 13 toolchain to Build Tools 2017">
+
+<title>J-M’s ‘lab notebook’ - Upgrading a C++ streamflow compilation toolchain</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Upgrading a C++ streamflow compilation toolchain</h1>
+                  <div>
+        <div class="description">
+          Moving a legacy Visual C++ 13 toolchain to Build Tools 2017
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">recipes</div>
+                <div class="quarto-category">VCPP</div>
+                <div class="quarto-category">C++</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="https://github.com/jmp75">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 26, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#current-status" id="toc-current-status" class="nav-link" data-scroll-target="#current-status">Current status</a>
+  <ul class="collapse">
+  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies">Dependencies</a></li>
+  </ul></li>
+  <li><a href="#high-level-options" id="toc-high-level-options" class="nav-link" data-scroll-target="#high-level-options">High level options</a></li>
+  <li><a href="#plan" id="toc-plan" class="nav-link" data-scroll-target="#plan">Plan</a></li>
+  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <ul class="collapse">
+  <li><a href="#boost" id="toc-boost" class="nav-link" data-scroll-target="#boost">Boost</a>
+  <ul class="collapse">
+  <li><a href="#compile-from-source" id="toc-compile-from-source" class="nav-link" data-scroll-target="#compile-from-source">Compile from source</a></li>
+  <li><a href="#precompiled-boost-binaries" id="toc-precompiled-boost-binaries" class="nav-link" data-scroll-target="#precompiled-boost-binaries">precompiled Boost binaries</a></li>
+  </ul></li>
+  <li><a href="#moirai" id="toc-moirai" class="nav-link" data-scroll-target="#moirai">Moirai</a></li>
+  <li><a href="#netcdf" id="toc-netcdf" class="nav-link" data-scroll-target="#netcdf">netCDF</a></li>
+  <li><a href="#jsoncpp" id="toc-jsoncpp" class="nav-link" data-scroll-target="#jsoncpp">jsoncpp</a></li>
+  <li><a href="#yaml-cpp" id="toc-yaml-cpp" class="nav-link" data-scroll-target="#yaml-cpp">yaml-cpp</a></li>
+  <li><a href="#uchronia-datatypes" id="toc-uchronia-datatypes" class="nav-link" data-scroll-target="#uchronia-datatypes">uchronia / datatypes</a></li>
+  <li><a href="#swift" id="toc-swift" class="nav-link" data-scroll-target="#swift">swift</a></li>
+  </ul></li>
+  <li><a href="#conclusion-and-next" id="toc-conclusion-and-next" class="nav-link" data-scroll-target="#conclusion-and-next">Conclusion, and next</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>For years I’ve been contributing to and maintaining, at work, a <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a>. It is a stack with a core in C++. For a variety of reasons (licencing, habits, inertia) it is still compiled with the microsoft VCPP2013 toolchain. The most recent versions of some of the third party dependencies are starting to not be compiling with fthat 10 year old compiler, making maintenance more difficult.</p>
+<p>This is not a particularly popular topic, but I am posting to at least organise and plan a migration.</p>
+</section>
+<section id="current-status" class="level1">
+<h1>Current status</h1>
+<p>On Windows, we are relying on vcxproj files. A fair bit of work went into being able to manage switching configurations more easily than via horrendous hard coded paths, which is the baffling default behavior with these files, or at least, was. The supposedly “user-friendly” GUIs to manage project settings foster an unholly mess unless users are on a very tight leash. The Readme at <a href="https://github.com/jmp75/vcpp-commons">vcpp-commons</a> includes instructions on how to set things up, and how to use it from visual c++ project files.</p>
+<p>There are tools in the microsoft ecosystem to manage dependencies and configurations that were not existing 10 years ago. Here <a href="https://blog.conan.io/2021/02/10/Dependencies-Visual-Studio-C++-property-files.html">is one, Conan</a>, essentially doing what I put in place 10 years ago. There is also <a href="https://vcpkg.io/en/index.html">vcpkg</a> which I looked at a few years back. Be it as it may, we have a legacy that worked for a while, so we are likely to keep using it.</p>
+<p>We are using property files (.props files) to manage centrally some definitions, so that our vcxproj files look like:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">ImportGroup</span><span class="ot"> Label=</span><span class="st">"PropertySheets"</span>&gt;</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Import</span><span class="ot"> Project=</span><span class="st">"$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"</span><span class="ot"> Condition=</span><span class="st">"exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"</span><span class="ot"> Label=</span><span class="st">"LocalAppDataPlatform"</span> /&gt;</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Import</span><span class="ot"> Project=</span><span class="st">"$(UserProfile)/vcpp_config.props"</span><span class="ot"> Condition=</span><span class="st">"exists('$(UserProfile)/vcpp_config.props')"</span> /&gt;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">ImportGroup</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">PropertyGroup</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">IncludePath</span>&gt;../include;$(LocalIncludePaths);$(IncludePath)&lt;/<span class="kw">IncludePath</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">ReferencePath</span>&gt;$(VisualLeakDetectorLibPath);$(LocalLibraryPaths);$(ReferencePath)&lt;/<span class="kw">ReferencePath</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">LibraryPath</span>&gt;$(VisualLeakDetectorLibPath);$(LocalLibraryPaths);$(LibraryPath)&lt;/<span class="kw">LibraryPath</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">PropertyGroup</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">ItemDefinitionGroup</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Link</span>&gt;</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">AdditionalLibraryDirectories</span>&gt;$(LocalLibraryPaths);%(AdditionalLibraryDirectories)&lt;/<span class="kw">AdditionalLibraryDirectories</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">AdditionalDependencies</span>&gt;netcdf.lib;yaml-cpp.lib;moirai.lib;%(AdditionalDependencies)&lt;/<span class="kw">AdditionalDependencies</span>&gt;</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="co">&lt;!--AdditionalDependencies&gt;vld.lib;%(AdditionalDependencies)&lt;/AdditionalDependencies--&gt;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Link</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">ItemDefinitionGroup</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A priori this is independent of the version of compiler used. A priori.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">PlatformToolset</span>&gt;v120&lt;/<span class="kw">PlatformToolset</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>So, is it just a matter of just bulk replacing to <code>&lt;PlatformToolset&gt;v143&lt;/PlatformToolset&gt;</code>? Even if considering only the purely mechanistic aspect (notwithstanding users), probably not.</p>
+<section id="dependencies" class="level2">
+<h2 class="anchored" data-anchor-id="dependencies">Dependencies</h2>
+<p>The following figure gives an overview of the dependencies of the main DLLs. There are already several versions of the MS C runtimes, which is possible so long as libraries interact in a binary compatible way (C API). Usually, C++ level binary compatibility is not achievable. Never, in practice, so far as I recall.</p>
+<p><img src="./images/swift-library-dependencies-win.png" title="swift-library-dependencies-windows" class="img-fluid"></p>
+</section>
+</section>
+<section id="high-level-options" class="level1">
+<h1>High level options</h1>
+<p>There are two main options to upgrade compilers</p>
+<ul>
+<li>Give up on compiling using MS VCpp and migrate the MinGW toolchain (gcc). While it would be interesting to trial, the debugging facilities offered by the Microsoft tools and IDEs are a key value added for users.</li>
+<li>Upgrade the compilation to a newer version of MS vc++. A quick scan of what is available out there for the dependencies of the stack (boost, netcdf, etc.) suggests that the build tool chain 2017 is prevalent.</li>
+</ul>
+<p>Related to that are 2 key dependencies:</p>
+<ul>
+<li>netcdf: does this need to be stuck at msvcr100.dll (not that it is much of a problem)</li>
+<li>boost: while boost is largely header only, it has a few libraries. These need to be brought to the same version of VCPP as that to compile our software, contrary to netcdf, because boost is C++, not C.</li>
+</ul>
+<p>Finally, some mostly orthogonal concerns</p>
+<ul>
+<li>Move to use <code>cmake</code> to manage compilations, exactly as we do on Linux.</li>
+<li>Set up a CI/CD for compilation on windows.</li>
+<li>Automation of the migration to various versions of MSVCPP.</li>
+</ul>
+</section>
+<section id="plan" class="level1">
+<h1>Plan</h1>
+<p>The rest of this post will be a log of a “dry run” trying to migrate to MS build toolchain 2017 (vcpp v14.x to be determined). I’ll be capturing steps with a view to automate a CI/CD pipeline for windows soon, and also so that we can more easily adjust our target migration if I hit a blocker.</p>
+</section>
+<section id="walkthrough" class="level1">
+<h1>Walkthrough</h1>
+<p>I already have a recent visual studio installed via my corporate software management system. I do need to install the Microsoft build tools for visual studio 2017. I note two things in what options this selects: the compiler version (perhaps known as platform version) is v141, and Windows SDK 10.0.17763.0.</p>
+<section id="boost" class="level2">
+<h2 class="anchored" data-anchor-id="boost">Boost</h2>
+<p>Read <a href="https://www.boost.org/doc/libs/1_79_0/more/getting_started/windows.html">Boost 1.79.0 for windows</a>.</p>
+<section id="compile-from-source" class="level3">
+<h3 class="anchored" data-anchor-id="compile-from-source">Compile from source</h3>
+<p>I first tried to compile from source, out of curiosity, but this failed. For the record a summary follows.</p>
+<p>Opening the Visual Studio 2017 Developer Command Prompt v15.0, then <code>7z x boost_1_79_0.7z</code>. Note that running <code>bootstrap</code> indicated that it was <code>Using 'vc143' toolset</code> so this may be an issue.</p>
+<p>Then doing:</p>
+<pre class="bat"><code>mkdir c:\tmp\boost
+b2.exe  --prefix=c:\tmp\boost</code></pre>
+<pre class="text"><code>c:/src/tmp/boost_1_79_0/tools/build/src/build\targets.jam:617: in start-building from module targets
+error: Recursion in main target references
+error: the following target are being built currently:
+error: ./forward -&gt; ./stage -&gt; ./stage-proper -&gt; ***libs/filesystem/build/stage*** -&gt; libs/filesystem/build/stage-dependencies -&gt; libs/log/build/stage -&gt; libs/log/build/stage-dependencies -&gt; ***libs/filesystem/build/stage***</code></pre>
+<p>Go for the prebuilt windows binaries then…</p>
+</section>
+<section id="precompiled-boost-binaries" class="level3">
+<h3 class="anchored" data-anchor-id="precompiled-boost-binaries">precompiled Boost binaries</h3>
+<p><a href="https://www.boost.org/users/download/">https://www.boost.org/users/download/</a> leads to <a href="https://sourceforge.net/projects/boost/files/boost-binaries/1.79.0/boost_1_79_0-msvc-14.1-64.exe/download">boost_1_79_0-msvc-14.1-64.exe on sourceforge</a></p>
+<p>Copying a subset of the libraries:</p>
+<pre class="cmd"><code>set vcpp_ver=14.1
+set boost_ver=1_79_0
+set vcpp_ver_s=141
+
+set src_root_dir=C:\local\boost_%boost_ver%
+set src_lib_dir=%src_root_dir%\lib64-msvc-%vcpp_ver%
+set src_header_dir=%src_root_dir%\boost
+
+set dest_root_dir=C:\local
+set dest_dbg_root_dir=C:\localdev
+set dest_lib_dir=%dest_root_dir%\libs\64
+set dest_dbg_lib_dir=%dest_dbg_root_dir%\libs\64
+set dest_header_dir=%dest_root_dir%\include
+:: Cleanup or backup?
+
+mkdir %dest_lib_dir%
+
+set COPYOPTIONS=/Y /R /D
+
+xcopy %src_lib_dir%\boost_chrono-vc%vcpp_ver_s%* %dest_lib_dir%\  %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_date_time-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_filesystem-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_system-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_thread-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\boost_regex-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+
+xcopy %src_lib_dir%\libboost_chrono-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_date_time-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_filesystem-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_system-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_thread-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %src_lib_dir%\libboost_regex-vc%vcpp_ver_s%* %dest_lib_dir%\ %COPYOPTIONS%
+
+:: header files
+mkdir %dest_header_dir%
+mv %src_header_dir% %dest_header_dir%\</code></pre>
+</section>
+</section>
+<section id="moirai" class="level2">
+<h2 class="anchored" data-anchor-id="moirai">Moirai</h2>
+<p><a href="https://github.com/csiro-hydroinformatics/MOIRAI">moirai</a> is the workorse for reference counting opaque pointers.</p>
+<p>Open project with ms vstudio 2019 or more does offer an upgrade of the project. There are options to upgrade the windows sdk to a couple of versions.including the 10.0.17763.0 we noted. Note that the Platform toolset option however <strong>does not include v141</strong>.</p>
+<p>So, a manual modification of the .vcxproj file is needed (or via project properties from vsstudio after opening the project, it is available this time)</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">WindowsTargetPlatformVersion</span>&gt;10.0.17763.0&lt;/<span class="kw">WindowsTargetPlatformVersion</span>&gt;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PlatformToolset</span>&gt;v141&lt;/<span class="kw">PlatformToolset</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And this appears to compile.</p>
+</section>
+<section id="netcdf" class="level2">
+<h2 class="anchored" data-anchor-id="netcdf">netCDF</h2>
+<p>Again may be interesting to compile from source, but not essential. <a href="https://docs.unidata.ucar.edu/netcdf-c/current/winbin.html">netcdf windows binaries document</a>. Appears to be compiled with vcpp 2017.</p>
+<p>Downloading <a href="https://downloads.unidata.ucar.edu/netcdf-c/4.9.0/netCDF4.9.0-NC4-64.exe">netCDF4.9.0-NC4-64.exe</a></p>
+<p>It appears to run on top of the v140 platform tools.That’s OK since this is a C API. Try. May see if we can compile from source with v141 target later.</p>
+<pre class="bat"><code>xcopy C:\tmp\netcdf\bin\*.dll %dest_lib_dir%\ %COPYOPTIONS%
+xcopy C:\tmp\netcdf\lib\*.lib %dest_lib_dir%\ %COPYOPTIONS%
+
+mkdir %dest_header_dir%\netcdf
+xcopy C:\tmp\netcdf\include\*.h %dest_header_dir%\netcdf\ %COPYOPTIONS%</code></pre>
+</section>
+<section id="jsoncpp" class="level2">
+<h2 class="anchored" data-anchor-id="jsoncpp">jsoncpp</h2>
+<p>I have a <a href="https://github.com/jmp75/jsoncpp/tree/custom/concise-project-file">fork of jsoncpp and a branch</a> with a customised .vcxproj file. Modifying with:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PlatformToolset</span>&gt;v141&lt;/<span class="kw">PlatformToolset</span>&gt;</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">WindowsTargetPlatformVersion</span>&gt;10.0.17763.0&lt;/<span class="kw">WindowsTargetPlatformVersion</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And this compiles fine. Note that without <code>WindowsTargetPlatformVersion</code> in the project file, this failed to compile.</p>
+<p>Now, how do I automate the building of these? TODO perhaps streamline the powershell script to deal with jsoncpp too. Even if likely very infrequent.</p>
+<pre class="bat"><code>set jsoncpp_srcdir=C:\src\jsoncpp
+set jsoncpp_builddir=%jsoncpp_srcdir%\makefiles\custom\x64
+xcopy %jsoncpp_builddir%\Release\jsoncpp.dll %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %jsoncpp_builddir%\Release\jsoncpp.lib %dest_lib_dir%\ %COPYOPTIONS%
+:: Debug also needed, likely. Know of very odd crashes when mixing debug/nondebug in the past. May not be the case anymore. 
+
+mkdir %dest_dbg_lib_dir%
+xcopy %jsoncpp_builddir%\Debug\jsoncpp.dll %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %jsoncpp_builddir%\Debug\jsoncpp.lib %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %jsoncpp_builddir%\Debug\jsoncpp.pdb %dest_dbg_lib_dir%\ %COPYOPTIONS%
+
+set robocopy_opt=/MIR /MT:1 /R:2 /NJS /NJH /NFL /NDL /XX
+robocopy %jsoncpp_srcdir%\include\json %dest_header_dir%\json  %robocopy_opt%</code></pre>
+</section>
+<section id="yaml-cpp" class="level2">
+<h2 class="anchored" data-anchor-id="yaml-cpp">yaml-cpp</h2>
+<pre class="bat"><code>set yamlcpp_srcdir=C:\src\yaml-cpp
+set yamlcpp_builddir=%yamlcpp_srcdir%\vsproj\x64
+xcopy %yamlcpp_builddir%\Release\yaml-cpp.dll %dest_lib_dir%\ %COPYOPTIONS%
+xcopy %yamlcpp_builddir%\Release\yaml-cpp.lib %dest_lib_dir%\ %COPYOPTIONS%
+:: Debug also needed, likely. Know of very odd crashes when mixing debug/nondebug in the past. May not be the case anymore. 
+xcopy %yamlcpp_builddir%\Debug\yaml-cpp.dll %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %yamlcpp_builddir%\Debug\yaml-cpp.lib %dest_dbg_lib_dir%\ %COPYOPTIONS%
+xcopy %yamlcpp_builddir%\Debug\yaml-cpp.pdb %dest_dbg_lib_dir%\ %COPYOPTIONS%
+
+robocopy %yamlcpp_srcdir%\include\yaml-cpp %dest_header_dir%\yaml-cpp  %robocopy_opt%</code></pre>
+</section>
+<section id="uchronia-datatypes" class="level2">
+<h2 class="anchored" data-anchor-id="uchronia-datatypes">uchronia / datatypes</h2>
+<p><a href="https://github.com/csiro-hydroinformatics/uchronia-time-series">Uchronia - time series handling for ensembles simulations and forecasts in C++</a> is the bedrock for data handling in our stack.</p>
+<p>At this point I do need to copy the files for the catch unit testing framework, from <a href="https://github.com/csiro-hydroinformatics/config-utils">config-utils</a>, which the unit tests rely on. I notice also a bit of a minor issue, because the unit tests compile against the deployed headers, not the ones from source. This may be a gotcha to watch for, because my <code>vcpp_settings.props</code> file is not set up for development mode compilation. Beware when setting a build pipeline.</p>
+<pre class="bat"><code>robocopy C:\src\config-utils\catch\include\catch %dest_header_dir%\catch  %robocopy_opt%</code></pre>
+<p>The compilation and deploymebnt of this is relatively streamlined by using a high level powershell script.</p>
+</section>
+<section id="swift" class="level2">
+<h2 class="anchored" data-anchor-id="swift">swift</h2>
+<p>swift uses wila and its multithreading optimnisers. We need to install a complementary threadpool tool.</p>
+<pre class="bat"><code>robocopy C:\src\threadpool\boost %dest_header_dir%\boost  %robocopy_opt%</code></pre>
+<p>Also uses in-house numerical header-only files:</p>
+<pre class="bat"><code>robocopy C:\src\numerical-sl-cpp\algorithm\include\sfsl %dest_header_dir%\sfsl  %robocopy_opt%
+robocopy C:\src\numerical-sl-cpp\math\include\sfsl %dest_header_dir%\sfsl  %robocopy_opt%</code></pre>
+<pre class="text"><code>Error   C2039   'tuple': is not a member of 'boost::math' (compiling source file channel_muskingum_nl.cpp)  libswift    c:\src\swift\libswift\include\swift\channel_muskingum_nl.h  74  </code></pre>
+<p>Seems I just an explicit additional <code>#include &lt;boost/math/tools/tuple.hpp&gt;</code> now with a more recent version of boost.</p>
+<pre class="bat"><code>robocopy C:\local\include_old\tclap %dest_header_dir%\tclap  %robocopy_opt%
+:: &lt;!-- and for fogss later on: --&gt;
+robocopy C:\local\include_old\eigen3 %dest_header_dir%\eigen3  %robocopy_opt%</code></pre>
+<pre class="text"><code>Error   C2079   'outfile' uses undefined class 'std::basic_ofstream&lt;char,std::char_traits&lt;char&gt;&gt;'   swiftcl c:\src\swift\applications\swiftcl\run_calibration.cpp   120 </code></pre>
+<p><code>#include &lt;fstream&gt;</code> is now needed.</p>
+<p>After that, unit tests are mostly as expected, a few watchpoint that may be red herring.</p>
+</section>
+</section>
+<section id="conclusion-and-next" class="level1">
+<h1>Conclusion, and next</h1>
+<p>While it took a bit longer than ideal, so far, it looks rather straightforward and successful. Nothing was particularly risky a priori in this migration, but one is usually taken by a few surprises.</p>
+<p>I am feeling the need for a more fully automated CI/CD. To be fair to myself, a fair bit of streamline already to build on. A challenge with the CI/CD, aside from some of the logistical cost of setting it up, probably on Azure Devops, is to define the artefacts it produces. Some artefacts the way they are currently would be better served as conda packages, but this is a larger scope.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

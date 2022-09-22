@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-08-22">
+<meta name="description" content="Convert doxygen C++ API documentation to Markdown with doxybook2, to generate a gorgeous site with MkDocs">
+
+<title>J-M’s ‘lab notebook’ - Presenting doxygen C++ API documentation via MkDocs with doxybook2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Presenting doxygen C++ API documentation via MkDocs with doxybook2</h1>
+                  <div>
+        <div class="description">
+          Convert doxygen C++ API documentation to Markdown with doxybook2, to generate a gorgeous site with MkDocs
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">documentation</div>
+                <div class="quarto-category">C++</div>
+                <div class="quarto-category">Python</div>
+                <div class="quarto-category">MkDocs</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="https://github.com/jmp75">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 22, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  <li><a href="#summary-walkthrough" id="toc-summary-walkthrough" class="nav-link" data-scroll-target="#summary-walkthrough">Summary walkthrough</a>
+  <ul class="collapse">
+  <li><a href="#installing-software" id="toc-installing-software" class="nav-link" data-scroll-target="#installing-software">Installing software</a>
+  <ul class="collapse">
+  <li><a href="#doxybook2" id="toc-doxybook2" class="nav-link" data-scroll-target="#doxybook2">doxybook2</a></li>
+  </ul></li>
+  <li><a href="#configuration" id="toc-configuration" class="nav-link" data-scroll-target="#configuration">Configuration</a>
+  <ul class="collapse">
+  <li><a href="#doxygen-settings" id="toc-doxygen-settings" class="nav-link" data-scroll-target="#doxygen-settings">Doxygen settings</a></li>
+  <li><a href="#doxybook2-settings" id="toc-doxybook2-settings" class="nav-link" data-scroll-target="#doxybook2-settings">doxybook2 settings</a></li>
+  <li><a href="#running-doxybook2" id="toc-running-doxybook2" class="nav-link" data-scroll-target="#running-doxybook2">Running doxybook2</a></li>
+  </ul></li>
+  <li><a href="#finally" id="toc-finally" class="nav-link" data-scroll-target="#finally">Finally</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>The codebase <a href="https://github.com/csiro-hydroinformatics/uchronia-time-series/">Uchronia - time series handling for ensembles simulations and forecasts in C++</a> comprises a C++ core with Python and R bindings. The Python package documentation is using <a href="https://www.mkdocs.org/">MkDocs</a> to generate its API documentation, in line with its dependencies <a href="https://github.com/csiro-hydroinformatics/c-interop">c-interop</a> and <a href="https://github.com/csiro-hydroinformatics/pyrefcount">Python refcount</a>.</p>
+<p>The C++ core is (to some extent) documented in the source code with formatted comments, and are extracted with <a href="https://doxygen.nl/index.html">Doxygen</a>, a long established de-facto standard.</p>
+<p>While the Python, R and C++ parts of the code base usually address different types of users, I was wondering whether it is possible to host at least the Python and C++ API documentation jointly in a MkDocs based site. While it is somewhat subjective, one purpose is to host the documentation via a pleasant Web based interface such as <a href="https://pyrefcount.readthedocs.io/en/latest/">this</a>.</p>
+</section>
+<section id="resources" class="level1">
+<h1>Resources</h1>
+<p>Scouting for bridges between Doxygen and MkDocs, I found a few resources. The most active and adopted one appears to be <a href="https://github.com/matusnovak/doxybook2">doxybook2</a>. This appears worth a try on the Uchronia code base.</p>
+</section>
+<section id="summary-walkthrough" class="level1">
+<h1>Summary walkthrough</h1>
+<p>While I could host the documentation on github pages via the existing Uchronia codebase, to avoid growing its scope let us create a dedicated project <a href="https://github.com/csiro-hydroinformatics/uchronia-ts-doc">uchronia-ts-doc</a>.</p>
+<section id="installing-software" class="level2">
+<h2 class="anchored" data-anchor-id="installing-software">Installing software</h2>
+<p>Doxygen is mainstream and on a Debian linux available with <code>sudo apt install doxygen</code></p>
+<section id="doxybook2" class="level3">
+<h3 class="anchored" data-anchor-id="doxybook2">doxybook2</h3>
+<p>doxybook2 has precompiled Windows binaries. For Linux, installing from the source code appears the way to go.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">--depth</span><span class="op">=</span>1 https://github.com/matusnovak/doxybook2.git</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> doxybook2/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The instructions are to use Microsoft vcpkg to manage dependencies, which worried me at first. Usually I would assume dependencies would be available via <code>apt</code>, but the list <code>catch2 fmt dirent fmt nlohmann-json inja cxxopts spdlog</code> makes me think there would be some not readily available. But, vcpkg appears to be multi-platform these days; I had not looked closely for years. Let’s give it a try.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$HOME</span>/src</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/microsoft/vcpkg</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./vcpkg/bootstrap-vcpkg.sh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This appears to work fine.</p>
+<p>Now on to building <code>doxybook2</code>. I had to adjust a bit the instructions given by the doxybook2 Readme. There are probably some assumptions as to how vcpkg was bootstrapped, perhaps with <code>sudo</code>. Anyway, figuring out was not that difficult; I had to <code>locate vcpkg.cmake</code>, and the executable doxybook2 output was not in the place I expected it to be.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> <span class="at">-B</span> ./build <span class="at">-G</span> <span class="st">"Unix Makefiles"</span>     <span class="at">-DCMAKE_BUILD_TYPE</span><span class="op">=</span>MinSizeRel     <span class="at">-DCMAKE_TOOLCHAIN_FILE</span><span class="op">=</span><span class="va">${HOME}</span>/src/vcpkg/scripts/buildsystems/vcpkg.cmake</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> <span class="at">--build</span> ./build <span class="at">--config</span> MinSizeRel  <span class="co"># could do with a -j4 perhaps</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">${HOME}</span><span class="ex">/src/doxybook2/build/src/DoxybookCli/doxybook2</span> <span class="at">--help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s define a shorcut:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">DX2</span><span class="op">=</span><span class="va">${HOME}</span>/src/doxybook2/build/src/DoxybookCli/doxybook2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="configuration" class="level2">
+<h2 class="anchored" data-anchor-id="configuration">Configuration</h2>
+<section id="doxygen-settings" class="level3">
+<h3 class="anchored" data-anchor-id="doxygen-settings">Doxygen settings</h3>
+<p>Adjust the doxygen settings in the <a href="https://github.com/csiro-hydroinformatics/uchronia-ts-doc/blob/main/Doxyfile">Doxyfile</a>. Below are some settings changed compared to the default config file, some found only after the fact (i.e.&nbsp;seeing the final output through MkDocs).</p>
+<pre class="text"><code>PROJECT_NAME           = "uchronia"
+###  Also PROJECT_BRIEF, etc.
+OUTPUT_DIRECTORY       = "./doxyoutput"
+###
+INPUT   = ../datatypes/datatypes/include/datatypes
+###
+FULL_PATH_NAMES        = NO
+###
+INPUT_FILTER           = " sed 's/^\s*DATATYPES_API\s*//g;s/^\s*DATATYPES_DLL_LIB\s*//g;s/DATATYPES_DLL_LIB//g' "
+###
+GENERATE_XML           = YES
+###
+XML_OUTPUT             = xml</code></pre>
+<p><code>FULL_PATH_NAMES = NO</code> is useful to avoid having your full machine-specific file paths shown in the resulting output. <code>INPUT_FILTER</code> is less obvious, and relate to one technique in C libraries that may not be all that unusual (since derived from a Microsoft best practice as I recall). <code>uchronia</code> headers use macros such as <code>#define DATATYPES_DLL_LIB __declspec(dllexport)</code> on Windows, necessary to define which functions are exported (or imported). This results in C / C++ code such as :</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c++ code-with-copy"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    DATATYPES_API <span class="dt">char</span><span class="op">**</span> GetEnsembleDatasetDataIdentifiers<span class="op">(</span>ENSEMBLE_DATA_SET_PTR dataLibrary<span class="op">,</span> <span class="dt">int</span><span class="op">*</span> size<span class="op">);</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">//, or:</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">class</span> DATATYPES_DLL_LIB TimeSeriesChecks<span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">//</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This confuses doxygen and/or doxybook2, resulting in noisy or even incorrect rendered HTML output. <code>INPUT_FILTER</code> is here to strip out these macros prior to parsing. You may need to find such statement for your library. Consider using <a href="https://regex101.com/">regex101</a> if you, like me, are shamefully not on top of regular expressions.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">doxygen</span> Doxyfile</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="doxybook2-settings" class="level3">
+<h3 class="anchored" data-anchor-id="doxybook2-settings">doxybook2 settings</h3>
+<p>The doxybook2 repo suggests looking at the <a href="https://github.com/matusnovak/doxybook2/tree/master/example/mkdocs-material">MkDocs + Material theme example</a>, as this is the theme I use.</p>
+<p>The <a href="https://github.com/csiro-hydroinformatics/uchronia-ts-doc/blob/main/config-doxybook2.json">config-doxybook2.json</a> requires one change for the links. It took me a few trial and errors to figure out that I needed to set <code>"baseUrl": "/uchronia-ts-doc/cpp/"</code> for URL links to work in the final API documentation generated on github pages.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"baseUrl"</span><span class="fu">:</span> <span class="st">"/uchronia-ts-doc/cpp/"</span><span class="fu">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"indexInFolders"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"linkSuffix"</span><span class="fu">:</span> <span class="st">"/"</span><span class="fu">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"indexClassesName"</span><span class="fu">:</span> <span class="st">"index"</span><span class="fu">,</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"indexFilesName"</span><span class="fu">:</span> <span class="st">"index"</span><span class="fu">,</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"indexGroupsName"</span><span class="fu">:</span> <span class="st">"index"</span><span class="fu">,</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"indexNamespacesName"</span><span class="fu">:</span> <span class="st">"index"</span><span class="fu">,</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"indexRelatedPagesName"</span><span class="fu">:</span> <span class="st">"index"</span><span class="fu">,</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"indexExamplesName"</span><span class="fu">:</span> <span class="st">"index"</span><span class="fu">,</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"mainPageInRoot"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"mainPageName"</span><span class="fu">:</span> <span class="st">"index"</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This <code>"baseUrl": "/uchronia-ts-doc/cpp/"</code> deserves a bit of an explanation so that you hopefully don’t have to trial much (it is not rocket science, but…).</p>
+<p>The markdown documentation for the site will be located under a <code>docs</code> folder, the mkdocs default. The C++ derived markdown documents will be under a subfolder <code>docs/cpp</code>. doxygen did not know about this upfront (though there may be a way to do it, but nevermind), so doxybook2 is where this prefix can be added to building URLs.</p>
+<p>The MkDocs settings <code>mkdocs.yml</code> will have a <code>site_url: https://csiro-hydroinformatics.github.io/uchronia-ts-doc/</code> specified. See the <a href="https://www.mkdocs.org/user-guide/configuration/#site_url">MkDocs configuration doc</a> for explanations. To be honest I am very sketchy in Web URL things, and not sure how to explain reliably what is going on in detail. Just know that <code>"baseUrl": "/uchronia-ts-doc/cpp/"</code> was required in the doxybook2 config file, with leading and trailing <code>/</code> characters, for links to work. I hope this helps you speed up finding your own exact settings.</p>
+</section>
+<section id="running-doxybook2" class="level3">
+<h3 class="anchored" data-anchor-id="running-doxybook2">Running doxybook2</h3>
+<p>So, our <code>doxygen Doxyfile</code> has created a <code>doxyoutput</code> folder. Now let us convert to markdown:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> docs/cpp</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="va">$DX2</span> <span class="at">--input</span> ./doxyoutput/xml <span class="at">--output</span> ./docs/cpp <span class="at">--config</span> config-doxybook2.json</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># . ~/config/baseconda</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># conda activate mkdocsenv</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mkdocs</span> build <span class="at">--clean</span> <span class="at">--site-dir</span> _build/html <span class="at">--config-file</span> mkdocs.yml</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">mkdocs</span> serve</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="finally" class="level2">
+<h2 class="anchored" data-anchor-id="finally">Finally</h2>
+<p>Updating the github pages site is simply:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mkdocs</span> gh-deploy <span class="at">--clean</span> <span class="at">--site-dir</span> _build/html <span class="at">--config-file</span> mkdocs.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Some rough corners left, but it largely works:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="https://csiro-hydroinformatics.github.io/uchronia-ts-doc"><img src="./images/doxybook2/uchronia-c-api-doxybook2.png" title="uchronia-c-api-doxybook2.png" class="img-fluid figure-img"></a></p>
+<p></p><figcaption class="figure-caption">“uchronia-c-api-doxybook2.png”</figcaption><p></p>
+</figure>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

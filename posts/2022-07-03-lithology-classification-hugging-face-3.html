@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-07-03">
+<meta name="description" content="First working lithology classification training on the Namoi data">
+
+<title>J-M’s ‘lab notebook’ - Lithology classification using Hugging Face, part 3</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Lithology classification using Hugging Face, part 3</h1>
+                  <div>
+        <div class="description">
+          First working lithology classification training on the Namoi data
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">hugging-face</div>
+                <div class="quarto-category">NLP</div>
+                <div class="quarto-category">lithology</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>J-M </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 3, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#about" id="toc-about" class="nav-link active" data-scroll-target="#about">About</a>
+  <ul class="collapse">
+  <li><a href="#plan" id="toc-plan" class="nav-link" data-scroll-target="#plan">Plan</a></li>
+  </ul></li>
+  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <ul class="collapse">
+  <li><a href="#dealing-with-imbalanced-classes-with-weights" id="toc-dealing-with-imbalanced-classes-with-weights" class="nav-link" data-scroll-target="#dealing-with-imbalanced-classes-with-weights">Dealing with imbalanced classes with weights</a></li>
+  <li><a href="#tokenisation" id="toc-tokenisation" class="nav-link" data-scroll-target="#tokenisation">Tokenisation</a></li>
+  <li><a href="#create-dataset-and-tokenisation" id="toc-create-dataset-and-tokenisation" class="nav-link" data-scroll-target="#create-dataset-and-tokenisation">Create dataset and tokenisation</a></li>
+  <li><a href="#training" id="toc-training" class="nav-link" data-scroll-target="#training">Training</a></li>
+  <li><a href="#exploring-results" id="toc-exploring-results" class="nav-link" data-scroll-target="#exploring-results">Exploring results</a></li>
+  <li><a href="#observations" id="toc-observations" class="nav-link" data-scroll-target="#observations">Observations</a></li>
+  </ul></li>
+  <li><a href="#conclusion-next" id="toc-conclusion-next" class="nav-link" data-scroll-target="#conclusion-next">Conclusion, Next</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="about" class="level1">
+<h1>About</h1>
+<p>This is a continuation of <a href="https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html">Lithology classification using Hugging Face, part 2</a>.</p>
+<p>The “Part 2” post ended up on an error on calling <code>trainer.train</code>, with incompatible tensor dimensions in a tensor multiplication. It was not clear at all (to me) what the root issue was. After getting back to basics and looking at the <a href="https://huggingface.co/docs/transformers/main/en/tasks/sequence_classification">HF Text classification how-to</a>, I noticed that my Dataset contained pytorch tensors or lists thereof, where the how-do just had simple data types.</p>
+<p>Long story short, I removed the tokernizer’s parameter <code>return_tensors="pt",</code> and did not call <code>tok_ds.set_format("torch")</code>, and surprised, it worked. I had added these because the initial trial complained about a mix of GPU and CPU data.</p>
+<section id="plan" class="level2">
+<h2 class="anchored" data-anchor-id="plan">Plan</h2>
+<p>At this stage, it is worthwhile laying out a roadmap of where this line of work may go:</p>
+<ul>
+<li>Complete a classification on at least a subset of the Namoi dataset (this post)</li>
+<li>Upload a trained model to Hugging Face Hub, or perhaps <a href="https://huggingface.co/hugginglearners">fastai X Hugging Face Group 2022</a></li>
+<li>Set up a Gradio application on HF Spaces</li>
+<li>Project proposal at work. Weekend self-teaching can only go so far.</li>
+</ul>
+</section>
+</section>
+<section id="walkthrough" class="level1">
+<h1>Walkthrough</h1>
+<p>Much of the code in this section is very similar to <a href="https://jmp75.github.io/work-blog/hugging-face/nlp/lithology/2022/06/13/lithology-classification-hugging-face-2.html">Lithology classification using Hugging Face, part 2</a>, so blocks will be less commented.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> Dataset</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoModelForSequenceClassification, AutoTokenizer</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> ClassLabel</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> TrainingArguments, Trainer</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> f1_score</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve,confusion_matrix,auc</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Some column string identifiers</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>MAJOR_CODE <span class="op">=</span> <span class="st">"MajorLithCode"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>MAJOR_CODE_INT <span class="op">=</span> <span class="st">"MajorLithoCodeInt"</span>  <span class="co"># We will create a numeric representation of labels, which is (I think?) required by HF.</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>MINOR_CODE <span class="op">=</span> <span class="st">"MinorLithCode"</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>DESC <span class="op">=</span> <span class="st">"Description"</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>fn <span class="op">=</span> Path(<span class="st">"~"</span>).expanduser() <span class="op">/</span> <span class="st">"data/ela/shp_namoi_river/NGIS_LithologyLog.csv"</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>litho_logs <span class="op">=</span> pd.read_csv(</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    fn, dtype<span class="op">=</span>{<span class="st">"FromDepth"</span>: <span class="bu">str</span>, <span class="st">"ToDepth"</span>: <span class="bu">str</span>, MAJOR_CODE: <span class="bu">str</span>, MINOR_CODE: <span class="bu">str</span>}</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> token_freq(tokens, n_most_common<span class="op">=</span><span class="dv">50</span>):</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    list_most_common <span class="op">=</span> Counter(tokens).most_common(n_most_common)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(list_most_common, columns<span class="op">=</span>[<span class="st">"token"</span>, <span class="st">"frequency"</span>])</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>litho_classes <span class="op">=</span> litho_logs[MAJOR_CODE].values</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>df_most_common <span class="op">=</span> token_freq(litho_classes, <span class="dv">50</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>NUM_CLASSES_KEPT<span class="op">=</span><span class="dv">17</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>labels_kept <span class="op">=</span> df_most_common[<span class="st">"token"</span>][:NUM_CLASSES_KEPT].values </span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>labels_kept <span class="op">=</span> labels_kept[labels_kept <span class="op">!=</span> <span class="st">"None"</span>]</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>labels_kept</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>array(['CLAY', 'GRVL', 'SAND', 'SHLE', 'SDSN', 'BSLT', 'TPSL', 'SOIL',
+       'ROCK', 'GRNT', 'SDCY', 'SLSN', 'CGLM', 'MDSN', 'UNKN', 'COAL'],
+      dtype=object)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>kept <span class="op">=</span> [x <span class="kw">in</span> labels_kept <span class="cf">for</span> x <span class="kw">in</span> litho_classes]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>litho_logs_kept <span class="op">=</span> litho_logs[kept].copy()  <span class="co"># avoid warning messages down the track.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> ClassLabel(names<span class="op">=</span>labels_kept)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>int_labels <span class="op">=</span> np.array([</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    labels.str2int(x) <span class="cf">for</span> x <span class="kw">in</span> litho_logs_kept[MAJOR_CODE].values</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>int_labels <span class="op">=</span> int_labels.astype(np.int8) <span class="co"># to mimick chapter3 HF so far as I can see</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>litho_logs_kept[MAJOR_CODE_INT] <span class="op">=</span> int_labels</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will fine tune a smaller version of <a href="https://huggingface.co/microsoft/deberta-v3-small">DeBERTaV3: Improving DeBERTa using ELECTRA-Style Pre-Training with Gradient-Disentangled Embedding Sharing</a> available on the Hugging Face model repository.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>STARTING_MODEL <span class="op">=</span> <span class="st">"microsoft/deberta-v3-small"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="dealing-with-imbalanced-classes-with-weights" class="level2">
+<h2 class="anchored" data-anchor-id="dealing-with-imbalanced-classes-with-weights">Dealing with imbalanced classes with weights</h2>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sorted_counts <span class="op">=</span> litho_logs_kept[MAJOR_CODE].value_counts()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>class_weights <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> sorted_counts <span class="op">/</span> sorted_counts.<span class="bu">sum</span>()).values</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>class_weights <span class="op">=</span> torch.from_numpy(class_weights).<span class="bu">float</span>().to(<span class="st">"cuda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="tokenisation" class="level2">
+<h2 class="anchored" data-anchor-id="tokenisation">Tokenisation</h2>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> Path(<span class="st">"./tokz_pretrained"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pretrained_model_name_or_path <span class="op">=</span> p <span class="cf">if</span> p.exists() <span class="cf">else</span> STARTING_MODEL</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Tokenizer max length</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>max_length <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># https://discuss.huggingface.co/t/sentence-transformers-paraphrase-minilm-fine-tuning-error/9612/4</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>tokz <span class="op">=</span> AutoTokenizer.from_pretrained(pretrained_model_name_or_path, use_fast<span class="op">=</span><span class="va">True</span>, max_length<span class="op">=</span>max_length, model_max_length<span class="op">=</span>max_length)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> p.exists():</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    tokz.save_pretrained(<span class="st">"./tokz_pretrained"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We know from the previous post that we should work with lowercase descriptions to have a more sensible tokenisation</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>litho_logs_kept[DESC] <span class="op">=</span> litho_logs_kept[DESC].<span class="bu">str</span>.lower()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>litho_logs_kept_mini <span class="op">=</span> litho_logs_kept[[MAJOR_CODE_INT, DESC]]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>litho_logs_kept_mini.sample(n<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>MajorLithoCodeInt</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>88691</th>
+      <td>3</td>
+      <td>shale</td>
+    </tr>
+    <tr>
+      <th>77323</th>
+      <td>11</td>
+      <td>siltstone</td>
+    </tr>
+    <tr>
+      <th>42318</th>
+      <td>0</td>
+      <td>clay fine sandy water supply</td>
+    </tr>
+    <tr>
+      <th>85089</th>
+      <td>1</td>
+      <td>gravel; as above, except gravels 70% 2-10mm, 3...</td>
+    </tr>
+    <tr>
+      <th>112223</th>
+      <td>0</td>
+      <td>clay; 70%, light brown. coarse sand to fine gr...</td>
+    </tr>
+    <tr>
+      <th>35510</th>
+      <td>0</td>
+      <td>clay</td>
+    </tr>
+    <tr>
+      <th>106351</th>
+      <td>0</td>
+      <td>clay</td>
+    </tr>
+    <tr>
+      <th>80478</th>
+      <td>0</td>
+      <td>clay; ligth grey with brown streaks - with som...</td>
+    </tr>
+    <tr>
+      <th>20290</th>
+      <td>1</td>
+      <td>gravel</td>
+    </tr>
+    <tr>
+      <th>23426</th>
+      <td>0</td>
+      <td>clay, gravelly, blueish</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="create-dataset-and-tokenisation" class="level2">
+<h2 class="anchored" data-anchor-id="create-dataset-and-tokenisation">Create dataset and tokenisation</h2>
+<p>We will use a subset sample of the full dataset to train on, for the sake of execution speed, for now</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(litho_logs_kept_mini)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>123657</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>litho_logs_kept_mini_subset <span class="op">=</span> litho_logs_kept_mini.sample(<span class="bu">len</span>(litho_logs_kept_mini) <span class="op">//</span> <span class="dv">4</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(litho_logs_kept_mini_subset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>30914</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> Dataset.from_pandas(litho_logs_kept_mini_subset)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tok_func(x):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> tokz(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        x[DESC],</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        padding<span class="op">=</span><span class="st">"max_length"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        truncation<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        max_length<span class="op">=</span>max_length,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># return_tensors="pt", ## IMPORTANT not to use return_tensors="pt" here, perhaps conter-intuitively</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tok_ds <span class="op">=</span> ds.<span class="bu">map</span>(tok_func)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>num_labels <span class="op">=</span> <span class="bu">len</span>(labels_kept)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Parameter 'function'=&lt;function tok_func at 0x7f49f6e17a60&gt; of the transform datasets.arrow_dataset.Dataset._map_single couldn't be hashed properly, a random hash was used instead. Make sure your transforms and parameters are serializable with pickle or dill for the dataset fingerprinting and caching to work. If you reuse this transform, the caching mechanism will consider it to be different from the previous calls and recompute everything. This warning is only showed once. Subsequent hashing failures won't be showed.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+[{"model_id":"b03ce3fba985496997138eb73e6334d3","version_major":2,"version_minor":0}]
+</script>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: the local caching may be superflous</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> Path(<span class="st">"./model_pretrained"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> p <span class="cf">if</span> p.exists() <span class="cf">else</span> STARTING_MODEL</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> AutoModelForSequenceClassification.from_pretrained(model_name, num_labels<span class="op">=</span>num_labels, max_length<span class="op">=</span>max_length)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                                           <span class="co"># label2id=label2id, id2label=id2label).to(device) </span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> p.exists():</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    model.save_pretrained(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">type</span>(model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'transformers.models.deberta_v2.modeling_deberta_v2.DebertaV2ForSequenceClassification'&gt;</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tok_ds <span class="op">=</span> tok_ds.rename_columns({MAJOR_CODE_INT: <span class="st">"labels"</span>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep the description column, which will be handy later despite warnings at training time.</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>tok_ds <span class="op">=</span> tok_ds.remove_columns([<span class="st">'__index_level_0__'</span>])</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># tok_ds = tok_ds.remove_columns(['Description', '__index_level_0__'])</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Not sure why, but cannot set the labels class otherwise `train_test_split` complains</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tok_ds.features['labels'] = labels</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>dds <span class="op">=</span> tok_ds.train_test_split(test_size<span class="op">=</span><span class="fl">0.25</span>, seed<span class="op">=</span><span class="dv">42</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Defining the Trainer to compute Custom Loss Function, adapted from [Simple Training with the 🤗 Transformers Trainer, around 840 seconds](https://youtu.be/u--UVvH-LIQ?t=840)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> WeightedLossTrainer(Trainer):</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> compute_loss(<span class="va">self</span>, model, inputs, return_outputs<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Feed inputs to model and extract logits</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> model(<span class="op">**</span>inputs)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        logits <span class="op">=</span> outputs.get(<span class="st">"logits"</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Extract Labels</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        labels <span class="op">=</span> inputs.get(<span class="st">"labels"</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Define loss function with class weights</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        loss_func <span class="op">=</span> torch.nn.CrossEntropyLoss(weight<span class="op">=</span>class_weights)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Compute loss</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> loss_func(logits, labels)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (loss, outputs) <span class="cf">if</span> return_outputs <span class="cf">else</span> loss</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_metrics(eval_pred):</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> eval_pred.label_ids</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> eval_pred.predictions.argmax(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    f1 <span class="op">=</span> f1_score(labels, predictions, average<span class="op">=</span><span class="st">"weighted"</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"f1"</span>: f1}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> <span class="st">"./hf_training"</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">64</span> <span class="co"># 128 causes a CUDA out of memory exception... Maybe I shoudl consider dynamic padding instead. Later.</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">3</span> <span class="co"># low, but for didactic purposes will do.</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">8e-5</span>  <span class="co"># inherited, no idea whether appropriate. is there an lr_find in hugging face?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>training_args <span class="op">=</span> TrainingArguments(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    output_dir<span class="op">=</span>output_dir,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    num_train_epochs<span class="op">=</span>epochs,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    learning_rate<span class="op">=</span>lr,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    lr_scheduler_type<span class="op">=</span><span class="st">"cosine"</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    per_device_train_batch_size<span class="op">=</span>batch_size,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    per_device_eval_batch_size<span class="op">=</span>batch_size <span class="op">*</span> <span class="dv">2</span>,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    weight_decay<span class="op">=</span><span class="fl">0.01</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    evaluation_strategy<span class="op">=</span><span class="st">"epoch"</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    logging_steps<span class="op">=</span><span class="bu">len</span>(dds[<span class="st">"train"</span>]),</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    fp16<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    push_to_hub<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    report_to<span class="op">=</span><span class="st">"none"</span>,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> model.to(<span class="st">"cuda:0"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The above nay not be strictly necessary, depending on your version of <code>transformers</code>. I bumped into the following issue, which was probably the transformers <a href="https://github.com/nlp-with-transformers/notebooks/issues/31#issuecomment-1075369210">4.11.3 bug</a>: <code>RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu! (when checking argument for argument index in method wrapper__index_select)</code></p>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>trainer <span class="op">=</span> Trainer(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    args<span class="op">=</span>training_args,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    train_dataset<span class="op">=</span>dds[<span class="st">"train"</span>],</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    eval_dataset<span class="op">=</span>dds[<span class="st">"test"</span>],</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    tokenizer<span class="op">=</span>tokz,</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    compute_metrics<span class="op">=</span>compute_metrics,</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Using amp half precision backend</code></pre>
+</div>
+</div>
+</section>
+<section id="training" class="level2">
+<h2 class="anchored" data-anchor-id="training">Training</h2>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>trainer.train()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following columns in the training set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+/home/per202/miniconda/envs/hf/lib/python3.9/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+***** Running training *****
+  Num examples = 23185
+  Num Epochs = 3
+  Instantaneous batch size per device = 64
+  Total train batch size (w. parallel, distributed &amp; accumulation) = 64
+  Gradient Accumulation steps = 1
+  Total optimization steps = 1089</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+
+    <div>
+      
+      <progress value="1089" max="1089" style="width:300px; height:20px; vertical-align: middle;"></progress>
+      [1089/1089 04:57, Epoch 3/3]
+    </div>
+    <table class="dataframe table table-sm table-striped">
+  <thead>
+ <tr>
+      <th>Epoch</th>
+      <th>Training Loss</th>
+      <th>Validation Loss</th>
+      <th>F1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>No log</td>
+      <td>0.072295</td>
+      <td>0.983439</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>No log</td>
+      <td>0.063188</td>
+      <td>0.985492</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>No log</td>
+      <td>0.061934</td>
+      <td>0.986534</td>
+    </tr>
+  </tbody>
+</table><p>
+</p></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 7729
+  Batch size = 128
+Saving model checkpoint to ./hf_training/checkpoint-500
+Configuration saved in ./hf_training/checkpoint-500/config.json
+Model weights saved in ./hf_training/checkpoint-500/pytorch_model.bin
+tokenizer config file saved in ./hf_training/checkpoint-500/tokenizer_config.json
+Special tokens file saved in ./hf_training/checkpoint-500/special_tokens_map.json
+The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 7729
+  Batch size = 128
+Saving model checkpoint to ./hf_training/checkpoint-1000
+Configuration saved in ./hf_training/checkpoint-1000/config.json
+Model weights saved in ./hf_training/checkpoint-1000/pytorch_model.bin
+tokenizer config file saved in ./hf_training/checkpoint-1000/tokenizer_config.json
+Special tokens file saved in ./hf_training/checkpoint-1000/special_tokens_map.json
+The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 7729
+  Batch size = 128
+
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>TrainOutput(global_step=1089, training_loss=0.16952454397938907, metrics={'train_runtime': 297.9073, 'train_samples_per_second': 233.479, 'train_steps_per_second': 3.655, 'total_flos': 2304099629568000.0, 'train_loss': 0.16952454397938907, 'epoch': 3.0})</code></pre>
+</div>
+</div>
+</section>
+<section id="exploring-results" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-results">Exploring results</h2>
+<p>This part is newer compared to the previous post, so I will elaborate a bit.</p>
+<p>I am not across the high level facilities to assess model predictions (visualisation, etc.) so what follows may be sub-optimal and idiosyncratic.</p>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>test_pred <span class="op">=</span> trainer.predict(trainer.eval_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following columns in the test set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+***** Running Prediction *****
+  Num examples = 7729
+  Batch size = 128</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+
+    <div>
+      
+      <progress value="61" max="61" style="width:300px; height:20px; vertical-align: middle;"></progress>
+      [61/61 00:08]
+    </div>
+    
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>test_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>PredictionOutput(predictions=array([[-0.519 , -2.127 ,  0.61  , ..., -1.751 , -1.145 , -2.832 ],
+       [ 0.8223,  2.123 ,  9.27  , ..., -3.254 , -0.8325, -1.929 ],
+       [-1.003 , -0.469 , -1.233 , ..., -1.084 , -0.7856, -0.4966],
+       ...,
+       [-0.53  , -1.396 , -0.5615, ..., -2.506 , -1.985 , -3.44  ],
+       [-0.453 , -1.442 , -0.621 , ..., -2.424 , -1.973 , -3.44  ],
+       [-1.388 , -2.346 , -1.186 , ..., -1.94  , -0.6084, -2.22  ]],
+      dtype=float16), label_ids=array([4, 2, 8, ..., 5, 5, 6]), metrics={'test_loss': 0.061934199184179306, 'test_f1': 0.9865336898918051, 'test_runtime': 8.7643, 'test_samples_per_second': 881.873, 'test_steps_per_second': 6.96})</code></pre>
+</div>
+</div>
+<p>This is lower level than I anticipated. The predictions array appear to be the <code>logits</code>. Note that I was not sure <code>label_ids</code> was, and it is <strong>not</strong> the predicted label, but the “true” label.</p>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> trainer.eval_dataset.to_pandas()</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>y_true <span class="op">=</span> test_df.labels.values.astype(<span class="bu">int</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>y_true</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>array([4, 2, 8, ..., 5, 5, 6])</code></pre>
+</div>
+</div>
+<p>To get the predicted labels, I seem to need to do the following song and dance:</p>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>preds_tf <span class="op">=</span> torch.asarray(test_pred.predictions, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> torch.nn.functional.softmax(preds_tf, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>highest <span class="op">=</span> np.argmax(predictions, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> np.array(highest)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>y_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>array([4, 2, 8, ..., 5, 5, 6])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>differ <span class="op">=</span> np.logical_not(y_true <span class="op">==</span> y_pred)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"There are </span><span class="sc">{0}</span><span class="st"> records in the validation data set that differ from true labels"</span>.<span class="bu">format</span>(np.<span class="bu">sum</span>(differ)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>There are 104 records in the validation data set that differ from true labels</code></pre>
+</div>
+</div>
+<p>Let’s look at where we fail to match the labels:</p>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>differing <span class="op">=</span> test_df[differ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>lbl_true <span class="op">=</span> labels.int2str(differing.labels.values)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>descriptions <span class="op">=</span> differing.Description.values </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>lbl_pred <span class="op">=</span> labels.int2str(y_pred[differ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_colwidth <span class="op">=</span> <span class="dv">150</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">110</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame.from_dict({</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label_true"</span>: lbl_true,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label_pred"</span>: lbl_pred,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"desc"</span>: descriptions,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>label_true</th>
+      <th>label_pred</th>
+      <th>desc</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>TPSL</td>
+      <td>GRNT</td>
+      <td>topoil; granite, grey</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>TPSL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>SHLE</td>
+      <td>CLAY</td>
+      <td>clay multicoloured sandy</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>TPSL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>SAND</td>
+      <td>GRNT</td>
+      <td>granite sand</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>gray</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>TPSL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy clay</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>TPSL</td>
+      <td>CLAY</td>
+      <td>clay - brown, silty</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>brown</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>CLAY</td>
+      <td>SHLE</td>
+      <td>grey</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>SLSN</td>
+      <td>SDSN</td>
+      <td>grey soft silstone</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>SAND</td>
+      <td>SDCY</td>
+      <td>sandy bands, brown</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>SDCY</td>
+      <td>CLAY</td>
+      <td>clay sandy</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>BSLT</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>carbonaceous wood - dark bluish black to black with associated associated minor khaki and dark grey clay.  sample retained for analysis</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>GRNT</td>
+      <td>SAND</td>
+      <td>grantie; ligh pinkish grey, medium, fragments of quartz, hornblende &amp; mica, increased pink feldspar</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>ROCK</td>
+      <td>UNKN</td>
+      <td>missing</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>SLSN</td>
+      <td>SDSN</td>
+      <td>silstone</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>CLAY</td>
+      <td>GRVL</td>
+      <td>light grey medium to coarse sandy gravel - 30%, and gravelly clay - 70%.  gravel mainly basalt and jasper</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy clay</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>GRVL</td>
+      <td>SAND</td>
+      <td>sand and gravel</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>SAND</td>
+      <td>SOIL</td>
+      <td>soil + sand</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>SHLE</td>
+      <td>CLAY</td>
+      <td>brown</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>CLAY</td>
+      <td>SAND</td>
+      <td>clayey  sand (brown) - fine-medium</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>white puggy some slightly hard</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>GRNT</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>SHLE</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>BSLT</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>GRVL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>SHLE</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy and gravel aquifer with bands of clay</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>SDCY</td>
+      <td>CLAY</td>
+      <td>clay sandy</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>CLAY</td>
+      <td>SDSN</td>
+      <td>silty</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy clay, light grey, fine</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>BSLT</td>
+      <td>SHLE</td>
+      <td>blue bassalt</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy brown clay</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>CLAY</td>
+      <td>SAND</td>
+      <td>sand - silty up to 1mm, clayey</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>SOIL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>GRVL</td>
+      <td>SAND</td>
+      <td>wash alluvial</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy clay</td>
+    </tr>
+    <tr>
+      <th>47</th>
+      <td>GRNT</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>48</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>49</th>
+      <td>SDSN</td>
+      <td>SAND</td>
+      <td>sand - mostly white very fine to very coarse gravel</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>GRVL</td>
+      <td>CLAY</td>
+      <td>gravelly sandy clay</td>
+    </tr>
+    <tr>
+      <th>51</th>
+      <td>SOIL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>52</th>
+      <td>BSLT</td>
+      <td>SDSN</td>
+      <td>brown weathered</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>GRVL</td>
+      <td>SAND</td>
+      <td>brown sand and fine gravel</td>
+    </tr>
+    <tr>
+      <th>54</th>
+      <td>GRVL</td>
+      <td>SAND</td>
+      <td>course sand and gravel, w/b</td>
+    </tr>
+    <tr>
+      <th>55</th>
+      <td>SDCY</td>
+      <td>GRNT</td>
+      <td>silt, sandy/silty sand</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>TPSL</td>
+      <td>BSLT</td>
+      <td>blue basalt</td>
+    </tr>
+    <tr>
+      <th>57</th>
+      <td>GRVL</td>
+      <td>CLAY</td>
+      <td>stones clay</td>
+    </tr>
+    <tr>
+      <th>58</th>
+      <td>ROCK</td>
+      <td>CLAY</td>
+      <td>ochrs yellow</td>
+    </tr>
+    <tr>
+      <th>59</th>
+      <td>GRVL</td>
+      <td>ROCK</td>
+      <td>stone, clayed to semi formed sandstone</td>
+    </tr>
+    <tr>
+      <th>60</th>
+      <td>UNKN</td>
+      <td>SAND</td>
+      <td>soak water bearing</td>
+    </tr>
+    <tr>
+      <th>61</th>
+      <td>BSLT</td>
+      <td>SDSN</td>
+      <td>balsalt: weathered</td>
+    </tr>
+    <tr>
+      <th>62</th>
+      <td>SOIL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>63</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>very</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>GRVL</td>
+      <td>CLAY</td>
+      <td>gravelly sandy clay</td>
+    </tr>
+    <tr>
+      <th>65</th>
+      <td>SDSN</td>
+      <td>GRNT</td>
+      <td>granite sand</td>
+    </tr>
+    <tr>
+      <th>66</th>
+      <td>SHLE</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>67</th>
+      <td>ROCK</td>
+      <td>UNKN</td>
+      <td>water bearing</td>
+    </tr>
+    <tr>
+      <th>68</th>
+      <td>BSLT</td>
+      <td>SAND</td>
+      <td>h/frac, quartz</td>
+    </tr>
+    <tr>
+      <th>69</th>
+      <td>MDSN</td>
+      <td>COAL</td>
+      <td>coal 80% &amp; mudstone, 20%; dark grey, strong, carbonaceous</td>
+    </tr>
+    <tr>
+      <th>70</th>
+      <td>GRVL</td>
+      <td>CLAY</td>
+      <td>as above</td>
+    </tr>
+    <tr>
+      <th>71</th>
+      <td>CLAY</td>
+      <td>GRVL</td>
+      <td>gravelly clay</td>
+    </tr>
+    <tr>
+      <th>72</th>
+      <td>GRVL</td>
+      <td>SAND</td>
+      <td>sand + gravel (water)</td>
+    </tr>
+    <tr>
+      <th>73</th>
+      <td>CLAY</td>
+      <td>GRVL</td>
+      <td>with gravel</td>
+    </tr>
+    <tr>
+      <th>74</th>
+      <td>SAND</td>
+      <td>SDCY</td>
+      <td>sandy yellow</td>
+    </tr>
+    <tr>
+      <th>75</th>
+      <td>CLAY</td>
+      <td>SOIL</td>
+      <td>brown soil and clay</td>
+    </tr>
+    <tr>
+      <th>76</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy clay</td>
+    </tr>
+    <tr>
+      <th>77</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>hard slightly stoney</td>
+    </tr>
+    <tr>
+      <th>78</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>79</th>
+      <td>SDSN</td>
+      <td>ROCK</td>
+      <td>sandsstone</td>
+    </tr>
+    <tr>
+      <th>80</th>
+      <td>TPSL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>81</th>
+      <td>SOIL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>82</th>
+      <td>SHLE</td>
+      <td>BSLT</td>
+      <td>shae (brown)</td>
+    </tr>
+    <tr>
+      <th>83</th>
+      <td>BSLT</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>84</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy clay</td>
+    </tr>
+    <tr>
+      <th>85</th>
+      <td>SAND</td>
+      <td>SOIL</td>
+      <td>surface soil</td>
+    </tr>
+    <tr>
+      <th>86</th>
+      <td>GRVL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>87</th>
+      <td>SAND</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>88</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>89</th>
+      <td>CLAY</td>
+      <td>SHLE</td>
+      <td>grey</td>
+    </tr>
+    <tr>
+      <th>90</th>
+      <td>SDCY</td>
+      <td>CLAY</td>
+      <td>clay sandy water supply</td>
+    </tr>
+    <tr>
+      <th>91</th>
+      <td>GRVL</td>
+      <td>BSLT</td>
+      <td>blue/dark mixed</td>
+    </tr>
+    <tr>
+      <th>92</th>
+      <td>GRVL</td>
+      <td>SAND</td>
+      <td>sand + gravel + white clay</td>
+    </tr>
+    <tr>
+      <th>93</th>
+      <td>UNKN</td>
+      <td>SHLE</td>
+      <td>grey very hard</td>
+    </tr>
+    <tr>
+      <th>94</th>
+      <td>UNKN</td>
+      <td>CLAY</td>
+      <td>white fine, and clay, nodular</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>CLAY</td>
+      <td>SLSN</td>
+      <td>yellow clayey siltstone</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>SDSN</td>
+      <td>SAND</td>
+      <td>brown sand + stones (clean)</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>SDSN</td>
+      <td>CLAY</td>
+      <td>yellow</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>BSLT</td>
+      <td>UNKN</td>
+      <td>broken</td>
+    </tr>
+    <tr>
+      <th>100</th>
+      <td>CLAY</td>
+      <td>SDCY</td>
+      <td>sandy clay stringers</td>
+    </tr>
+    <tr>
+      <th>101</th>
+      <td>SAND</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+    <tr>
+      <th>102</th>
+      <td>SDSN</td>
+      <td>ROCK</td>
+      <td>bedrock - sandstone; whitish greyish blue, highly weathered, fine grains, angular to subangular, predominantly clear quartz. very small amounts of...</td>
+    </tr>
+    <tr>
+      <th>103</th>
+      <td>TPSL</td>
+      <td>CLAY</td>
+      <td>none</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="observations" class="level2">
+<h2 class="anchored" data-anchor-id="observations">Observations</h2>
+<p>The error rate is rather low for a first trial, though admittedly we know that many descriptions are fairly unambiguous. If we examine the failed predictions, we can make a few observations:</p>
+<ul>
+<li>There are many <code>none</code> descriptions that are picked up as CLAY, but given that the true labels are not necessarily <code>UNKN</code> for these, one cannot complain too much about the model. The fact that some true labels are set to <code>CLAY</code> for these hints at the use of contextual information, perhaps nearby lithology log entries being classified as <code>CLAY</code>.</li>
+<li>The model picks up several <code>sandy clay</code> as <code>SDCY</code>, which is a priori more suited than the true labels, at least without other information context explaining why the “true” classification ends up being another category such as <code>CLAY</code></li>
+<li>Typographical errors such as <code>ssandstone</code> are throwing the model off, which is extected. A production pipeline would need to have an orthographic correction step.</li>
+<li>grammatically unusual expressions such as <code>clay sandy</code> and <code>clayey/gravel brown</code> are also a challenge for the model.</li>
+<li>More nuanced descriptions such as <code>light grey medium to coarse sandy gravel - 30%, and gravelly clay - 70%. gravel mainly basalt and jasper</code> where a human reads that the major class is clay, not gravel, or <code>broken rock</code> is more akin to gravel than rock.</li>
+</ul>
+<p>Still, the confusion matrix is overall really encouraging. Let’s have a look:</p>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.ticker <span class="im">import</span> FixedFormatter</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_cm(y_true, y_pred, title, figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">10</span>), labels<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">''''</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="co">    input y_true-Ground Truth Labels</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="co">          y_pred-Predicted Value of Model</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="co">          title-What Title to give to the confusion matrix</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Draws a Confusion Matrix for better understanding of how the model is working</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="co">    return None</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>    cm <span class="op">=</span> confusion_matrix(y_true, y_pred, labels<span class="op">=</span>np.unique(y_true))</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>    cm_sum <span class="op">=</span> np.<span class="bu">sum</span>(cm, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>    cm_perc <span class="op">=</span> cm <span class="op">/</span> cm_sum.astype(<span class="bu">float</span>) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>    annot <span class="op">=</span> np.empty_like(cm).astype(<span class="bu">str</span>)</span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>    nrows, ncols <span class="op">=</span> cm.shape</span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nrows):</span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(ncols):</span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>            c <span class="op">=</span> cm[i, j]</span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a>            p <span class="op">=</span> cm_perc[i, j]</span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> i <span class="op">==</span> j:</span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a>                s <span class="op">=</span> cm_sum[i]</span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">'</span><span class="sc">%.1f%%</span><span class="ch">\n</span><span class="sc">%d</span><span class="st">/</span><span class="sc">%d</span><span class="st">'</span> <span class="op">%</span> (p, c, s)</span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> c <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">''</span></span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">'</span><span class="sc">%.1f%%</span><span class="ch">\n</span><span class="sc">%d</span><span class="st">'</span> <span class="op">%</span> (p, c)</span>
+<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a>    cm <span class="op">=</span> pd.DataFrame(cm, index<span class="op">=</span>np.unique(y_true), columns<span class="op">=</span>np.unique(y_true))</span>
+<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a>    cm.index.name <span class="op">=</span> <span class="st">'Actual'</span></span>
+<span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a>    cm.columns.name <span class="op">=</span> <span class="st">'Predicted'</span></span>
+<span id="cb46-35"><a href="#cb46-35" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
+<span id="cb46-36"><a href="#cb46-36" aria-hidden="true" tabindex="-1"></a>    ff <span class="op">=</span> FixedFormatter(labels)</span>
+<span id="cb46-37"><a href="#cb46-37" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_major_formatter(ff)</span>
+<span id="cb46-38"><a href="#cb46-38" aria-hidden="true" tabindex="-1"></a>    ax.xaxis.set_major_formatter(ff)</span>
+<span id="cb46-39"><a href="#cb46-39" aria-hidden="true" tabindex="-1"></a>    plt.title(title)</span>
+<span id="cb46-40"><a href="#cb46-40" aria-hidden="true" tabindex="-1"></a>    sns.heatmap(cm, cmap<span class="op">=</span> <span class="st">"YlGnBu"</span>, annot<span class="op">=</span>annot, fmt<span class="op">=</span><span class="st">''</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb46-41"><a href="#cb46-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-42"><a href="#cb46-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> roc_curve_plot(fpr,tpr,roc_auc):</span>
+<span id="cb46-43"><a href="#cb46-43" aria-hidden="true" tabindex="-1"></a>    plt.figure()</span>
+<span id="cb46-44"><a href="#cb46-44" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb46-45"><a href="#cb46-45" aria-hidden="true" tabindex="-1"></a>    plt.plot(fpr, tpr, color<span class="op">=</span><span class="st">'darkorange'</span>,</span>
+<span id="cb46-46"><a href="#cb46-46" aria-hidden="true" tabindex="-1"></a>             lw<span class="op">=</span>lw, label<span class="op">=</span><span class="st">'ROC curve (area = </span><span class="sc">%0.2f</span><span class="st">)'</span> <span class="op">%</span>roc_auc)</span>
+<span id="cb46-47"><a href="#cb46-47" aria-hidden="true" tabindex="-1"></a>    plt.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">'navy'</span>, lw<span class="op">=</span>lw, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb46-48"><a href="#cb46-48" aria-hidden="true" tabindex="-1"></a>    plt.xlim([<span class="fl">0.0</span>, <span class="fl">1.0</span>])</span>
+<span id="cb46-49"><a href="#cb46-49" aria-hidden="true" tabindex="-1"></a>    plt.ylim([<span class="fl">0.0</span>, <span class="fl">1.05</span>])</span>
+<span id="cb46-50"><a href="#cb46-50" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'False Positive Rate'</span>)</span>
+<span id="cb46-51"><a href="#cb46-51" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'True Positive Rate'</span>)</span>
+<span id="cb46-52"><a href="#cb46-52" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Receiver operating characteristic example'</span>)</span>
+<span id="cb46-53"><a href="#cb46-53" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb46-54"><a href="#cb46-54" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-tags="[]" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>plot_cm(y_true, y_pred, title<span class="op">=</span><span class="st">"Test set confusion matrix"</span>, figsize<span class="op">=</span>(<span class="dv">16</span>,<span class="dv">16</span>), labels<span class="op">=</span>labels.names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_29992/2038836972.py:37: UserWarning: FixedFormatter should only be used together with FixedLocator
+  ax.yaxis.set_major_formatter(ff)
+/tmp/ipykernel_29992/2038836972.py:38: UserWarning: FixedFormatter should only be used together with FixedLocator
+  ax.xaxis.set_major_formatter(ff)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="2022-07-03-lithology-classification-hugging-face-3_files/figure-html/cell-35-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion-next" class="level1">
+<h1>Conclusion, Next</h1>
+<p>Despite quite a few arbitrary shortcuts in the overall pipeline, we have a working template to fine-tune a pre-trained classification model to classify primary lithologies.</p>
+<p>I’ll probably have to pause on this work for a few weeks, though perhaps a teaser Gradio app on Hugging Face spaces in the same vein as <a href="https://huggingface.co/spaces/j-m/formality_tagging">this one</a> is diable with relatively little work.</p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Later on, in another post, for predictions on the CPU:</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="co"># model_cpu = model.to("cpu")</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># from transformers import TextClassificationPipeline</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="co"># tokenizer = tokz</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe = TextClassificationPipeline(model=model_cpu, tokenizer=tokenizer, return_all_scores=True)</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="co"># # outputs a list of dicts like [[{'label': 'NEGATIVE', 'score': 0.0001223755971295759},  {'label': 'POSITIVE', 'score': 0.9998776316642761}]]</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe("clayey sand")</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="co"># raw_inputs = [</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="co">#     "I've been waiting for a HuggingFace course my whole life.",</span></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="co">#     "I hate this so much!",</span></span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a><span class="co"># inputs = tokz(raw_inputs, padding=True, truncation=True, return_tensors="pt")</span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="co"># print(inputs)</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe("I've been waiting for a HuggingFace course my whole life.")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-06-10">
+<meta name="description" content="Journey in building a conda package for C++ libraries">
+
+<title>J-M’s ‘lab notebook’ - Conda package for compiled native libraries</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">J-M’s ‘lab notebook’</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Conda package for compiled native libraries</h1>
+                  <div>
+        <div class="description">
+          Journey in building a conda package for C++ libraries
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">recipes</div>
+                <div class="quarto-category">conda</div>
+                <div class="quarto-category">conda-forge</div>
+                <div class="quarto-category">C++</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="https://github.com/jmp75">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 10, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#market-review" id="toc-market-review" class="nav-link" data-scroll-target="#market-review">Market review</a></li>
+  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <ul class="collapse">
+  <li><a href="#starting-point" id="toc-starting-point" class="nav-link" data-scroll-target="#starting-point">Starting point</a></li>
+  <li><a href="#building-locally-on-linux64" id="toc-building-locally-on-linux64" class="nav-link" data-scroll-target="#building-locally-on-linux64">Building locally on linux64</a></li>
+  <li><a href="#building-locally-on-win64" id="toc-building-locally-on-win64" class="nav-link" data-scroll-target="#building-locally-on-win64">Building locally on win64</a></li>
+  </ul></li>
+  <li><a href="#recapitulation-and-summary" id="toc-recapitulation-and-summary" class="nav-link" data-scroll-target="#recapitulation-and-summary">Recapitulation and summary</a></li>
+  <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
+  <li><a href="#appendices" id="toc-appendices" class="nav-link" data-scroll-target="#appendices">Appendices</a>
+  <ul class="collapse">
+  <li><a href="#appendix-if-missing-ms-build-tools-2017" id="toc-appendix-if-missing-ms-build-tools-2017" class="nav-link" data-scroll-target="#appendix-if-missing-ms-build-tools-2017">Appendix: if missing ms build tools 2017</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>I recently wrote about <a href="https://jmp75.github.io/work-blog/recipes/conda/conda-forge/2022/06/04/conda-packages-conda-forge.html">submitting your first conda package to conda-forge</a>. You’ll find background on the “bigger picture” endeavour in that previous post.</p>
+<p>This post is a follow-on with, perhaps, a second submission to conda-forge, this time not of a python package but a C++ library.</p>
+<p>I’ll try to package a relatively small C++ codebase <a href="https://github.com/csiro-hydroinformatics/moirai">MOIRAI: Manage C++ objects lifetime when exposed through a C API</a>. While dealing with very similar needs as refcount (reference counting and memory management), there is no explicit dependency between them.</p>
+</section>
+<section id="market-review" class="level1">
+<h1>Market review</h1>
+<p><code>moirai</code> grew out of specific projects almost a decade ago, but its inception did not occur without looking first at third party options. There were surprisingly few I could identify, and of the ones I saw licensing or design made it difficult to adopt as they were. Still, in 2022 is there, on conda-forge or not, something making <code>moirai</code> possibly redundant?</p>
+<p>It can be tricky to find relevant work without a time consuming research. A cursory scan comes up:</p>
+<ul>
+<li><a href="https://anaconda.org/conda-forge/cppy">Cppy</a> seems to have intersects, but this is solely Python-centric.</li>
+<li><a href="https://github.com/vancegroup-mirrors/loki-lib">Loki-lib</a> is an (underappreciated) library with reference counting features, but not on conda-forge. I believe Loki-lib was largely written by <a href="https://erdani.org/index.html">Andrei Alexandrescu</a>, author of <a href="http://amazon.com/exec/obidos/ASIN/0201704315/modecdesi-20">Modern C++ Design</a>, one of the most impressive computer science book I read.</li>
+</ul>
+<p>Maybe there is a place for <code>moirai</code>. Plus the name is not taken…</p>
+</section>
+<section id="walkthrough" class="level1">
+<h1>Walkthrough</h1>
+<p>I already forked and cloned staged-recipes from the previous post.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/src/staged-recipes</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout main</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> branch moirai</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="starting-point" class="level2">
+<h2 class="anchored" data-anchor-id="starting-point">Starting point</h2>
+<p><a href="https://github.com/conda-incubator/grayskull#introduction"><code>grayskull</code></a> is userful to generate meta.yaml stubs out of python packages, and not applicable in this case.</p>
+<p>I learned the hard way that installing conda-build, grayskull and shyaml and <code>conda update conda</code>in my conda base environment landed me in a broken mamba and incompatible package versions. So, this time create a new dedicate environment:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> cf python=3.9 mamba <span class="at">-c</span> conda-forge</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate cf</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-c</span> conda-forge conda-build grayskull <span class="co"># grayskull not for this post, but other future submissions</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Is there an example I can start from and work by inference and similarity rather than first principles?</p>
+<p><a href="https://github.com/conda-forge/libnetcdf-feedstock/blob/main/recipe/meta.yaml">libnetcdf-feedstock</a> may be an appropriate case to start from, even if more sophisticated than my case. Rather than strip down this libnetcdf recipe though, I work from the example in the staged-recipe and add, staying closer to <a href="https://conda-forge.org/docs/maintainer/adding_pkgs.html">contributing packages</a></p>
+<p>I did bump into a couple of issues, but I got less issues than I thought to get a package compiling</p>
+<p>The end result should be something like:</p>
+<!-- NOTE: we need to use a 'raw' section; ninja2 things otherwise mess things up at rendering with Jekyll 
+https://stackoverflow.com/questions/52324134/getting-an-liquid-exception-liquid-syntax-error-while-using-jekyll
+-->
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span><span class="at">% set name = </span><span class="st">"moirai"</span><span class="at"> %</span><span class="kw">}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span><span class="at">% set version = </span><span class="st">"1.1"</span><span class="at"> %</span><span class="kw">}</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">package</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="at">{ name|lower </span><span class="kw">}</span><span class="at">}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="at">{ version </span><span class="kw">}</span><span class="at">}</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span><span class="kw">:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">  # url: https://github.com/moirai/moirai/releases/download/{{ version }}/moirai-{{ version }}.tar.gz</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">  # and otherwise fall back to archive:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">url</span><span class="kw">:</span><span class="at"> https://github.com/csiro-hydroinformatics/moirai/archive/refs/tags/{{ version }}.tar.gz</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sha256</span><span class="kw">:</span><span class="at"> b329353aee261ec42ddd57b7bb4ca5462186b2d132cdb2c9dacc9325899b85f3</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">number</span><span class="kw">:</span><span class="at"> </span><span class="dv">0</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">requirements</span><span class="kw">:</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> cmake</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> make</span><span class="co">  # [not win]</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">    # - pkg-config  # [not win]</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">    # - gnuconfig  # [unix]</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at">{ compiler(</span><span class="st">'c'</span><span class="at">) </span><span class="kw">}</span><span class="at">}</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="kw">{</span><span class="at">{ compiler(</span><span class="st">'cxx'</span><span class="at">) </span><span class="kw">}</span><span class="at">}</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> curl</span><span class="co"> # [win]</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> libgcc</span><span class="co"> # [unix]</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="fu">test</span><span class="kw">:</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">files</span><span class="kw">:</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> CMakeLists.txt</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">commands</span><span class="kw">:</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> ls</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="fu">about</span><span class="kw">:</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">home</span><span class="kw">:</span><span class="at"> https://github.com/csiro-hydroinformatics/moirai</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">summary</span><span class="kw">:</span><span class="at"> </span><span class="st">'Manage C++ objects lifetime when exposed through a C API'</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="fu">  description</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    This C++ library is designed to help handling C++ objects from so called opaque pointers, via a C API, featuring:</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>      * counting references via the C API to C++ domain objects</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>      * handle C++ class inheritance even via opaque pointers</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>      * mechanism for resilience to incorrect type casts</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>      * thread-safe design</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">license</span><span class="kw">:</span><span class="at"> BSD-3-Clause</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">license_family</span><span class="kw">:</span><span class="at"> BSD</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">license_file</span><span class="kw">:</span><span class="at"> LICENSE.txt</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">doc_url</span><span class="kw">:</span><span class="at"> https://github.com/csiro-hydroinformatics/moirai/blob/master/doc/Walkthrough.md</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dev_url</span><span class="kw">:</span><span class="at"> https://github.com/csiro-hydroinformatics/moirai</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="fu">extra</span><span class="kw">:</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">recipe-maintainers</span><span class="kw">:</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> jmp75</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="at">```yaml</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="fu">Note that you do need `make` as a build requirement besides `cmake`, otherwise you'd end up with </span><span class="kw">:</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="at">```text</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="fu">CMake Error</span><span class="kw">:</span><span class="at"> CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="fu">CMake Error</span><span class="kw">:</span><span class="at"> CMAKE_C_COMPILER not set, after EnableLanguage</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="fu">CMake Error</span><span class="kw">:</span><span class="at"> CMAKE_CXX_COMPILER not set, after EnableLanguage</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>build.sh:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Build moirai.</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-v</span> <span class="at">-p</span> build</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> build</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># May be needed for unit tests down the track?</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">TERM</span><span class="op">=</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LD_LIBRARY_PATH</span><span class="op">=</span><span class="va">$LD_LIBRARY_PATH</span>:<span class="va">$PREFIX</span>/lib</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_MODULE_PATH=/usr/local/share/cmake/Modules/ -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON ..</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> <span class="at">-DCMAKE_BUILD_TYPE</span><span class="op">=</span>Release <span class="at">-DCMAKE_INSTALL_PREFIX</span><span class="op">=</span><span class="va">${PREFIX}</span> <span class="at">-DBUILD_SHARED_LIBS</span><span class="op">=</span>ON ../</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-j</span> 2 install</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># rm -rf ../build/ # not if we want to run the unit tests</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="building-locally-on-linux64" class="level2">
+<h2 class="anchored" data-anchor-id="building-locally-on-linux64">Building locally on linux64</h2>
+<p>Note: although it may have changed by the time you read this, at the time I write I may have to <code>export DOCKER_IMAGE=quay.io/condaforge/linux-anvil-cos7-x86_64</code> to force that image being used. See <a href="https://jmp75.github.io/work-blog/recipes/conda/conda-forge/2022/06/04/conda-packages-conda-forge.html">previous post</a>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate cf</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">DOCKER_IMAGE</span><span class="op">=</span>quay.io/condaforge/linux-anvil-cos7-x86_64</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/src/staged-recipes</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> ./build-locally.py linux64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and the build seems OK…</p>
+<pre class="text"><code>+ touch /home/conda/staged-recipes/build_artifacts/conda-forge-build-done</code></pre>
+</section>
+<section id="building-locally-on-win64" class="level2">
+<h2 class="anchored" data-anchor-id="building-locally-on-win64">Building locally on win64</h2>
+<p>Trying to run build-locally.py with the option win64 returns: <code>ValueError: only Linux/macOS configs currently supported, got win64</code></p>
+<p>You’ll want to read or re-read the conda-forge documentation <a href="https://conda-forge.org/docs/maintainer/knowledge_base.html?#using-cmake">Using cmake</a> and <a href="https://conda-forge.org/docs/maintainer/knowledge_base.html?#particularities-on-windows">particularities on windows</a></p>
+<p>Trying for <code>bld.bat</code>:</p>
+<pre class="bat"><code>REM Build moirai.
+@REM Credits: some material in this file are courtesy of Kavid Kent (ex Australian Bureau of Meteorology)
+
+mkdir build
+cd build
+
+@REM following may be unncessary
+set PATH="%PREFIX%\bin";%PATH%
+
+:: Configure using the CMakeFiles
+cmake -G "%CMAKE_GENERATOR%" ^
+      -DCMAKE_INSTALL_PREFIX:PATH="%LIBRARY_PREFIX%" ^
+      -DCMAKE_PREFIX_PATH:PATH="%LIBRARY_PREFIX%" ^
+      -DCMAKE_BUILD_TYPE:STRING=Release ^
+      ..
+
+if %errorlevel% neq 0 exit 1
+msbuild /p:Configuration=Release /v:q /clp:/v:q "INSTALL.vcxproj"
+if %errorlevel% neq 0 exit 1
+@REM del *.*</code></pre>
+<p>Since the local build script cannot emulate a win64 build, I am trying to set up on a Windows box and see what a <code>conda build</code> gives.</p>
+<p>I first tried on my Windows desktop where I do have vs 2019 and 2022 installed. Not sure whether they can be used. <a href="https://conda-forge.org/docs/maintainer/knowledge_base.html?highlight=compiler%20cxx#local-testing">This section of the conda-forge doc</a> seem to suggest Microsoft Build Tools for Visual Studio 2017 is required, but the link to the Python wiki page on Windows compilers is covering many more versions, so this is rather confusing. See the Appendix for more details on what happens in this case.</p>
+<p>Trying again on a windows machine, but installing visual studio build tools 2017.</p>
+<p>After creating the conda environment <code>cf</code>, similar to the above on Linux:</p>
+<pre class="bat"><code>cd c:\src\staged-recipes\recipes
+conda build moirai</code></pre>
+<p>“mostly” works. for a minute or two it seems to freeze at a “number of files” line:</p>
+<pre class="text"><code>Packaging moirai
+INFO:conda_build.build:Packaging moirai
+Packaging moirai-1.1-h82bb817_0
+INFO:conda_build.build:Packaging moirai-1.1-h82bb817_0
+number of files: 11</code></pre>
+<p>then:</p>
+<pre class="text"><code>PGO: UNKNOWN is not implemented yet!
+PGO: UNKNOWN is not implemented yet!
+Unknown format
+Unknown format
+Unknown format
+Unknown format
+   INFO: sysroot: 'C:/Windows/' files: '['zh-CN/winhlp32.exe.mui', 'zh-CN/twain_32.dll.mui', 'zh-CN/regedit.exe.mui', 'zh-CN/notepad.exe.mui']'
+
+&lt;edit: snip&gt;
+
+Importing conda-verify failed.  Please be sure to test your packages.  conda install conda-verify to make this message go away.</code></pre>
+<p><code>conda search -c conda-forge conda-verify</code> indeed returns something. Noted…</p>
+<pre class="text"><code>&lt;edit: snip&gt;
+
+## Package Plan ##
+
+  environment location: C:\Users\xxxyyy\Miniconda3\envs\cf\conda-bld\moirai_1654825059872\_test_env
+
+
+The following NEW packages will be INSTALLED:
+
+    ca-certificates: 2022.4.26-haa95532_0
+    curl:            7.82.0-h2bbff1b_0
+    libcurl:         7.82.0-h86230a5_0
+    libssh2:         1.10.0-hcd4344a_0
+    moirai:          1.1-h82bb817_0         local
+    openssl:         1.1.1o-h2bbff1b_0
+    vc:              14.2-h21ff451_1
+    vs2015_runtime:  14.27.29016-h5e58377_2
+    zlib:            1.2.12-h8cc25b3_2</code></pre>
+<pre class="text"><code>&lt;edit: snip&gt;
+
+set PREFIX=C:\Users\xxxyyy\Miniconda3\envs\cf\conda-bld\moirai_1654825059872\_test_env
+set SRC_DIR=C:\Users\xxxyyy\Miniconda3\envs\cf\conda-bld\moirai_1654825059872\test_tmp
+(cf) %SRC_DIR%&gt;call "%SRC_DIR%\conda_test_env_vars.bat"
+(cf) %SRC_DIR%&gt;set "CONDA_SHLVL="   &amp;&amp;
+(cf) %SRC_DIR%&gt;conda activate "%PREFIX%"
+(%PREFIX%) %SRC_DIR%&gt;IF 0 NEQ 0 exit /B 1
+(%PREFIX%) %SRC_DIR%&gt;call "%SRC_DIR%\run_test.bat"
+(%PREFIX%) %SRC_DIR%&gt;ls
+(%PREFIX%) %SRC_DIR%&gt;IF -1073741511 NEQ 0 exit /B 1</code></pre>
+<p>The latter fails because the command line <code>ls</code> borks with the error message (windows box error message) <code>ls.exe - Entry Point not found</code>. <code>where ls</code> returns <code>C:\Users\xxxyyy\Miniconda3\envs\cf\Library\usr\bin\ls.exe</code> so this is something that came from conda.</p>
+<p>Taking a look at the resulting <code>moirai-1.1-h82bb817_0.tar.bz2</code> file, the content looks sensible (include header files, bin/moirai.dll)</p>
+<pre class="text"><code>info/hash_input.json
+info/index.json
+info/files
+info/paths.json
+info/about.json
+info/git
+info/recipe/build.sh
+info/recipe/meta.yaml.template
+info/licenses/LICENSE.txt
+Library/include/moirai/extern_c_api_as_opaque.h
+Library/include/moirai/extern_c_api_as_transparent.h
+Library/include/moirai/setup_modifiers.h
+Library/include/moirai/reference_handle_map_export.h
+Library/include/moirai/error_reporting.h
+Library/include/moirai/reference_handle.h
+info/recipe/conda_build_config.yaml
+info/recipe/meta.yaml
+info/test/run_test.bat
+info/recipe/bld.bat
+Library/bin/moirai.dll
+Library/include/moirai/reference_handle_test_helper.hpp
+Library/include/moirai/opaque_pointers.hpp
+Library/include/moirai/reference_type_converters.hpp
+Library/include/moirai/reference_handle.hpp</code></pre>
+</section>
+</section>
+<section id="recapitulation-and-summary" class="level1">
+<h1>Recapitulation and summary</h1>
+<p>In some respects I had less issues with this conda package than the “pure python” one, partly because of prior experience, but not entirely.</p>
+<p>I may be in a decent place to submit this to the conda-forge/staged-recipe repository. I may hold off a bit though. First, the unit tests in moirai are not exercised by the meta.yaml file (or build scripts). Second, I may next look at setting up a conda channel to test managing conda dependencies, even if I see <code>moirai</code> as belonging to conda-forge rather than a private channel. Third, there are probably other things I need to tidy up.</p>
+<p>To recapitulate on the essentials out of post:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> cf python=3.9 mamba <span class="at">-c</span> conda-forge</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate cf</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># grayskull not for this post, but other future submissions</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-c</span> conda-forge conda-build conda-verify grayskull </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The draft conda recipe for <code>moirai</code> at this stage is available <a href="https://github.com/jmp75/staged-recipes/tree/a4c0e075230699b7f4dfd86e91f8f6b4ebca9af8/recipes/moirai">there</a></p>
+</section>
+<section id="acknowledgements" class="level1">
+<h1>Acknowledgements</h1>
+<p>Some of the conda recipe trialled was influenced by prior work by Kavid Kent (ex Australian Bureau of Meteorology).</p>
+</section>
+<section id="appendices" class="level1">
+<h1>Appendices</h1>
+<section id="appendix-if-missing-ms-build-tools-2017" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-if-missing-ms-build-tools-2017">Appendix: if missing ms build tools 2017</h2>
+<p>If trying without having installed ms build tools 2017:</p>
+<pre class="text"><code>%SRC_DIR%&gt;CALL %BUILD_PREFIX%\etc\conda\activate.d\vs2017_get_vsinstall_dir.bat
+Did not find VSINSTALLDIR
+Windows SDK version found as: "10.0.19041.0"
+The system cannot find the path specified.
+Did not find VSINSTALLDIR
+CMake Error at CMakeLists.txt:16 (PROJECT):
+  Generator
+
+    Visual Studio 15 2017 Win64
+
+could not find any instance of Visual Studio.</code></pre>
+<pre class="text"><code>(cf) %SRC_DIR%&gt;set "SCRIPTS=%PREFIX%\Scripts"
+(cf) %SRC_DIR%&gt;set "LIBRARY_PREFIX=%PREFIX%\Library"
+(cf) %SRC_DIR%&gt;set "LIBRARY_BIN=%PREFIX%\Library\bin"
+(cf) %SRC_DIR%&gt;set "LIBRARY_INC=%PREFIX%\Library\include"
+(cf) %SRC_DIR%&gt;set "LIBRARY_LIB=%PREFIX%\Library\lib"
+
+(cf) %SRC_DIR%&gt;set "c_compiler=vs2017"
+(cf) %SRC_DIR%&gt;set "fortran_compiler=gfortran"
+(cf) %SRC_DIR%&gt;set "vc=14"
+(cf) %SRC_DIR%&gt;set "cxx_compiler=vs2017"</code></pre>
+<p>call C:.bat</p>
+<p>Note:</p>
+<pre><code>base                  *  C:\Users\xxxyyy\Miniconda3\envs\cf
+                         C:\Users\xxxyyy\Miniconda3\envs\cf\conda-bld\moirai_1654760072022\_build_env
+                         C:\Users\xxxyyy\Miniconda3\envs\cf\conda-bld\moirai_1654760072022\_h_env</code></pre>
+<p>If I try to start with Visual Studio 2022 Developer Command Prompt v17.1.5. Then conda environment activation, still:</p>
+<pre><code>%SRC_DIR%&gt;CALL %BUILD_PREFIX%\etc\conda\activate.d\vs2017_get_vsinstall_dir.bat
+Did not find VSINSTALLDIR
+Windows SDK version found as: "10.0.19041.0"
+**********************************************************************
+** Visual Studio 2022 Developer Command Prompt v17.1.5
+** Copyright (c) 2022 Microsoft Corporation
+**********************************************************************
+[ERROR:vcvars.bat] Toolset directory for version '14.16' was not found.
+[ERROR:VsDevCmd.bat] *** VsDevCmd.bat encountered errors. Environment may be incomplete and/or incorrect. ***
+[ERROR:VsDevCmd.bat] In an uninitialized command prompt, please 'set VSCMD_DEBUG=[value]' and then re-run
+[ERROR:VsDevCmd.bat] vsdevcmd.bat [args] for additional details.
+[ERROR:VsDevCmd.bat] Where [value] is:
+[ERROR:VsDevCmd.bat]    1 : basic debug logging
+[ERROR:VsDevCmd.bat]    2 : detailed debug logging
+[ERROR:VsDevCmd.bat]    3 : trace level logging. Redirection of output to a file when using this level is recommended.
+[ERROR:VsDevCmd.bat] Example: set VSCMD_DEBUG=3
+[ERROR:VsDevCmd.bat]          vsdevcmd.bat &gt; vsdevcmd.trace.txt 2&gt;&amp;1
+Did not find VSINSTALLDIR
+CMake Error at CMakeLists.txt:16 (PROJECT):
+  Generator
+
+    Visual Studio 15 2017 Win64
+
+  could not find any instance of Visual Studio.
+-- Configuring incomplete, errors occurred!</code></pre>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<ul>
+<li><a href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.85.6335&amp;rep=rep1&amp;type=pdf">Reference Counting in Library Design – Optionally and with Union-Find Optimization</a></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
