@@ -1,8 +1,10 @@
 ---
 title: "J-M's 'lab notebook'"
-image: profile.png
+image: profile_01.png
 about:
   template: jolla
+  # image-width: 10em
+  image-shape: rectangle
   links:
     - icon: twitter
       text: Twitter

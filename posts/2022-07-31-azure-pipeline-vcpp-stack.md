@@ -20,6 +20,8 @@ toc: true
 
 ---
 
+![Azure pipeline run](images/azure/pipeline_hydrofc.png "Azure pipeline run")
+
 # Background
 
 For years I've been contributing to and maintaining, at work, a [software stack for streamflow forecasting](https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/). Recently I explored [updating the compilation to a more recent Microsoft visual c++ compiler](https://jmp75.github.io/work-blog/recipes/vcpp/c++/2022/06/26/vcpp-compilation-upgrade.html) in another post.

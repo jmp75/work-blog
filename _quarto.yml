@@ -12,7 +12,7 @@ website:
         href: https://twitter.com/jmp_oz
 format:
   html:
-    theme: slate
+    theme: darkly
     css: styles.css
 
 
