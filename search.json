@@ -571,6 +571,13 @@
     "href": "about.html",
     "title": "J-M’s ‘lab notebook’",
     "section": "",
-    "text": "Also, Why you (yes, you) should blog.\nWorkplace profile"
+    "text": "Because peer reviewed publication is not the sole vehicle for useful content.\nAlso, Why you (yes, you) should blog.\nMy workplace profile"
+  },
+  {
+    "objectID": "about.html#source",
+    "href": "about.html#source",
+    "title": "J-M’s ‘lab notebook’",
+    "section": "Source",
+    "text": "Source\nThis blog site is built from this github repository with Quarto"
   }
 ]
