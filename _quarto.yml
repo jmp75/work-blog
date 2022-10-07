@@ -15,8 +15,10 @@ website:
     left: "© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0."
 format:
   html:
-    theme: darkly
+    theme:
+      light: cosmo
+      dark: darkly
     css: styles.css
-
+    highlight-style: breeze
 
 

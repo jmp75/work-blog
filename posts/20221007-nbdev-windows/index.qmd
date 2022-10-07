@@ -1,0 +1,171 @@
+---
+title: "Using nbdev on Windows"
+description: "Testing setting up and using nbdev on Windows"
+author:
+  - name: J-M
+    url: {}
+date: "2022-10-07"
+categories: ["Python", "Notebook", "IDE"]
+image: screenshot.png
+format: 
+  html:
+    toc: true
+engine: knitr
+---
+
+
+# nbdev
+
+[nbdev](https://nbdev.fast.ai/) is a system to "write, test, document, and distribute software packages and technical articles — all in one place, your notebook.". I was aware of it for a while, but saw more of it while attending the [Practical Deep Learning course](https://course.fast.ai/) a few months ago. I have a set of habits to develop python software, of course, and jupyter notebooks are part of what I use, but not to develop packages. It is good to trial other ways of working though, and I am in the midst of using nbdev "in anger" in one of my projects. 
+
+I work mostly from Linux, but tested nbdev on Windows prior to suggesting my colleagues to give it a try. I reported [this nbdev issue](https://github.com/fastai/nbdev/issues/1120) (which is too vague and premature, admitedly). As of Sept 2022 nbdev is not fully supported on Windows though, and clearly stated in the nbdev documentation at that time: ["nbdev works on macOS, Linux, and most Unix-style operating systems. It works on Windows under WSL, but not under cmd or Powershell"](https://nbdev.fast.ai/getting_started.html#install).
+
+In this post we will nevertheless try and see what does not work natively on Windows, with a view to assess whether I can contribute to `nbdev` for support on Windows natively.
+
+# Installation
+
+I usually work from `conda` environments rather than `venv`, and typically using the `conda-forge` channel. To install `nbdev` in an existing environment `bm`, from the base conda environment:
+
+```sh
+mamba install -n bm -c fastai -c conda-forge nbdev
+# (the environment name `bm` stands for biomass, but this is besides the point of the post)
+```
+
+
+which results in nbdev 2.3.7 installed. 
+
+```text
+nbdev                     2.3.7                      py_0    fastai
+```
+
+As an aside note that `conda-forge` has also nbdev packages available, but visibly older ones, so beware not to forget to use the `fastai` channel as a priority.
+
+Then in to my existing python package under development: 
+
+```bat
+conda activate bm
+cd C:\Users\abcdef\src\bmfb\nbs
+```
+
+I am partial to using a command line for nbdev commands; this is not the only way to operate as you can operate directly from the notebook. The latter may work fine, but let's test the command line first (CMD prompt, not a powershell terminal)
+
+Let's see what happens trying to execute commands in this project
+
+# Trying from a CMD terminal
+
+`where nbdev_clean` returns `C:\Users\abcdef\Miniconda3\envs\bm\Scripts\nbdev_clean`. However trying to execute `nbdev_clean` returns:
+
+```text
+'nbdev_clean' is not recognized as an internal or external command, operable program or batch file.
+```
+
+The file nbdev_clean contains the following: 
+
+```python
+#!C:/Users/abcdef/Miniconda3/envs/bm/bin/python
+# -*- coding: utf-8 -*-
+import re
+import sys
+from nbdev.clean import nbdev_clean
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(nbdev_clean())
+```
+
+This is something looking like a script suitable for a `bash` or type of terminal, perhaps via `MinGW`. But we are trying to test on Windows natively.
+
+# Installing `nbdev` from pip packages not conda packages
+
+A conversation with a valued colleague about a completely separate package, `nbstripout`, provided a clue: he had a working `nbstripout.exe` on Windows, where I had a similar python script only similar to the above. The difference, I thought, may be that installed with pip, and I did using the conda package.
+
+So, let's see if we reinstall nbdev via pip. Note that I do not necessarily encourage installing from `pypi` on top of a conda environment often. You certainly can, and it can work just fine, but in certain complicated cases you can mess up, so use with caution.
+
+First, let's remove the packages sourced from the `fastai` channel: 
+
+```text
+execnb                    0.1.4                      py_0    fastai
+fastcore                  1.5.27                     py_0    fastai
+ghapi                     1.0.3                      py_0    fastai
+nbdev                     2.3.7                      py_0    fastai
+```
+
+from the conda base environment `mamba remove -n bm execnb fastcore ghapi nbdev` which removes the following packages:
+
+```text
+  - astunparse    1.6.3  pyhd8ed1ab_0    conda-forge
+  - execnb        0.1.4  py_0            fastai
+  - fastcore     1.5.27  py_0            fastai
+  - ghapi         1.0.3  py_0            fastai
+  - nbdev         2.3.7  py_0            fastai
+  - watchdog      2.1.9  py39hcbf5309_0  conda-forge
+```
+
+I want to minimise the potential for packages coming from `pypi` so let's reinstall `astunparse` and `watchdog` with  `conda install -c conda-forge -n bm astunparse watchdog`
+
+Then activate the development environment `conda activate bm` and do `pip install nbdev`
+
+```text
+Successfully installed execnb-0.1.4 fastcore-1.5.27 ghapi-1.0.3 nbdev-2.3.7
+```
+
+This time around if we do from the command line `where nbdev_clean` we get `C:\Users\abcdef\Miniconda3\envs\bm\Scripts\nbdev_clean.exe`, notice the .exe prefix. We may be onto something that previously confused me in trialing nbdev on Windows.
+
+# Usage
+
+Time to give a try and see if the nbdev commands work. I have a `bmfb` package under development installed in dev mode in the `bm` environment.
+
+`nbdev_clean` seems to work. `nbdev_export` also completes without errors. `nbdev_help` returns the expected list, with colors and all.
+
+## Creating and previewing qith Quarto
+
+Initially `where quarto` returns `C:\Program Files\RStudio\bin\quarto\bin\quarto.cmd` which I inherited from my RStudio installation from my IT department. `quarto --help` returns:
+
+```text
+  Usage:   quarto
+  Version: 0.9.649
+```
+
+I have `Version: 1.1.165` on Linux, and suspect this is preferable to have the latest quarto. With quarto 0.9.649 `nbdev_preview` returns:
+
+```text
+Traceback (most recent call last):
+  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "C:\Users\abcdef\Miniconda3\envs\bm\Scripts\nbdev_preview.exe\__main__.py", line 7, in <module>
+  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\site-packages\fastcore\script.py", line 119, in _f
+    return tfunc(**merge(args, args_from_prog(func, xtra)))
+  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\site-packages\nbdev\quarto.py", line 283, in nbdev_preview
+    with fs_watchdog(_f, path): subprocess.run(['quarto','preview']+xtra)
+  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\subprocess.py", line 505, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\subprocess.py", line 951, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\subprocess.py", line 1420, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+FileNotFoundError: [WinError 2] The system cannot find the file specified
+```
+
+It may or may not be a quarto version issue. 
+
+## Upgrade Quarto
+
+After installing the lates quarto, which nicely can be installed with Admin priviledges:
+
+```bat
+set PATH=C:\Users\abcdef\AppData\Local\Programs\Quarto\bin;%path%` 
+quarto --version
+# returns 1.1.251
+cd C:\Users\abcdef\src\bmfb
+nbdev_preview
+```
+
+And the package documentation seems to render fine...
+
+# Conclusion
+
+The quick spin above is not exhaustive, but `nbdev` 2.3.7 installed from pypi seems to work well natively on Windows for the main commands I am typically using. I am more confident suggesting to some colleagues to consider nbdev as a way to transition exploratory notebooks to reusable, packaged code. 
+
+It looks like the conda packaging is where something is amiss when deployed on Windows. It appears to be an issue for other projects such as `nbstripout`, and not specifc to nbdev. I'll follow up with a detailed issue on the [nbdev github repo](https://github.com/fastai/nbdev); I've limited experience with conda packaging, but will try to contribute.
+
