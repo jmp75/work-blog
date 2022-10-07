@@ -508,7 +508,7 @@
     "href": "posts/20221007-nbdev-windows/index.html#upgrade-quarto",
     "title": "Using nbdev on Windows",
     "section": "Upgrade Quarto",
-    "text": "Upgrade Quarto\nAfter installing the lates quarto, which nicely can be installed with Admin priviledges:\nset PATH=C:\\Users\\abcdef\\AppData\\Local\\Programs\\Quarto\\bin;%path%` \nquarto --version\n# returns 1.1.251\ncd C:\\Users\\abcdef\\src\\bmfb\nnbdev_preview"
+    "text": "Upgrade Quarto\nAfter installing the lates quarto, which nicely can be installed with Admin priviledges:\nset PATH=C:\\Users\\abcdef\\AppData\\Local\\Programs\\Quarto\\bin;%path%` \nquarto --version\n# returns 1.1.251\ncd C:\\Users\\abcdef\\src\\bmfb\nnbdev_preview\nAnd the package documentation seems to render fine…"
   },
   {
     "objectID": "posts/2022-06-01-lithology-classification-hugging-face.html",
