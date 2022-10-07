@@ -151,10 +151,14 @@ It may or may not be a quarto version issue.
 
 ## Upgrade Quarto
 
-After installing the lates quarto, which nicely can be installed with Admin priviledges:
+Let's install the latest version of [Quarto](https://quarto.org/docs/get-started), which nicely can be installed without Admin privileges.
+
+You may need to update your PATH environment variable to make sure you are using the correct version of Quarto, if you have several:
 
 ```bat
-set PATH=C:\Users\abcdef\AppData\Local\Programs\Quarto\bin;%path%` 
+where quarto
+set PATH=C:\Users\abcdef\AppData\Local\Programs\Quarto\bin;%path%
+where quarto
 quarto --version
 # returns 1.1.251
 cd C:\Users\abcdef\src\bmfb
