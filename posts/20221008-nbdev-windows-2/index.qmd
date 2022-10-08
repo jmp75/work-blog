@@ -13,7 +13,7 @@ format:
 engine: knitr
 ---
 
-This post is a follow up on [Using nbdev on Windows](https://jmp75.github.io/work-blog/posts/20221007-nbdev-windows/), which explains the motivation for assessing now nbdev works on Windows, natively (i.e. not from a unix emulation or WSL).
+This post is a follow up on [Using nbdev on Windows](https://jmp75.github.io/work-blog/posts/20221007-nbdev-windows/), which explains the motivation for assessing how nbdev works on Windows, natively (i.e. not from a unix emulation or WSL).
 
 The author of these lines is a near exclusive Linux user, so I am not posting this to advocate for Windows. This is because I have many colleagues who may consider using `nbdev` but for whom, based on past experience, adoption is much more likely if it is natively working on Windows.
 
