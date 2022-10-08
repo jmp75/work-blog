@@ -13,6 +13,9 @@ format:
 engine: knitr
 ---
 
+# Foreword
+
+An initial post on using nbdev on Windows native. Now followed by [Using nbdev on Windows - part 2](https://jmp75.github.io/work-blog/posts/20221008-nbdev-windows-2)
 
 # nbdev
 
