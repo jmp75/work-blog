@@ -308,7 +308,7 @@ GREEN: Packages available on conda-forge
 Maintainers:
    - j-m
 
-#### Recipe generated on /home/per202/src/staged-recipes/recipes for refcount ####</code></pre>
+#### Recipe generated on /home/abcdef/src/staged-recipes/recipes for refcount ####</code></pre>
 <p>The output <code>meta.yaml</code> (which is actually a ninja template file), is a good start, however you should revise it a bit rather than accept wholesale</p>
 <p>Mostly fine, however this did not pick up a requirement <code>cffi &gt;=1.11.5</code>, and second guessing from reading this gallon.me post, a minimum python version is necessary to get accepted.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">requirements</span><span class="kw">:</span></span>
@@ -390,7 +390,7 @@ https://stackoverflow.com/questions/52324134/getting-an-liquid-exception-liquid-
 <p>so:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/src/staged-recipes</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> ./build-locally.py linux64</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>  File "/home/per202/miniconda/lib/python3.9/subprocess.py", line 373, in check_call
+<pre class="text"><code>  File "/home/abcdef/miniconda/lib/python3.9/subprocess.py", line 373, in check_call
     raise CalledProcessError(retcode, cmd)
 subprocess.CalledProcessError: Command '['.scripts/run_docker_build.sh']' returned non-zero exit status 1.</code></pre>
 <p>I tried to <code>conda install -c conda-forge shyaml</code> which seems to be used by the scripts, but this did not alleviate the issue.</p>
