@@ -142,7 +142,7 @@ _Note: the following code is not yet publicly available. It should be in a revis
 ```fsharp
 open System.Collections.Generic
 
-#r "/home/per202/src/c-api-wrapper-generation/engine/ApiWrapperGenerator/bin/Debug/netstandard2.0/ApiWrapperGenerator.dll"
+#r "/home/abcdef/src/c-api-wrapper-generation/engine/ApiWrapperGenerator/bin/Debug/netstandard2.0/ApiWrapperGenerator.dll"
 // #r @"C:\src\github_jm\c-api-wrapper-generation\engine\ApiWrapperGenerator\bin\Debug\netstandard2.0\ApiWrapperGenerator.dll"
 open ApiWrapperGenerator
 

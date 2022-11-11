@@ -1,0 +1,183 @@
+---
+title: "Custom rules for gitleaks"
+description: "Adding rules to a gitleaks configuration to scan git repo for low-medium sensitivity information"
+author:
+  - name: J-M
+    url: {}
+date: "2022-11-11"
+categories: ["Security", "git"]
+image: ./security_security.png
+format: 
+  html:
+    toc: true
+engine: knitr
+---
+
+![The Three S'es, [from comedy cult Black Books S1E5 'The Big Lock-Out'](https://en.wikipedia.org/wiki/Black_Books)](./security_security.png "Security, security, security"){fig-alt="Black books season 1 episode 5 'The Big Lock-Out'"}
+
+# Context
+
+Say you inherit custody of large-ish git repositories because e.g. of staff turnover, that may be made public of access down the track. How do you systematically assess whether this internal development does not have sensitive info or downright secret keys buried down in the codebase, present or past in the git history?
+
+# gitleaks
+
+::: {.callout-note}
+
+**Upfront disclaimer** I found about gitleaks today only. It looks good to me for what I want. This short post does not imply any suitability or fitness for purpose for your particular need if you have any.
+
+:::
+
+After a very cursory search via google today I landed on [gitleaks](https://github.com/zricethezav/gitleaks) (see also [https://gitleaks.io/](https://gitleaks.io/) and its [blog](https://blog.gitleaks.io)). Out of curiosity I decided to give it a try on some git repositories, and assess whether I could add some custom rules.
+
+# Log
+
+## Installation
+
+::: {.callout-tip}
+
+In general I'd prefer to build tools from source if I can. for gitleaks I figured I needed `sudo apt golang` to then try `make build`, but bumped into:
+
+```text
+config/config.go:4:2: package embed is not in GOROOT (/usr/lib/go-1.15/src/embed)
+detect/detect.go:8:2: package io/fs is not in GOROOT (/usr/lib/go-1.15/src/io/fs)
+```
+
+which is a bit of a bump for folks not familiar with the `go` ecosystem. Binary releases are readily available; your choice to install. [See this issue](https://github.com/zricethezav/gitleaks/issues/1029).
+
+:::
+
+## Trial basic use
+
+Pick a random repo to test, and see what happen.
+
+`gitleaks detect -r report.json`:
+
+```text
+6:22PM INF 284 commits scanned.
+6:22PM INF scan completed in 260ms
+6:22PM WRN leaks found: 2
+```
+
+Huh oh... What? Thankfully this is a false positive: some generated R code uses arbitrary tokens, with no security implications. It does pick the commit at which this information was added.
+
+```json
+ {
+  "Description": "Generic API Key",
+  "StartLine": 2,
+  "EndLine": 3,
+  "StartColumn": 14,
+  "EndColumn": 1,
+  "Match": "token: 10BE3573-1514-4C36-9D1C-5A225CD40393",
+  "Secret": "10BE3573-1514-4C36-9D1C-5A225CD40393",
+  "File": "path/to/some/R/RcppExports.R",
+  "SymlinkFile": "",
+  "Commit": "21324567890oiuasheroiuhawoiruhaoiuwrh",
+  "Entropy": 3.6943858,
+  "Author": "J-M",
+  "Email": "some.guy@example.com",
+  "Date": "2017-04-05T06:20:11Z",
+  "Message": "Add R package 'blah' wrapping for mylibrary.dll",
+  "Tags": [],
+  "RuleID": "generic-api-key",
+  "Fingerprint": "21324567890oiuasheroiuhawoiruhaoiuwrh:path/to/some/R/RcppExports.R:generic-api-key:2"
+ },
+```
+
+## Custom rules
+
+OK, I get the gist of the tool, and this is appealing.
+
+Creating a test repository with a readme, to further test default and upcoming custom rules. 
+
+Starting with a segment of the readme like the following, which I expect violates the rul "Generic API Key"
+
+```text
+username: abcdef
+password: password
+```
+
+Nope.
+
+I suspect this is because there is an entropy threshold to consider a password is indeed a secret, rather than a dummy documentation artifact. So, let's complicate the password:
+
+```text
+password: ;oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i
+```
+
+Nope.
+
+On a complete hunch: because starting character is not a letter or number? 
+
+```text
+password: oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i
+```
+
+Bingo!, that was it. The underlying regex rules are quite complicated (to me at least), so not quite sure what is going on, but not flagging the line `password: ;oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i` may be a small flaw in the tool.
+
+I note that we have a high entropy in the reported match:
+
+```json
+  "Match": "password: oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i",
+  "Secret": "password: oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i",
+  "File": "README.md",
+  "SymlinkFile": "",
+  "Commit": "19fbedaa6e0cf9907d8779583aa391f49bb09a03",
+    "Entropy": 4.3028474,
+```
+
+## Custom rule with a low entropy threshold
+
+We create a file `~/.config/gitleaks.toml`. Let's say we want to catch anything that remotely looks like a password (though still restricted by lines starting with the characters `password`):
+
+```text
+# Title for the gitleaks configuration file.
+title = "J-M's gitleaks config"
+[extend]
+# useDefault will extend the base (this) configuration with the default gitleaks config:
+# https://github.com/zricethezav/gitleaks/blob/master/config/gitleaks.toml
+useDefault = true
+
+[[rules]]
+# Unique identifier for this rule
+id = "any-kind-of-password"
+# Short human readable description of the rule.
+description = "Any passwords"
+regex = '''password.*:.*'''
+# Float representing the minimum shannon entropy a regex group must have to be considered a secret.
+entropy = 0
+```
+
+```sh
+gitleaks -c ~/.config/gitleaks.toml detect -r report.json
+```
+
+```json
+ {
+  "Description": "Any passwords",
+  "StartLine": 70,
+  "EndLine": 70,
+  "StartColumn": 2,
+  "EndColumn": 19,
+  "Match": "password: password",
+  "Secret": "password: password",
+  "File": "README.md",
+  "SymlinkFile": "",
+  "Commit": "5c4782a83541baa26e98f8c162d2eede1744d316",
+  "Entropy": 3.0588138,
+  "Author": "J-M",
+  "Email": "blah@blah.au",
+  "Date": "2022-11-11T06:13:53Z",
+  "Message": "Try to trigger rule for password",
+  "Tags": [],
+  "RuleID": "any-kind-of-password",
+  "Fingerprint": "5c4782a83541baa26e98f8c162d2eede1744d316:README.md:any-kind-of-password:70"
+ },
+```
+
+# Conclusion
+
+This appears to be a suitable tool to audit git repositories to detect more or less sensitive information, including with custom criteria. I did find the introductory material is a bit lacking for newcomers, but this is far from a showstopper. And, I know what it's like...
+
+I recommend you read [this post](https://blog.gitleaks.io/gitleaks-llc-announcement-d7d06a52e801) from the tool creator. Food for thoughts 
+
+

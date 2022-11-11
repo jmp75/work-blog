@@ -103,7 +103,7 @@ GREEN: Packages available on conda-forge
 Maintainers:
    - j-m
 
-#### Recipe generated on /home/per202/src/staged-recipes/recipes for refcount ####
+#### Recipe generated on /home/abcdef/src/staged-recipes/recipes for refcount ####
 ```
 
 The output `meta.yaml`  (which is actually a ninja template file), is a good start, however you should revise it a bit rather than accept wholesale
@@ -214,7 +214,7 @@ python ./build-locally.py linux64
 ```
 
 ```text
-  File "/home/per202/miniconda/lib/python3.9/subprocess.py", line 373, in check_call
+  File "/home/abcdef/miniconda/lib/python3.9/subprocess.py", line 373, in check_call
     raise CalledProcessError(retcode, cmd)
 subprocess.CalledProcessError: Command '['.scripts/run_docker_build.sh']' returned non-zero exit status 1.
 ```
