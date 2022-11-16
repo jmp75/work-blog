@@ -1,0 +1,259 @@
+---
+title: "Electron+python multi-os installers"
+description: "Building multiplatform installers for an electron application with an embedded python server"
+author:
+  - name: J-M
+    url: {}
+date: "2022-11-16"
+categories: ["Electron", "packaging"]
+# image: ./security_security.png
+format: 
+  html:
+    toc: true
+engine: knitr
+---
+
+# Context
+
+A build pipeline producing an installer for Windows 64 bits for an application aiding [water reservoirs operations in Pakistan](https://www.dawn.com/news/1710163). The application code is platform agnostic, but can the build pipeline also produce installers for other platforms, notably MacOS and Windows 32 bits?
+
+[Bringing transparency and consistency to Pakistan’s seasonal water planning decisions: 1991 inter-provincial Water Apportionment Accord (WAA)Tool User Guide and Reference Manual](https://publications.csiro.au/publications/publication/PIcsiro:EP2022-0811)
+
+# Existing pipeline
+
+```yaml
+    - task: Bash@3
+      displayName: 'Build python-based server for Windows with pyinstaller'
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(Build.SourcesDirectory)/server
+          ./build-server.sh
+    - task: Bash@3
+      displayName: 'Build the UI, and package with Electron'
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd $(Build.SourcesDirectory)/docker
+          ./build-electron.sh
+```
+
+## Building the python server
+
+The docker image [cdrx/pyinstaller-windows](https://hub.docker.com/r/cdrx/pyinstaller-windows/) which uses Wine to emulate Windows.
+
+```sh
+pyinstaller --clean -y --dist ./dist/windows --workpath /tmp -F --additional-hooks-dir=hooks --add-data "waasrv/server/templates;templates" --add-data "waasrv/server/static;static" run_app.py
+```
+
+## Building the application with Electron 
+
+[electronuserland/builder:wine-mono](https://hub.docker.com/r/electronuserland/builder/)
+
+```sh
+cd app
+cp package.json package.tmp
+
+echo entrypoint:VERSION_NUMBER:${VERSION_NUMBER}
+echo entrypoint:CURRENT_UID:${CURRENT_UID}
+yarn version --no-git-tag-version --no-commit-hooks --new-version ${VERSION_NUMBER}
+cd ..
+yarn
+echo yarn package-win-publish...
+yarn package-win-publish
+
+cd app
+rm package.json
+mv package.tmp package.json
+```
+
+`yarn package-win-publish` a bit curious since it seems to be to publish to GH releases.
+
+# Expanding to other platforms
+
+https://www.electron.build/ seems to target multiple platforms at least in principle.
+
+## Windows 32 bits
+
+I am told that some of the potential users may run older versions of Windows, perhaps 32 bits.
+
+pyinstaller's page [supporting multiple operating systems](https://pyinstaller.org/en/stable/usage.html#supporting-multiple-operating-systems). 
+
+> If you need to distribute your application for more than one OS, for example both Windows and macOS, you must install PyInstaller on each platform and bundle your app separately on each.
+
+The docker image at [cdrx/pyinstaller-windows](https://hub.docker.com/r/cdrx/pyinstaller-windows/) includes a 32 bit image as well, so by similarity this should be easy to swap the docker image and get a 32 bits python app installer for the server side.
+
+
+```yaml
+    "scripts": {
+        ## things
+        "package-win": "yarn build && electron-builder build --win --x64",
+        "package-win-publish": "yarn build && electron-builder build --win --x64 --publish always",
+        ## things
+    }
+```
+```yaml
+    "scripts": {
+        ## things
+        "package-win64": "yarn build && electron-builder build --win --x64",
+        "package-win64-publish": "yarn build && electron-builder build --win --x64 --publish always",
+        "package-win32": "yarn build && electron-builder build --win --ia32",
+        "package-win32-publish": "yarn build && electron-builder build --win --ia32 --publish always",
+        ## things
+    }
+```
+
+
+cdrx/pyinstaller-windows:python3-32bit
+
+
+## MacOS
+
+A priori, need to build on the macos image
+
+# Testing the feasibility
+
+Let's apply a flavor of the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle) to start testing the feasibility. Given the substantial codebase being checked out and packaged, can we start a stripped down pipeline doing as little as possible, and get by increments towards our fully fledged pipeline. 
+
+We should use a [matrix strategy](https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started-multiplatform?view=azure-devops) for the build pipeline, to avoid duplication of code between cases, in particular Win64 and Win64 builds. MacOS may be harder to fit in though. Side Note a nifty resource that may be more flexible than matrices in [this StackOverflow post](https://stackoverflow.com/a/72676056/2752565).
+
+## First increment
+
+We'll start from scratch at the top level of the workflow. One thing I am unsure of is how to gather multiple artifacts (installers) over several different jobs or stages. Let's explore.
+
+If I use the possibly naive:
+
+```yaml
+# A simplified pipeline to test building installers for multiple platforms 
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+# to get a custom '$(Build.BuildNumber)', and 'r' is a counter reset to 1 every change of the major/minor versions
+name: '0.1.$(Rev:r)'
+
+stages:
+- stage: WindowsInstallers
+  displayName: WindowsInstallers
+  jobs:
+  - job: BuildJob
+    strategy:
+      matrix:
+        'Windows64':
+          arch_tag: 'win64'
+          pyinstaller_tag: 'python3'
+        'Windows32':
+          arch_tag: 'win32'
+          pyinstaller_tag: 'python3-32bit'
+    displayName: Build Tool windows installer
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+      submodules: 'true'
+    - task: Bash@3
+      displayName: 'Build $(arch_tag) pyinstaller'
+      inputs:
+        targetType: 'inline'
+        script: |
+          mkdir -p $(Build.ArtifactStagingDirectory)/$(arch_tag)
+          cd $(Build.ArtifactStagingDirectory)/$(arch_tag)
+          echo $(arch_tag) > installer.txt
+      env: 
+        VERSION_NUMBER: '$(Build.BuildNumber)'
+    - task: Bash@3
+      displayName: 'listing task $(arch_tag)'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ls -l $(Build.ArtifactStagingDirectory)
+
+- stage: CheckContents
+  dependsOn: WindowsInstallers
+  displayName: CheckContents
+  jobs:
+  - job: BuildJob
+    displayName: List pipeline content artifacts
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: self
+      submodules: 'true'
+    - task: Bash@3
+      displayName: 'listing task'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ls -l $(Build.ArtifactStagingDirectory)
+      env: 
+        VERSION_NUMBER: '$(Build.BuildNumber)'
+```
+
+The first listing task "listing task win64" returns `drwxr-xr-x 2 vsts docker 4096 Nov 16 10:04 win64`
+
+The first listing task "listing task win32" returns `drwxr-xr-x 2 vsts docker 4096 Nov 16 10:05 win32`: the folder `win64` is not present anymore. This may be obvious to seasoned devops, but this was not to me. So, something is missing to persist the artifacts between jobs, and a fortiori between stages.
+
+## Second increment: pipeline artifacts
+
+See [Publish and download pipeline Artifacts](https://learn.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops) and adapt. Although there is something I find quite confusing in that doc.
+
+To the `stage: WindowsInstallers` let's add:
+
+```yaml
+    - publish: '$(Build.ArtifactStagingDirectory)/$(arch_tag)'
+      displayName: 'Publish $(arch_tag)'
+      artifact: arti_$(arch_tag)
+```
+
+The MS documentation states that:
+
+> By default, artifacts are downloaded to $(Pipeline.Workspace)
+
+so let's add to the stage `CheckContents`:
+
+```yaml
+    - download: current
+      artifact: arti_win32
+    - download: current
+      artifact: arti_win64
+    - task: Bash@3
+      displayName: 'listing task'
+      inputs:
+        targetType: 'inline'
+        script: |
+          echo ls -l $(Build.ArtifactStagingDirectory)
+          ls -l $(Build.ArtifactStagingDirectory)
+          echo ls -l $(Pipeline.Workspace)
+          ls -l $(Pipeline.Workspace)
+```
+
+`ls -l $(Pipeline.Workspace)` indeed then returns:
+
+```text
+total 24
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 TestResults
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 a
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 arti_win32
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 arti_win64
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 b
+drwxr-xr-x 3 vsts docker 4096 Nov 16 10:27 s
+```
+
+I think we have a way to persist insallers between stages, to then collage them in a bigger output artifact (not a pipeline artifact, but a project artifact)
+
+## Third increment
+
+TODO
+
+Change the "real" pipeline to win 32 and 64. Leave MacOS out for now.
+
+## Fourth increment
+
+Add MacOS. I may need to work this one in isolation first, then merge.
+
