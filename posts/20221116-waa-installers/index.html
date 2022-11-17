@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.165">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2022-11-16">
+<meta name="description" content="Building multiplatform installers for an electron application with an embedded python server">
+
+<title>J-M’s ‘lab notebook’ - Electron+python multi-os installers</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Electron+python multi-os installers</h1>
+                  <div>
+        <div class="description">
+          Building multiplatform installers for an electron application with an embedded python server
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Azure</div>
+                <div class="quarto-category">Electron</div>
+                <div class="quarto-category">packaging</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>J-M </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 16, 2022</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#context" id="toc-context" class="nav-link active" data-scroll-target="#context">Context</a></li>
+  <li><a href="#existing-pipeline" id="toc-existing-pipeline" class="nav-link" data-scroll-target="#existing-pipeline">Existing pipeline</a>
+  <ul class="collapse">
+  <li><a href="#building-the-python-server" id="toc-building-the-python-server" class="nav-link" data-scroll-target="#building-the-python-server">Building the python server</a></li>
+  <li><a href="#building-the-application-with-electron" id="toc-building-the-application-with-electron" class="nav-link" data-scroll-target="#building-the-application-with-electron">Building the application with Electron</a></li>
+  </ul></li>
+  <li><a href="#expanding-to-other-platforms" id="toc-expanding-to-other-platforms" class="nav-link" data-scroll-target="#expanding-to-other-platforms">Expanding to other platforms</a>
+  <ul class="collapse">
+  <li><a href="#windows-32-bits" id="toc-windows-32-bits" class="nav-link" data-scroll-target="#windows-32-bits">Windows 32 bits</a></li>
+  <li><a href="#macos" id="toc-macos" class="nav-link" data-scroll-target="#macos">MacOS</a></li>
+  </ul></li>
+  <li><a href="#testing-the-feasibility" id="toc-testing-the-feasibility" class="nav-link" data-scroll-target="#testing-the-feasibility">Testing the feasibility</a>
+  <ul class="collapse">
+  <li><a href="#first-increment" id="toc-first-increment" class="nav-link" data-scroll-target="#first-increment">First increment</a></li>
+  <li><a href="#second-increment-pipeline-artifacts" id="toc-second-increment-pipeline-artifacts" class="nav-link" data-scroll-target="#second-increment-pipeline-artifacts">Second increment: pipeline artifacts</a></li>
+  <li><a href="#third-increment" id="toc-third-increment" class="nav-link" data-scroll-target="#third-increment">Third increment</a>
+  <ul class="collapse">
+  <li><a href="#packaging-the-python-server-as-an-app.exe" id="toc-packaging-the-python-server-as-an-app.exe" class="nav-link" data-scroll-target="#packaging-the-python-server-as-an-app.exe">packaging the python server as an app.exe</a></li>
+  <li><a href="#electron-app-packaging" id="toc-electron-app-packaging" class="nav-link" data-scroll-target="#electron-app-packaging">Electron app packaging</a></li>
+  <li><a href="#adding-the-pipeline-artifacts-between-jobs" id="toc-adding-the-pipeline-artifacts-between-jobs" class="nav-link" data-scroll-target="#adding-the-pipeline-artifacts-between-jobs">Adding the pipeline artifacts between jobs</a></li>
+  </ul></li>
+  <li><a href="#fourth-increment-add-macos." id="toc-fourth-increment-add-macos." class="nav-link" data-scroll-target="#fourth-increment-add-macos.">Fourth increment: Add MacOS.</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix">Appendix</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p><img src="./pipeline.png" title="pipeline" class="img-fluid"></p>
+<section id="context" class="level1">
+<h1>Context</h1>
+<p>A build pipeline producing an installer for Windows 64 bits for an application aiding <a href="https://www.dawn.com/news/1710163">water reservoirs operations in Pakistan</a>. The application code is platform agnostic, but can the build pipeline also produce installers for other platforms, notably MacOS and Windows 32 bits?</p>
+<p>If you are curious about the application, I cannot share it nor its source code yet, but you can read the <a href="https://publications.csiro.au/publications/publication/PIcsiro:EP2022-0811">Bringing transparency and consistency to Pakistan’s seasonal water planning decisions: 1991 inter-provincial Water Apportionment Accord (WAA)Tool User Guide and Reference Manual</a></p>
+</section>
+<section id="existing-pipeline" class="level1">
+<h1>Existing pipeline</h1>
+<p>The existing pipeline comprises two tasks building a python application (server) and the UI, which also bundles the server into an Electron application.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Build python-based server for Windows with pyinstaller'</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>          cd $(Build.SourcesDirectory)/server</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>          ./build-server.sh</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Build the UI, and package with Electron'</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>          cd $(Build.SourcesDirectory)/docker</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>          ./build-electron.sh</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s look at each step, and the crux of what they consist of:</p>
+<section id="building-the-python-server" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-python-server">Building the python server</h2>
+<p>The docker image <a href="https://hub.docker.com/r/cdrx/pyinstaller-windows/">cdrx/pyinstaller-windows</a> which uses Wine to emulate Windows.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pyinstaller</span> <span class="at">--clean</span> <span class="at">-y</span> <span class="at">--dist</span> ./dist/windows <span class="at">--workpath</span> /tmp <span class="at">-F</span> <span class="at">--additional-hooks-dir</span><span class="op">=</span>hooks <span class="at">--add-data</span> <span class="st">"waasrv/server/templates;templates"</span> <span class="at">--add-data</span> <span class="st">"waasrv/server/static;static"</span> run_app.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="building-the-application-with-electron" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-application-with-electron">Building the application with Electron</h2>
+<p>The overall application is build using the docker image <a href="https://hub.docker.com/r/electronuserland/builder/">electronuserland/builder:wine-mono</a>. I am not sure why the <code>wine-mono</code> tag is used, but I’ll look at it if I have to.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> app</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> package.json package.tmp</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> entrypoint:VERSION_NUMBER:<span class="va">${VERSION_NUMBER}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> entrypoint:CURRENT_UID:<span class="va">${CURRENT_UID}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">yarn</span> version <span class="at">--no-git-tag-version</span> <span class="at">--no-commit-hooks</span> <span class="at">--new-version</span> <span class="va">${VERSION_NUMBER}</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ..</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">yarn</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> yarn package-win-publish...</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ex">yarn</span> package-win-publish</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> app</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> package.json</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> package.tmp package.json</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>yarn package-win-publish</code> a bit curious since it seems to be to publish to GitHub releases, which we are not using.</p>
+</section>
+</section>
+<section id="expanding-to-other-platforms" class="level1">
+<h1>Expanding to other platforms</h1>
+<p>The <a href="https://www.electron.build/">Electron-build documentation</a> seems to target multiple platforms at least in principle.</p>
+<section id="windows-32-bits" class="level2">
+<h2 class="anchored" data-anchor-id="windows-32-bits">Windows 32 bits</h2>
+<p>I am told that some of the potential users may run older versions of Windows, perhaps 32 bits.</p>
+<p>pyinstaller’s page <a href="https://pyinstaller.org/en/stable/usage.html#supporting-multiple-operating-systems">supporting multiple operating systems</a> states that:</p>
+<blockquote class="blockquote">
+<p>If you need to distribute your application for more than one OS, for example both Windows and macOS, you must install PyInstaller on each platform and bundle your app separately on each.</p>
+</blockquote>
+<p>The docker image at <a href="https://hub.docker.com/r/cdrx/pyinstaller-windows/">cdrx/pyinstaller-windows</a> includes a 32 bit image as well, with the tag <code>python3-32bit</code>: <code>cdrx/pyinstaller-windows:python3-32bit</code>, so by similarity this should be easy to swap the docker image and get a 32 bits python app installer for the server side.</p>
+<p>If I get the doc of electron-build right, I should prepare <code>package.json</code> with new commands, moving from:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">"scripts"</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">        ## things</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">"package-win"</span><span class="kw">:</span><span class="at"> </span><span class="st">"yarn build &amp;&amp; electron-builder build --win --x64"</span><span class="kw">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">"package-win-publish"</span><span class="kw">:</span><span class="at"> </span><span class="st">"yarn build &amp;&amp; electron-builder build --win --x64 --publish always"</span><span class="kw">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">        ## things</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>to:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">"scripts"</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">        ## things</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">"package-win64"</span><span class="kw">:</span><span class="at"> </span><span class="st">"yarn build &amp;&amp; electron-builder build --win --x64"</span><span class="kw">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">"package-win64-publish"</span><span class="kw">:</span><span class="at"> </span><span class="st">"yarn build &amp;&amp; electron-builder build --win --x64 --publish always"</span><span class="kw">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">"package-win32"</span><span class="kw">:</span><span class="at"> </span><span class="st">"yarn build &amp;&amp; electron-builder build --win --ia32"</span><span class="kw">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">"package-win32-publish"</span><span class="kw">:</span><span class="at"> </span><span class="st">"yarn build &amp;&amp; electron-builder build --win --ia32 --publish always"</span><span class="kw">,</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">        ## things</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="macos" class="level2">
+<h2 class="anchored" data-anchor-id="macos">MacOS</h2>
+<p>A priori, need to build on the macos image. There is no docker image such as a <code>cdrx/pyinstaller-macos</code> that I know of, so I doubt we can minimally repurpose the existing pipeline as we did for win 32 and 64.</p>
+</section>
+</section>
+<section id="testing-the-feasibility" class="level1">
+<h1>Testing the feasibility</h1>
+<p>Let’s apply a flavor of the <a href="https://en.wikipedia.org/wiki/KISS_principle">KISS principle</a> to start testing the feasibility. Given the substantial codebase being checked out and packaged, can we start a stripped down pipeline doing as little as possible, and get by increments towards our fully fledged pipeline.</p>
+<p>We should use a <a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started-multiplatform?view=azure-devops">matrix strategy</a> for the build pipeline, to avoid duplication of code between cases, in particular Win64 and Win64 builds. MacOS may be harder to fit in though. Side Note a nifty resource that may be more flexible than matrices in <a href="https://stackoverflow.com/a/72676056/2752565">this StackOverflow post</a>.</p>
+<section id="first-increment" class="level2">
+<h2 class="anchored" data-anchor-id="first-increment">First increment</h2>
+<p>We’ll start from scratch at the top level of the workflow. One thing I am unsure of is how to gather multiple artifacts (installers) over several different jobs or stages. Let’s explore.</p>
+<p>If I use the possibly naive:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A simplified pipeline to test building installers for multiple platforms </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">trigger</span><span class="kw">:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> main</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">resources</span><span class="kw">:</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">repo</span><span class="kw">:</span><span class="at"> self</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">variables</span><span class="kw">:</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.BuildId)'</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># to get a custom '$(Build.BuildNumber)', and 'r' is a counter reset to 1 every change of the major/minor versions</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> </span><span class="st">'0.1.$(Rev:r)'</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">stages</span><span class="kw">:</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">stage</span><span class="kw">:</span><span class="at"> WindowsInstallers</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> WindowsInstallers</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">job</span><span class="kw">:</span><span class="at"> BuildJob</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">strategy</span><span class="kw">:</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">matrix</span><span class="kw">:</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">'Windows64'</span><span class="kw">:</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">arch_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'win64'</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">pyinstaller_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'python3'</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">'Windows32'</span><span class="kw">:</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">arch_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'win32'</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">pyinstaller_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'python3-32bit'</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> Build Tool windows installer</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pool</span><span class="kw">:</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">vmImage</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">checkout</span><span class="kw">:</span><span class="at"> self</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">submodules</span><span class="kw">:</span><span class="at"> </span><span class="st">'true'</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Build $(arch_tag) pyinstaller'</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>          mkdir -p $(Build.ArtifactStagingDirectory)/$(arch_tag)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>          cd $(Build.ArtifactStagingDirectory)/$(arch_tag)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>          echo $(arch_tag) &gt; installer.txt</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">env</span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">VERSION_NUMBER</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.BuildNumber)'</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'listing task $(arch_tag)'</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>          ls -l $(Build.ArtifactStagingDirectory)</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">stage</span><span class="kw">:</span><span class="at"> CheckContents</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">dependsOn</span><span class="kw">:</span><span class="at"> WindowsInstallers</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> CheckContents</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">job</span><span class="kw">:</span><span class="at"> BuildJob</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> List pipeline content artifacts</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">pool</span><span class="kw">:</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">vmImage</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">checkout</span><span class="kw">:</span><span class="at"> self</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">submodules</span><span class="kw">:</span><span class="at"> </span><span class="st">'true'</span></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'listing task'</span></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>          ls -l $(Build.ArtifactStagingDirectory)</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">env</span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">VERSION_NUMBER</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.BuildNumber)'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The first listing task “listing task win64” returns <code>drwxr-xr-x 2 vsts docker 4096 Nov 16 10:04 win64</code></p>
+<p>The first listing task “listing task win32” returns <code>drwxr-xr-x 2 vsts docker 4096 Nov 16 10:05 win32</code>: the folder <code>win64</code> is not present anymore. This may be obvious to seasoned devops, but this was not to me. So, something is missing to persist the artifacts between jobs, and a fortiori between stages.</p>
+</section>
+<section id="second-increment-pipeline-artifacts" class="level2">
+<h2 class="anchored" data-anchor-id="second-increment-pipeline-artifacts">Second increment: pipeline artifacts</h2>
+<p>See <a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/artifacts/pipeline-artifacts?view=azure-devops">Publish and download pipeline Artifacts</a> and adapt. Although there is something I find quite confusing in that doc.</p>
+<p>To the <code>stage: WindowsInstallers</code> let’s add:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">publish</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.ArtifactStagingDirectory)/$(arch_tag)'</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Publish $(arch_tag)'</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">artifact</span><span class="kw">:</span><span class="at"> arti_$(arch_tag)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The MS documentation states that:</p>
+<blockquote class="blockquote">
+<p>By default, artifacts are downloaded to <code>$(Pipeline.Workspace)</code></p>
+</blockquote>
+<p>so let’s add to the stage <code>CheckContents</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">download</span><span class="kw">:</span><span class="at"> current</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">artifact</span><span class="kw">:</span><span class="at"> arti_win32</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">download</span><span class="kw">:</span><span class="at"> current</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">artifact</span><span class="kw">:</span><span class="at"> arti_win64</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'listing task'</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>          echo ls -l $(Build.ArtifactStagingDirectory)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>          ls -l $(Build.ArtifactStagingDirectory)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>          echo ls -l $(Pipeline.Workspace)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>          ls -l $(Pipeline.Workspace)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>ls -l $(Pipeline.Workspace)</code> indeed then returns:</p>
+<pre class="text"><code>total 24
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 TestResults
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 a
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 arti_win32
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 arti_win64
+drwxr-xr-x 2 vsts docker 4096 Nov 16 10:27 b
+drwxr-xr-x 3 vsts docker 4096 Nov 16 10:27 s</code></pre>
+<p>I think we now have a way to persist installers between stages, to then collate them in a bigger output artifact (not a pipeline artifact, but a project artifact)</p>
+</section>
+<section id="third-increment" class="level2">
+<h2 class="anchored" data-anchor-id="third-increment">Third increment</h2>
+<p>We change the “real” pipeline from its single architecture 64 to packaging for win 32 and 64. Leave MacOS out for now.</p>
+<p>We add the matrix strategy for the build job:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">strategy</span><span class="kw">:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">matrix</span><span class="kw">:</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">'Windows64'</span><span class="kw">:</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">arch_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'win64'</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">pyinstaller_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'python3'</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">'Windows32'</span><span class="kw">:</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">arch_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'win32'</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">pyinstaller_tag</span><span class="kw">:</span><span class="at"> </span><span class="st">'python3-32bit'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="packaging-the-python-server-as-an-app.exe" class="level3">
+<h3 class="anchored" data-anchor-id="packaging-the-python-server-as-an-app.exe">packaging the python server as an app.exe</h3>
+<p>The server Docker file now should have an argument <code>PYINSTALLER_TAG</code>:</p>
+<pre class="text"><code>ARG PYINSTALLER_TAG=python3
+FROM cdrx/pyinstaller-windows:${PYINSTALLER_TAG}</code></pre>
+<p>which is passed from the main startup shell script with:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="va">PYINSTALLER_TAG</span><span class="op">=</span><span class="va">$1</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">--no-cache</span> <span class="at">--force-rm</span> <span class="dt">\</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--build-arg</span> CURRENT_UID_ARG=<span class="va">${CURRENT_UID}</span> <span class="dt">\</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--build-arg</span> PYINSTALLER_TAG=<span class="va">${PYINSTALLER_TAG}</span> <span class="at">-t</span> <span class="va">${IMAGE_NAME}</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>which is launched from the pipeline by:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Build python-based server for Windows with pyinstaller $(arch_tag)'</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>          cd $(Build.SourcesDirectory)/server</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>          ./build-server.sh $(pyinstaller_tag)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="electron-app-packaging" class="level3">
+<h3 class="anchored" data-anchor-id="electron-app-packaging">Electron app packaging</h3>
+<p>We start from a build that was implicitely for 64 bits only:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Build the UI, and package with Electron'</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>          cd $(Build.SourcesDirectory)/docker</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>          ./build-electron.sh</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">env</span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">VERSION_NUMBER</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.BuildNumber)'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Starting from the inside out, the electron-builder command that starts the packaging is in the docker container <code>entrypoint.sh</code>, which now needs an ARCH variable</p>
+<pre><code>echo yarn package-${ARCH}-publish...
+yarn package-${ARCH}-publish</code></pre>
+<p>We can pass it as an environment variable set in the docker file:</p>
+<pre class="text"><code>FROM electronuserland/builder:wine-mono
+
+ARG CURRENT_UID_ARG
+ARG VERSION_NUMBER_ARG
+ARG ARCH_ARG
+
+ENV CURRENT_UID=${CURRENT_UID_ARG}
+ENV VERSION_NUMBER=${VERSION_NUMBER_ARG}
+ENV ARCH=${ARCH_ARG}
+
+WORKDIR /src
+
+CMD ["./docker/entrypoint.sh"]</code></pre>
+<p>Which is passed from the docker build script with:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="va">ARCH</span><span class="op">=</span><span class="va">$1</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> build <span class="at">--no-cache</span> <span class="at">--force-rm</span> <span class="dt">\</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">--build-arg</span> CURRENT_UID_ARG=<span class="va">${CURRENT_UID}</span> <span class="dt">\</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">--build-arg</span> VERSION_NUMBER_ARG=<span class="va">${VERSION_NUMBER}</span> <span class="dt">\</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--build-arg</span> ARCH_ARG=<span class="va">${ARCH}</span> <span class="dt">\</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">-t</span> <span class="va">${IMAGE_NAME}</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and the argument is passed from the pipeline with:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> Bash@3</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Build the UI, and package with Electron for $(arch_tag)'</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetType</span><span class="kw">:</span><span class="at"> </span><span class="st">'inline'</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">        script</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>          cd $(Build.SourcesDirectory)/docker</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>          ./build-electron.sh $(arch_tag)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">env</span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">VERSION_NUMBER</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.BuildNumber)'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="adding-the-pipeline-artifacts-between-jobs" class="level3">
+<h3 class="anchored" data-anchor-id="adding-the-pipeline-artifacts-between-jobs">Adding the pipeline artifacts between jobs</h3>
+<p>We need to publish the built installer, so that we can retrieve it in a subsequent job, or stage.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">task</span><span class="kw">:</span><span class="at"> CopyFiles@2</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Copy build output to the artifact staging directory'</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">inputs</span><span class="kw">:</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">sourceFolder</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.SourcesDirectory)/release'</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> </span><span class="st">'*.*'</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">targetFolder</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.ArtifactStagingDirectory)/release/$(arch_tag)'</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">publish</span><span class="kw">:</span><span class="at"> </span><span class="st">'$(Build.ArtifactStagingDirectory)/release/$(arch_tag)'</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">displayName</span><span class="kw">:</span><span class="at"> </span><span class="st">'Publish $(arch_tag)'</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">artifact</span><span class="kw">:</span><span class="at"> arti_$(arch_tag)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="fourth-increment-add-macos." class="level2">
+<h2 class="anchored" data-anchor-id="fourth-increment-add-macos.">Fourth increment: Add MacOS.</h2>
+<p>For MacOS, we probably cannot have the same approach. The docker image used for <code>electron-builder</code> can package applications for each of the targets. However pyinstaller needs to run on an OSX host to package the server side for it, and we cannot do this easily and/or legally in a docker container.</p>
+<p>Other questions:</p>
+<ul>
+<li>target the architecture x86_64 (MacOS on Intel) or arm64 (MacOS on Apple M1 and M2 chips)</li>
+</ul>
+<p>I may tackle this in another post.</p>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>This was mostly a post to document for myself, and possibly others, an Azure build pipeline that evolves towards a multi-stage jobs. It clarified for me where the matrix strategy can be specified, which is not entirely obvious from reading the AZ devops documentation. Then using named pipeline artifacts to store artifacts between stages (effectively needed when a different vm image is invoked i.e.&nbsp;over different jobs or stages).</p>
+</section>
+<section id="appendix" class="level1">
+<h1>Appendix</h1>
+<p>Interesting, but I believe only for security research <a href="https://dev.to/gombosg/running-macos-inside-linux-with-docker-osx-4e1i">Running macos with docker osx</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0.</div>   
+  </div>
+</footer>
+
+
+
+</body></html>
