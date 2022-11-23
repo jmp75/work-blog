@@ -15,7 +15,7 @@ engine: knitr
 
 ![](./logos.png "logos")
 
-(Logos are  
+(Logos are trademarks/copyright of respective owners)
 
 # Context
 
