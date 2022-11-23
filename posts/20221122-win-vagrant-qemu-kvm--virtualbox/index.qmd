@@ -1,6 +1,6 @@
 ---
-title: "Running a Windows VM with Vagrant and qemu"
-description: "Running a Windows VM with Vagrant and qemu"
+title: "Running a Windows VM with Vagrant on Linux"
+description: "Running a Windows VM with Vagrant on Linux, trying via Qemu and VirtualBox"
 author:
   - name: J-M
     url: {}
