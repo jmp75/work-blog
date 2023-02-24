@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "J-M’s ‘lab notebook’"
+  title: "J-M's 'lab notebook'"
   navbar:
     right:
       - text: "About"
