@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2022-10-07">
-<meta name="description" content="Testing setting up and using nbdev on Windows">
+<meta name="dcterms.date" content="2023-02-23">
+<meta name="description" content="C++ static code analysis">
 
-<title>J-M’s ‘lab notebook’ - Using nbdev on Windows</title>
+<title>J-M’s ‘lab notebook’ - C++ static code analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -174,16 +174,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Using nbdev on Windows</h1>
+      <h1 class="title">C++ static code analysis</h1>
                   <div>
         <div class="description">
-          Testing setting up and using nbdev on Windows
+          C++ static code analysis
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Python</div>
-                <div class="quarto-category">Notebook</div>
-                <div class="quarto-category">IDE</div>
+                <div class="quarto-category">C++</div>
+                <div class="quarto-category">memory</div>
+                <div class="quarto-category">safety</div>
               </div>
                   </div>
   </div>
@@ -201,7 +201,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">October 7, 2022</p>
+        <p class="date">February 23, 2023</p>
       </div>
     </div>
     
@@ -217,16 +217,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#nbdev" id="toc-nbdev" class="nav-link active" data-scroll-target="#nbdev">nbdev</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
   <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
-  <li><a href="#trying-from-a-cmd-terminal" id="toc-trying-from-a-cmd-terminal" class="nav-link" data-scroll-target="#trying-from-a-cmd-terminal">Trying from a CMD terminal</a></li>
-  <li><a href="#installing-nbdev-from-pip-packages-not-conda-packages" id="toc-installing-nbdev-from-pip-packages-not-conda-packages" class="nav-link" data-scroll-target="#installing-nbdev-from-pip-packages-not-conda-packages">Installing <code>nbdev</code> from pip packages not conda packages</a></li>
-  <li><a href="#usage" id="toc-usage" class="nav-link" data-scroll-target="#usage">Usage</a>
+  <li><a href="#case-studies" id="toc-case-studies" class="nav-link" data-scroll-target="#case-studies">Case studies</a>
   <ul class="collapse">
-  <li><a href="#creating-and-previewing-qith-quarto" id="toc-creating-and-previewing-qith-quarto" class="nav-link" data-scroll-target="#creating-and-previewing-qith-quarto">Creating and previewing qith Quarto</a></li>
-  <li><a href="#upgrade-quarto" id="toc-upgrade-quarto" class="nav-link" data-scroll-target="#upgrade-quarto">Upgrade Quarto</a></li>
+  <li><a href="#moirai" id="toc-moirai" class="nav-link" data-scroll-target="#moirai">Moirai</a>
+  <ul class="collapse">
+  <li><a href="#cppcheck" id="toc-cppcheck" class="nav-link" data-scroll-target="#cppcheck">cppcheck</a></li>
+  <li><a href="#coverity-scan" id="toc-coverity-scan" class="nav-link" data-scroll-target="#coverity-scan">coverity scan</a></li>
   </ul></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#uchronia-time-series" id="toc-uchronia-time-series" class="nav-link" data-scroll-target="#uchronia-time-series">uchronia time series</a>
+  <ul class="collapse">
+  <li><a href="#cppcheck-1" id="toc-cppcheck-1" class="nav-link" data-scroll-target="#cppcheck-1">cppcheck</a></li>
+  <li><a href="#coverity-scan-1" id="toc-coverity-scan-1" class="nav-link" data-scroll-target="#coverity-scan-1">coverity scan</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -236,108 +242,136 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<section id="nbdev" class="level1">
-<h1>nbdev</h1>
-<p><a href="https://nbdev.fast.ai/">nbdev</a> is a system to “write, test, document, and distribute software packages and technical articles — all in one place, your notebook.”. I was aware of it for a while, but saw more of it while attending the <a href="https://course.fast.ai/">Practical Deep Learning course</a> a few months ago. I have a set of habits to develop python software, of course, and jupyter notebooks are part of what I use, but not to develop packages. It is good to trial other ways of working though, and I am in the midst of using nbdev “in anger” in one of my projects.</p>
-<p>I work mostly from Linux, but tested nbdev on Windows prior to suggesting my colleagues to give it a try. I reported <a href="https://github.com/fastai/nbdev/issues/1120">this nbdev issue</a> (which is too vague and premature, admitedly). As of Sept 2022 nbdev is not fully supported on Windows though, and clearly stated in the nbdev documentation at that time: <a href="https://nbdev.fast.ai/getting_started.html#install">“nbdev works on macOS, Linux, and most Unix-style operating systems. It works on Windows under WSL, but not under cmd or Powershell”</a>.</p>
-<p>In this post we will nevertheless try and see what does not work natively on Windows, with a view to assess whether I can contribute to <code>nbdev</code> for support on Windows natively.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="./Cpp.png" title="C++ logo" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">“C++ logo”</figcaption><p></p>
+</figure>
+</div>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>A discussion on “cybersecurity” with a colleague touched on C/C++. This reminded me that I have not used static code analysis on some C++ code for a while. I had <a href="https://scan.coverity.com/projects/rclr">set up a scan for a project</a> back in 2013, and used static scans and memory leak detection on other projects, but it is time to revisit static scaning in this post.</p>
+</section>
+<section id="resources" class="level1">
+<h1>Resources</h1>
+<p>The article <a href="https://www.incredibuild.com/blog/top-9-c-static-code-analysis-tools">Top 9 c static code analysis tools</a> is but one resource listing options. I have used <a href="https://www.synopsys.com/software-integrity/security-testing/static-analysis-sast.html">Coverity</a> some years ago on an open source C interop product, and was impressed by what it. In this post I’ll give a try to <a href="https://cppchecksolutions.com/"><code>cppcheck</code></a></p>
 </section>
 <section id="installation" class="level1">
 <h1>Installation</h1>
-<p>I usually work from <code>conda</code> environments rather than <code>venv</code>, and typically using the <code>conda-forge</code> channel. To install <code>nbdev</code> in an existing environment <code>bm</code>, from the base conda environment:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-n</span> bm <span class="at">-c</span> fastai <span class="at">-c</span> conda-forge nbdev</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (the environment name `bm` stands for biomass, but this is besides the point of the post)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>which results in nbdev 2.3.7 installed.</p>
-<pre class="text"><code>nbdev                     2.3.7                      py_0    fastai</code></pre>
-<p>As an aside note that <code>conda-forge</code> has also nbdev packages available, but visibly older ones, so beware not to forget to use the <code>fastai</code> channel as a priority.</p>
-<p>Then in to my existing python package under development:</p>
-<pre class="bat"><code>conda activate bm
-cd C:\Users\abcdef\src\bmfb\nbs</code></pre>
-<p>I am partial to using a command line for nbdev commands; this is not the only way to operate as you can operate directly from the notebook. The latter may work fine, but let’s test the command line first (CMD prompt, not a powershell terminal)</p>
-<p>Let’s see what happens trying to execute commands in this project</p>
+<p>On linux the free version of cppcheck is easily installable with <code>sudo apt-get install cppcheck</code></p>
+<p>Coverity seems to have been bought but the <a href="https://scan.coverity.com">coverity scan</a> service is still available for open source projects. Login in with github identity, as the projects I intend to scan are hosted on github.</p>
 </section>
-<section id="trying-from-a-cmd-terminal" class="level1">
-<h1>Trying from a CMD terminal</h1>
-<p><code>where nbdev_clean</code> returns <code>C:\Users\abcdef\Miniconda3\envs\bm\Scripts\nbdev_clean</code>. However trying to execute <code>nbdev_clean</code> returns:</p>
-<pre class="text"><code>'nbdev_clean' is not recognized as an internal or external command, operable program or batch file.</code></pre>
-<p>The file nbdev_clean contains the following:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!C:/Users/abcdef/Miniconda3/envs/bm/bin/python</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># -*- coding: utf-8 -*-</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nbdev.clean <span class="im">import</span> nbdev_clean</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    sys.argv[<span class="dv">0</span>] <span class="op">=</span> re.sub(<span class="vs">r'(-script\.pyw|\.exe)?$'</span>, <span class="st">''</span>, sys.argv[<span class="dv">0</span>])</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    sys.exit(nbdev_clean())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This is something looking like a script suitable for a <code>bash</code> or type of terminal, perhaps via <code>MinGW</code>. But we are trying to test on Windows natively.</p>
+<section id="case-studies" class="level1">
+<h1>Case studies</h1>
+<section id="moirai" class="level2">
+<h2 class="anchored" data-anchor-id="moirai">Moirai</h2>
+<p><a href="https://github.com/csiro-hydroinformatics/moirai">Moirai</a> is a library is handling object lifetime of C++ objects used by external languages.</p>
+<section id="cppcheck" class="level3">
+<h3 class="anchored" data-anchor-id="cppcheck">cppcheck</h3>
+<p>Scaning the library with the command:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cppcheck</span> <span class="at">-I</span> include/ src/ <span class="dv">2</span><span class="op">&gt;</span> err.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>flags no error. cppcheck is known for minimising false positives.</p>
 </section>
-<section id="installing-nbdev-from-pip-packages-not-conda-packages" class="level1">
-<h1>Installing <code>nbdev</code> from pip packages not conda packages</h1>
-<p>A conversation with a valued colleague about a completely separate package, <code>nbstripout</code>, provided a clue: he had a working <code>nbstripout.exe</code> on Windows, where I had a similar python script only similar to the above. The difference, I thought, may be that installed with pip, and I did using the conda package.</p>
-<p>So, let’s see if we reinstall nbdev via pip. Note that I do not necessarily encourage installing from <code>pypi</code> on top of a conda environment often. You certainly can, and it can work just fine, but in certain complicated cases you can mess up, so use with caution.</p>
-<p>First, let’s remove the packages sourced from the <code>fastai</code> channel:</p>
-<pre class="text"><code>execnb                    0.1.4                      py_0    fastai
-fastcore                  1.5.27                     py_0    fastai
-ghapi                     1.0.3                      py_0    fastai
-nbdev                     2.3.7                      py_0    fastai</code></pre>
-<p>from the conda base environment <code>mamba remove -n bm execnb fastcore ghapi nbdev</code> which removes the following packages:</p>
-<pre class="text"><code>  - astunparse    1.6.3  pyhd8ed1ab_0    conda-forge
-  - execnb        0.1.4  py_0            fastai
-  - fastcore     1.5.27  py_0            fastai
-  - ghapi         1.0.3  py_0            fastai
-  - nbdev         2.3.7  py_0            fastai
-  - watchdog      2.1.9  py39hcbf5309_0  conda-forge</code></pre>
-<p>I want to minimise the potential for packages coming from <code>pypi</code> so let’s reinstall <code>astunparse</code> and <code>watchdog</code> with <code>conda install -c conda-forge -n bm astunparse watchdog</code></p>
-<p>Then activate the development environment <code>conda activate bm</code> and do <code>pip install nbdev</code></p>
-<pre class="text"><code>Successfully installed execnb-0.1.4 fastcore-1.5.27 ghapi-1.0.3 nbdev-2.3.7</code></pre>
-<p>This time around if we do from the command line <code>where nbdev_clean</code> we get <code>C:\Users\abcdef\Miniconda3\envs\bm\Scripts\nbdev_clean.exe</code>, notice the .exe prefix. We may be onto something that previously confused me in trialing nbdev on Windows.</p>
-</section>
-<section id="usage" class="level1">
-<h1>Usage</h1>
-<p>Time to give a try and see if the nbdev commands work. I have a <code>bmfb</code> package under development installed in dev mode in the <code>bm</code> environment.</p>
-<p><code>nbdev_clean</code> seems to work. <code>nbdev_export</code> also completes without errors. <code>nbdev_help</code> returns the expected list, with colors and all.</p>
-<section id="creating-and-previewing-qith-quarto" class="level2">
-<h2 class="anchored" data-anchor-id="creating-and-previewing-qith-quarto">Creating and previewing qith Quarto</h2>
-<p>Initially <code>where quarto</code> returns <code>C:\Program Files\RStudio\bin\quarto\bin\quarto.cmd</code> which I inherited from my RStudio installation from my IT department. <code>quarto --help</code> returns:</p>
-<pre class="text"><code>  Usage:   quarto
-  Version: 0.9.649</code></pre>
-<p>I have <code>Version: 1.1.165</code> on Linux, and suspect this is preferable to have the latest quarto. With quarto 0.9.649 <code>nbdev_preview</code> returns:</p>
-<pre class="text"><code>Traceback (most recent call last):
-  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\runpy.py", line 197, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\runpy.py", line 87, in _run_code
-    exec(code, run_globals)
-  File "C:\Users\abcdef\Miniconda3\envs\bm\Scripts\nbdev_preview.exe\__main__.py", line 7, in &lt;module&gt;
-  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\site-packages\fastcore\script.py", line 119, in _f
-    return tfunc(**merge(args, args_from_prog(func, xtra)))
-  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\site-packages\nbdev\quarto.py", line 283, in nbdev_preview
-    with fs_watchdog(_f, path): subprocess.run(['quarto','preview']+xtra)
-  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\subprocess.py", line 505, in run
-    with Popen(*popenargs, **kwargs) as process:
-  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\subprocess.py", line 951, in __init__
-    self._execute_child(args, executable, preexec_fn, close_fds,
-  File "C:\Users\abcdef\Miniconda3\envs\bm\lib\subprocess.py", line 1420, in _execute_child
-    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
-FileNotFoundError: [WinError 2] The system cannot find the file specified</code></pre>
-<p>It may or may not be a quarto version issue.</p>
-</section>
-<section id="upgrade-quarto" class="level2">
-<h2 class="anchored" data-anchor-id="upgrade-quarto">Upgrade Quarto</h2>
-<p>After installing the lates quarto, which nicely can be installed with Admin priviledges:</p>
-<pre class="bat"><code>set PATH=C:\Users\abcdef\AppData\Local\Programs\Quarto\bin;%path%` 
-quarto --version
-# returns 1.1.251
-cd C:\Users\abcdef\src\bmfb
-nbdev_preview</code></pre>
-<p>And the package documentation seems to render fine…</p>
+<section id="coverity-scan" class="level3">
+<h3 class="anchored" data-anchor-id="coverity-scan">coverity scan</h3>
+<p>Moving on to scan with <code>coverity</code> via <a href="https://scan.coverity.com">coverity scan</a>:</p>
+<ul>
+<li>Button “Register my github project”</li>
+<li>You need a manual refresh of your repo list with “Please load the repository list to select from your GitHub projects”</li>
+</ul>
+<p>Register Your Open Source GitHub Project on Coverity Scan</p>
+<p>“Once submitted, your project will be available when analysis is completed. It can take up to 48 hours for the first analysis to complete” (in practice, much less delay)</p>
+<p>“Upload a Project Build”</p>
+<p>One needs to <a href="https://scan.coverity.com/download?tab=cxx">download the Coverity Scan Build Tool: C/C++</a> and follow instructions. <code>cov-analysis-linux64-2022.06.tar.gz</code> for linux64 in my case. This is a 1.1GB download, so it takes some time.</p>
+<p>Check the download with <code>md5sum cov-analysis-linux64-2022.06.tar.gz</code></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> zxpvf cov-analysis-linux64-2022.06.tar.gz </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> cov-analysis-linux64-2022.6.0</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> cov-analysis-linux64-2022.6.0 ~/bin/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Update the PATH env var to add <code>~/bin/cov-analysis-linux64-2022.6.0/bin</code> as per the instructions. Check with <code>which cov-build</code>.</p>
+<p>Then moving to build the project:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/src/moirai/build</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> clean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cov-build</span> <span class="at">--dir</span> cov-int make <span class="at">-j</span> 4 </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> cov-int/build-log.txt</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Emitted 10 C/C++ compilation units (100%) successfully</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>tar caf moirai.bz2 cov-int</code></p>
+<p>There is a warning “Linux users on kernel version 4.8.x and newer will need to apply a sysctl parameter to support our binaries”. I am running on a Linux xxxxxx 5.10.0-21-amd64, and this seems to have worked fine.</p>
+<p>version 1.2.0</p>
+<p>Pressing “Upload Tar File”</p>
+<p>Last Build Status: In-queue. Your build is in the queue to be analyzed. There are 3 builds ahead of it.</p>
+<p>An email notifies:</p>
+<pre class="text"><code>    Analysis Summary:
+       Defects found: 19</code></pre>
+<p><img src="./moirai-coverity-001.png" class="img-fluid"></p>
+<p>The badge says the code passes the scan; a priori good. The defect density of 0.23, which is below the 0.35 for projects less than 100K LOC (as of 2013 though).</p>
+<p><a href="https://cwe.mitre.org/data/definitions/676.html">CWE-676: Use of Potentially Dangerous Function</a>. “Likelihood Of Exploit” is High.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="./moirai-coverity-002.png" title="CWE-676" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">CWE-676</figcaption><p></p>
+</figure>
+</div>
+<p>Using the “View Defects” button opens a dashboard with more details of the various potential issues. Most appear to arise in the third party codebase, the header-only unit test framework used, <strong>Catch</strong>. This happens to be an old version as well, so a newer version may not have these issues. But this is a low concern at any rate, as unit tests are not compiled into the library itself.</p>
+<p>It is not entirely clear which issue is flagged “CWE-676” actually, perhaps:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="./moirai-coverity-003.png" title="Use of 32-bit time_t" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">Use of 32-bit time_t</figcaption><p></p>
+</figure>
+</div>
+<p>There are a couple of issues mentioned that may impact the library itself, but nothing that warrants particular concern and more suggestions for improvements (e.g.&nbsp;“A move contructor may improve speed”)</p>
 </section>
 </section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
-<p>The quick spin above is not exhaustive, but <code>nbdev</code> 2.3.7 installed from pypi seems to work well natively on Windows for the main commands I am typically using. I am more confident suggesting to some colleagues to consider nbdev as a way to transition exploratory notebooks to reusable, packaged code.</p>
-<p>It looks like the conda packaging is where something is amiss when deployed on Windows. It appears to be an issue for other projects such as <code>nbstripout</code>, and not specifc to nbdev. I’ll follow up with a detailed issue on the <a href="https://github.com/fastai/nbdev">nbdev github repo</a>; I’ve limited experience with conda packaging, but will try to contribute.</p>
+<section id="uchronia-time-series" class="level2">
+<h2 class="anchored" data-anchor-id="uchronia-time-series">uchronia time series</h2>
+<section id="cppcheck-1" class="level3">
+<h3 class="anchored" data-anchor-id="cppcheck-1">cppcheck</h3>
+<p>Using cppcheck on <a href="https://github.com/csiro-hydroinformatics/uchronia-time-series/">Uchronia</a> reports some “double memory freeing” errors, which I think are more a software stability than security concern.</p>
+<pre class="text"><code>include/datatypes/time_series_io.hpp:1037:15: error: Memory pointed to by 'values' is freed twice. [doubleFree]
+     delete[] values;</code></pre>
+<p>Upon inspection this actually appears to be a false flag, where the memory is freed once before an exception is thrown:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>code <span class="op">!=</span> NC_NOERR<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">delete</span><span class="op">[]</span> values<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    ExceptionUtilities<span class="op">::</span>ThrowInvalidOperation<span class="op">(</span><span class="st">"SetVariableDimOne failed for variable ID "</span> <span class="op">+</span> <span class="bu">std::</span>to_string<span class="op">(</span>varId<span class="op">));</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Maybe this is a suggestion that the body should be refactored with a try / finally syntax, but this is a low priority task.</p>
+<pre><code>include/datatypes/time_series_strategies.hpp:477:12: error: Array index -1 is out of bounds. [negativeContainerIndex]
+    return buffer[-1];</code></pre>
+<p>This is indeed odd at first sight, but upon inspection this is again a line that cannot be reached because of an exception being thrown beforehand, and added to mote a compiler complaint. Still, this probably warrants something less quirky.</p>
+<p>Moving on to using coverity</p>
+</section>
+<section id="coverity-scan-1" class="level3">
+<h3 class="anchored" data-anchor-id="coverity-scan-1">coverity scan</h3>
+<p>“No top 25 CWE defects were found.”</p>
+<p>Defect density of 0.10 for 185,219 LOC. Most of the lines of course would result from third party work including Boost libraries, so the low density may well be mostly because of third party work.</p>
+<p>There are a couple of suggestions of a type that would improve performance:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="./uchronia-001.png" title="auto_causes_copy" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">“auto_causes_copy”</figcaption><p></p>
+</figure>
+</div>
+<p>Other types of errors deal with uninitialised object members. Whether these are false positives, or very unlikely to occur given typical practices, these should be followed up.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="./uchronia-002.png" title="uninit in ctor" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">“uninit in ctor”</figcaption><p></p>
+</figure>
+</div>
 
 
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->

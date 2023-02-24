@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2023-01-25">
+<meta name="description" content="fair4rs">
+
+<title>J-M’s ‘lab notebook’ - fair4rs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">fair4rs</h1>
+                  <div>
+        <div class="description">
+          fair4rs
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">FAIR</div>
+                <div class="quarto-category">packaging</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>J-M </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 25, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a>
+  <ul class="collapse">
+  <li><a href="#findable" id="toc-findable" class="nav-link" data-scroll-target="#findable">Findable</a>
+  <ul class="collapse">
+  <li><a href="#f1.-globally-unique-and-persistent-identifier" id="toc-f1.-globally-unique-and-persistent-identifier" class="nav-link" data-scroll-target="#f1.-globally-unique-and-persistent-identifier">F1. globally unique and persistent identifier</a></li>
+  <li><a href="#f1.1.-identifiers-for-levels-of-granularity" id="toc-f1.1.-identifiers-for-levels-of-granularity" class="nav-link" data-scroll-target="#f1.1.-identifiers-for-levels-of-granularity">F1.1. identifiers for levels of granularity</a></li>
+  <li><a href="#f1.2.-different-versions-distinct-identifiers" id="toc-f1.2.-different-versions-distinct-identifiers" class="nav-link" data-scroll-target="#f1.2.-different-versions-distinct-identifiers">F1.2. Different versions, distinct identifiers</a></li>
+  <li><a href="#f2.-rich-metadata" id="toc-f2.-rich-metadata" class="nav-link" data-scroll-target="#f2.-rich-metadata">F2. Rich metadata</a></li>
+  <li><a href="#f3.-id-in-metadata" id="toc-f3.-id-in-metadata" class="nav-link" data-scroll-target="#f3.-id-in-metadata">F3. ID in metadata</a></li>
+  <li><a href="#f4.-fair-metadata" id="toc-f4.-fair-metadata" class="nav-link" data-scroll-target="#f4.-fair-metadata">F4. FAIR metadata</a></li>
+  </ul></li>
+  <li><a href="#accessible" id="toc-accessible" class="nav-link" data-scroll-target="#accessible">Accessible</a>
+  <ul class="collapse">
+  <li><a href="#a1." id="toc-a1." class="nav-link" data-scroll-target="#a1.">A1.</a></li>
+  <li><a href="#a1.1." id="toc-a1.1." class="nav-link" data-scroll-target="#a1.1.">A1.1.</a></li>
+  <li><a href="#a1.2." id="toc-a1.2." class="nav-link" data-scroll-target="#a1.2.">A1.2.</a></li>
+  <li><a href="#a2." id="toc-a2." class="nav-link" data-scroll-target="#a2.">A2.</a></li>
+  </ul></li>
+  <li><a href="#interoperability" id="toc-interoperability" class="nav-link" data-scroll-target="#interoperability">Interoperability</a></li>
+  <li><a href="#i1." id="toc-i1." class="nav-link" data-scroll-target="#i1.">I1.</a></li>
+  <li><a href="#i2." id="toc-i2." class="nav-link" data-scroll-target="#i2.">I2.</a></li>
+  <li><a href="#reusable" id="toc-reusable" class="nav-link" data-scroll-target="#reusable">Reusable</a></li>
+  <li><a href="#r1." id="toc-r1." class="nav-link" data-scroll-target="#r1.">R1.</a></li>
+  <li><a href="#r1.1." id="toc-r1.1." class="nav-link" data-scroll-target="#r1.1.">R1.1.</a></li>
+  <li><a href="#r1.2." id="toc-r1.2." class="nav-link" data-scroll-target="#r1.2.">R1.2.</a></li>
+  <li><a href="#r2." id="toc-r2." class="nav-link" data-scroll-target="#r2.">R2.</a></li>
+  <li><a href="#r3." id="toc-r3." class="nav-link" data-scroll-target="#r3.">R3.</a></li>
+  </ul></li>
+  <li><a href="#appendices" id="toc-appendices" class="nav-link" data-scroll-target="#appendices">Appendices</a>
+  <ul class="collapse">
+  <li><a href="#searching-via-chatgpt" id="toc-searching-via-chatgpt" class="nav-link" data-scroll-target="#searching-via-chatgpt">Searching via ChatGPT</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/FAIR_data_principles.jpg/640px-FAIR_data_principles.jpg" title="FAIR principles" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">FAIR principles</figcaption><p></p>
+</figure>
+</div>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p><a href="https://doi.org/10.15497/RDA00068">FAIR Principles for Research Software (FAIR4RS Principles)</a></p>
+<section id="findable" class="level2">
+<h2 class="anchored" data-anchor-id="findable">Findable</h2>
+<blockquote class="blockquote">
+<p>Software, and its associated metadata, is easy for both humans and machines to find.</p>
+</blockquote>
+<p>What’s in a name… I was very surprised a few years ago to find the package name <code>refcount</code> <em>not</em> already taken on <a href="https://pypi.org">pypi.org</a>, when I first considered building this package.</p>
+<p>Googling from a Firefox private window, so that cookies are not used/stored, and hopefully mimicking an anymous user:</p>
+<ul>
+<li><strong>“refcount”</strong> returns relevant material to reference counting, including some packages, but not for python.</li>
+<li><strong>“refcount python”</strong> returns first things like <a href="https://docs.python.org/3/c-api/refcounting.html">Reference Counting — Python 3.11.1 documentation</a>, which is fair enough, but also on the first page <a href="https://pypi.org/project/refcount/">pypi.org › project › refcount</a></li>
+<li><strong>“refcount python source code”</strong> returns as a first hit <a href="https://github.com/csiro-hydroinformatics/pyrefcount">csiro-hydroinformatics/pyrefcount</a>, which is ideal from our point of view.</li>
+</ul>
+<p>Since this is the hotest topic in AI in Jan 2023, I decided to search through <a href="https://openai.com/blog/chatgpt">ChatGPT</a>. Well, it needed quite a bit of hinting before it zoomed in on the expected target, but this is early days and more for fun than as a criteria. The conversation is quite startling on its own and logged in the Appendix at the end of this blog. We really could be on the verge of big changes in searching information.</p>
+<p>Back to the FAIRness though.</p>
+<section id="f1.-globally-unique-and-persistent-identifier" class="level3">
+<h3 class="anchored" data-anchor-id="f1.-globally-unique-and-persistent-identifier">F1. globally unique and persistent identifier</h3>
+<blockquote class="blockquote">
+<p>Software is assigned a globally unique and persistent identifier.</p>
+</blockquote>
+<p>URLs or DOI</p>
+<p>https://data.csiro.au/collection/csiro:55869</p>
+<p>For <a href="https://github.com/rdotnet/dynamic-interop-dll">dynamic-interop-dll</a> I had set up a <a href="https://zenodo.org/badge/latestdoi/26792926">DOI</a> in April 2021. This was for a particular version rather than the package.</p>
+</section>
+<section id="f1.1.-identifiers-for-levels-of-granularity" class="level3">
+<h3 class="anchored" data-anchor-id="f1.1.-identifiers-for-levels-of-granularity">F1.1. identifiers for levels of granularity</h3>
+<blockquote class="blockquote">
+<p>Components of the software representing levels of granularity are assigned distinct identifiers.</p>
+</blockquote>
+<p>In this case, the package is rather small, and there is no compelling need to strongly distinguish sub-components. There are several python submodules in the package, which can be considered a weaker form of additional identification.</p>
+</section>
+<section id="f1.2.-different-versions-distinct-identifiers" class="level3">
+<h3 class="anchored" data-anchor-id="f1.2.-different-versions-distinct-identifiers">F1.2. Different versions, distinct identifiers</h3>
+<blockquote class="blockquote">
+<p>Different versions of the software are assigned distinct identifiers.</p>
+</blockquote>
+<p>URLs or DOI DAP entry?</p>
+</section>
+<section id="f2.-rich-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="f2.-rich-metadata">F2. Rich metadata</h3>
+<blockquote class="blockquote">
+<p>Software is described with rich metadata.</p>
+</blockquote>
+<ul>
+<li>docstrings. Decent, but there are some gaps left.</li>
+<li>code samples for usage. Something more meaty than doggy and owner would be welcome. Uchronia. Still not the most telling case, a bit dry.</li>
+</ul>
+</section>
+<section id="f3.-id-in-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="f3.-id-in-metadata">F3. ID in metadata</h3>
+<blockquote class="blockquote">
+<p>Metadata clearly and explicitly include the identifier of the software they describe.</p>
+</blockquote>
+<p>badges https://pyrefcount.readthedocs.io/en/latest/ (though not pypi or conda-forge yet as I write). Linkage to the source code repository, but no DOI yet.</p>
+</section>
+<section id="f4.-fair-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="f4.-fair-metadata">F4. FAIR metadata</h3>
+<blockquote class="blockquote">
+<p>Metadata are FAIR, searchable and indexable.</p>
+</blockquote>
+<ul>
+<li>mkdocs</li>
+</ul>
+<p><strong>“refcount python package documentation”</strong> returns <a href="https://pyrefcount.readthedocs.io/en/latest/">https://pyrefcount.readthedocs.io/en/latest/</a> as the top hit. The documentation includes an indexing/search system scoped to the package.</p>
+</section>
+</section>
+<section id="accessible" class="level2">
+<h2 class="anchored" data-anchor-id="accessible">Accessible</h2>
+<blockquote class="blockquote">
+<p>Software, and its metadata, is retrievable via standardized protocols.</p>
+</blockquote>
+<p>git, pypi, conda-forge, https.</p>
+<section id="a1." class="level3">
+<h3 class="anchored" data-anchor-id="a1.">A1.</h3>
+<blockquote class="blockquote">
+<p>Software is retrievable by its identifier using a standardized communications protocol.</p>
+</blockquote>
+</section>
+<section id="a1.1." class="level3">
+<h3 class="anchored" data-anchor-id="a1.1.">A1.1.</h3>
+<blockquote class="blockquote">
+<p>The protocol is open, free, and universally implementable.</p>
+</blockquote>
+</section>
+<section id="a1.2." class="level3">
+<h3 class="anchored" data-anchor-id="a1.2.">A1.2.</h3>
+<blockquote class="blockquote">
+<p>The protocol allows for an authentication and authorization procedure, where necessary.</p>
+</blockquote>
+<p>Not applicable</p>
+</section>
+<section id="a2." class="level3">
+<h3 class="anchored" data-anchor-id="a2.">A2.</h3>
+<blockquote class="blockquote">
+<p>Metadata are accessible, even when the software is no longer available.</p>
+</blockquote>
+</section>
+</section>
+<section id="interoperability" class="level2">
+<h2 class="anchored" data-anchor-id="interoperability">Interoperability</h2>
+<blockquote class="blockquote">
+<p>Software interoperates with other software by exchanging data and/or metadata, and/or through interaction via application programming interfaces (APIs), described through standards.</p>
+</blockquote>
+</section>
+<section id="i1." class="level2">
+<h2 class="anchored" data-anchor-id="i1.">I1.</h2>
+<blockquote class="blockquote">
+<p>Software reads, writes and exchanges data in a way that meets domain-relevant community standards.</p>
+</blockquote>
+</section>
+<section id="i2." class="level2">
+<h2 class="anchored" data-anchor-id="i2.">I2.</h2>
+<blockquote class="blockquote">
+<p>Software includes qualified references to other objects.</p>
+</blockquote>
+</section>
+<section id="reusable" class="level2">
+<h2 class="anchored" data-anchor-id="reusable">Reusable</h2>
+<blockquote class="blockquote">
+<p>Software is both usable (can be executed) and reusable (can be understood, modified, built upon, or incorporated into other software).</p>
+</blockquote>
+</section>
+<section id="r1." class="level2">
+<h2 class="anchored" data-anchor-id="r1.">R1.</h2>
+<blockquote class="blockquote">
+<p>Software is described with a plurality of accurate and relevant attributes.</p>
+</blockquote>
+</section>
+<section id="r1.1." class="level2">
+<h2 class="anchored" data-anchor-id="r1.1.">R1.1.</h2>
+<blockquote class="blockquote">
+<p>Software is given a clear and accessible license.</p>
+</blockquote>
+</section>
+<section id="r1.2." class="level2">
+<h2 class="anchored" data-anchor-id="r1.2.">R1.2.</h2>
+<blockquote class="blockquote">
+<p>Software is associated with detailed provenance.</p>
+</blockquote>
+</section>
+<section id="r2." class="level2">
+<h2 class="anchored" data-anchor-id="r2.">R2.</h2>
+<blockquote class="blockquote">
+<p>Software includes qualified references to other software.</p>
+</blockquote>
+</section>
+<section id="r3." class="level2">
+<h2 class="anchored" data-anchor-id="r3.">R3.</h2>
+<blockquote class="blockquote">
+<p>Software meets domain-relevant community standards.</p>
+</blockquote>
+</section>
+</section>
+<section id="appendices" class="level1">
+<h1>Appendices</h1>
+<section id="searching-via-chatgpt" class="level2">
+<h2 class="anchored" data-anchor-id="searching-via-chatgpt">Searching via ChatGPT</h2>
+<blockquote class="blockquote">
+<p>How do I do reference counting in Python?</p>
+</blockquote>
+<p>In Python, reference counting is done automatically by the interpreter. When an object is no longer being used, its reference count decreases. When the reference count reaches zero, the memory occupied by the object is freed. This process is known as garbage collection.</p>
+<p>However, if you want to manually check the reference count of an object, you can use the <code>sys.getrefcount()</code> function. For example:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sys.getrefcount(a))  <span class="co"># prints 3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will return the number of references to the object. Note that the reference count will always be at least 1, because the object is being referenced by the variable used to pass it to the function.</p>
+<blockquote class="blockquote">
+<p>What can I do to do reference counting of native resources from external c++ libraries</p>
+</blockquote>
+<p>In Python, when you’re working with native resources from external C++ libraries, you can use the <code>ctypes</code> library to manually increment and decrement the reference count of those resources.</p>
+<p>To increment the reference count, you can use the <code>c_void_p.from_address()</code> function from the <code>ctypes</code> library to create a new reference to the resource. For example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ctypes <span class="im">import</span> c_void_p</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Assume `ptr` is a pointer to a native resource</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>resource <span class="op">=</span> c_void_p.from_address(ptr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To decrement the reference count, you can use the del statement to delete the reference to the resource. For example:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">del</span> resource</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It is important to note that this method of reference counting is not foolproof, and can still lead to memory leaks if not used properly. It is also important to note that this is not the same as python garbage collection which works differently. It is recommended to use python’s <code>weakref</code> module if possible and when the C++ libray has not implemented reference counting or smart pointers.</p>
+<blockquote class="blockquote">
+<p>Are there higher level convenient python packages to manage native resources?</p>
+</blockquote>
+<p>Yes, there are several higher-level Python packages that can be used to manage native resources from external C++ libraries in a more convenient and robust way.</p>
+<p>One example is <code>ctypeslib</code>, which provides a set of utility functions for generating Python wrapper modules for C libraries. This can simplify the process of interfacing with C++ libraries, and can help to reduce the risk of memory leaks or other issues caused by manual reference counting.</p>
+<p>Another example is <code>cffi</code>, which is a Foreign Function Interface for Python. It allows to call C code from Python, and also to define C types in Python, which can be used to call C functions.</p>
+<p>Another is <code>pybind11</code> which is a lightweight header-only library that exposes C++ types in Python and vice versa, mainly by generating the C++ glue code.</p>
+<p>It’s important to note that, although these libraries can help to make the process of working with native resources more convenient, it’s still important to have a good understanding of the underlying C++ code and memory management techniques in order to use them effectively.</p>
+<blockquote class="blockquote">
+<p>Are there convenient python packages to manage the reference counting of native resources ?</p>
+</blockquote>
+<p>There are a few Python packages that can help to manage the reference counting of native resources in a more convenient way.</p>
+<p>One example is <code>weakref</code>, which provides a way to create weak references to objects. These references do not increase the reference count of the object, and the object will be garbage collected as soon as no strong references to it exist. This can be useful for creating circular references between C++ objects and Python objects, and can help to prevent memory leaks.</p>
+<p>Another example is <code>objgraph</code>, which is a library for visualizing the object references graph of Python programs. This can be useful for detecting reference cycles and memory leaks, which can be caused by incorrect reference counting.</p>
+<p><code>pympler</code> is another package that provides tools to track memory usage of Python objects, including memory leaks and reference cycles.</p>
+<p>It’s important to note that these packages can help you to manage the reference counting of native resources, but they do not replace the need of understanding the underlying C++ code and its memory management techniques.</p>
+<blockquote class="blockquote">
+<p>Are there convenient python packages to manage the reference counting of native resources via <code>cffi</code> ?</p>
+</blockquote>
+<p>As far as my knowledge cut off, I don’t know any convenient python packages that manage the reference counting of native resources via <code>cffi</code> specifically, but <code>cffi</code> itself allows to call C code from Python and also to define C types in Python and you can use C functions to manage the reference counting of native resources.</p>
+<p>You can use the <code>cffi.FFI()</code> class to create an instance of the foreign function interface and use the ffi.dlopen() method to load a shared library. Once the library is loaded, you can use the <code>ffi.new()</code>, <code>ffi.from_handle()</code>, and <code>ffi.dlclose()</code> functions to manage the reference counting of native resources.</p>
+<p>You need to make sure that the C library implements the reference counting of the native resources, and use the right C functions to increment and decrement the reference count.</p>
+<p>It’s important to note that managing native resources via <code>cffi</code> still requires good understanding of the underlying C++ code and memory management techniques in order to use it effectively, and also to prevent memory leaks.</p>
+<blockquote class="blockquote">
+<p>What about the python package <code>refcount</code> ?</p>
+</blockquote>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Not sure which <code>refcount</code> package is refered to, nor whether the explanations are correct.</p>
+</div>
+</div>
+<p>I apologize, I didn’t mention the <code>refcount</code> package in my previous answer.</p>
+<p>refcount is a package that provides a way to track the reference count of python objects. It can be used to detect reference cycles and memory leaks caused by incorrect reference counting.</p>
+<p>It provides a <code>refcount()</code> function that can be used to check the reference count of an object, and a tracked context manager that can be used to track the reference count of an object over time. The package also provides a <code>diff()</code> function to get the difference in reference count, and a <code>graph()</code> function to visualize the reference count of an object and its related objects.</p>
+<p>It’s important to note that <code>refcount</code> package is mainly useful for debugging and testing purposes and it’s not a replacement for understanding the underlying C++ code and its memory management techniques, and also it’s not a solution to work with native resources via <code>cffi</code> but it can be used to detect memory leaks and reference cycles on python objects.</p>
+<blockquote class="blockquote">
+<p>Well, that is interesting. I did not know of that package refcount. But I was wondering about the package <code>refcount</code> on pypi?</p>
+</blockquote>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The feature description is mostly incorrect.</p>
+</div>
+</div>
+<p>I apologize for the confusion, there is indeed a package called <code>refcount</code> on PyPI.</p>
+<p>refcount is a python package that provides a simple way to access the reference count of a python object, including the number of weak references to the object. It expose a refcount() function which takes an object as an argument and returns the object’s reference count.</p>
+<p>This package is based on the <code>sys.getrefcount()</code> function and the gc.get_referents() function and it’s main purpose is to provide a simple way to access the reference count of an object, it’s not designed to detect memory leaks or reference cycles.</p>
+<p>It’s important to note that this package, like <code>sys.getrefcount()</code> can give you an idea of the number of references of an object, but doesn’t guarantee that the object is not eligible for garbage collection. Also, keep in mind that, reference counting can be influenced by other factors such as the presence of circular references, thus the package <code>refcount</code> can be a good tool for debugging but not a replacement for understanding the underlying C++ code and its memory management techniques.</p>
+<blockquote class="blockquote">
+<p>How can I use that <code>refcount</code> package to manage objects from a C library using <code>cffi</code>?</p>
+</blockquote>
+<div class="callout-warning callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The answer is largely incorrect and misleading.</p>
+</div>
+</div>
+<p>The <code>refcount</code> package can be used to check the reference count of python objects, but it’s not directly related to managing objects from a C library using <code>cffi</code>.</p>
+<p>When working with C libraries using <code>cffi</code>, you will generally need to increment and decrement the reference count of objects manually, using the appropriate C functions provided by the library. The <code>refcount</code> package can be used to check the reference count of the python object that wraps the C object, but it does not provide any direct way to manage the reference count of the C object itself.</p>
+<p>However, you can use the <code>refcount</code> package to check the reference count of the python objects that wrap the C objects, and use that information to ensure that you are properly managing the reference count of the C objects.</p>
+<p>For example, you can use the <code>refcount</code> package to check the reference count of a python object that wraps a C object before and after calling a C function that increments or decrements the reference count of the C object. If the reference count of the python object does not change as expected, then you know that there is an issue with the way you are managing the reference count of the C object.</p>
+<p>It’s also important to note that you should be very careful when working with C libraries and <code>cffi</code>, as memory leaks and other issues can easily occur if you don’t handle the reference count correctly. It is recommended that you have a good understanding of the underlying C++ code and memory management techniques in order to use it effectively.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0.</div>   
+  </div>
+</footer>
+
+
+
+</body></html>

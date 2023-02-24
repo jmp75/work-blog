@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2022-11-22">
-<meta name="description" content="Running a Windows VM with Vagrant and qemu">
+<meta name="dcterms.date" content="2022-12-05">
+<meta name="description" content="Reengineering a python package">
 
-<title>J-M’s ‘lab notebook’ - Running a Windows VM with Vagrant on Linux</title>
+<title>J-M’s ‘lab notebook’ - Reengineering a python package</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -174,16 +174,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Running a Windows VM with Vagrant and qemu</h1>
+      <h1 class="title">Reengineering a python package</h1>
                   <div>
         <div class="description">
-          Running a Windows VM with Vagrant and qemu
+          Reengineering a python package
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">kvm</div>
-                <div class="quarto-category">vagrant</div>
-                <div class="quarto-category">qemu</div>
+                <div class="quarto-category">python</div>
+                <div class="quarto-category">packaging</div>
               </div>
                   </div>
   </div>
@@ -201,7 +200,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">November 22, 2022</p>
+        <p class="date">December 5, 2022</p>
       </div>
     </div>
     
@@ -217,7 +216,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#context" id="toc-context" class="nav-link active" data-scroll-target="#context">Context</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#related-posts" id="toc-related-posts" class="nav-link" data-scroll-target="#related-posts">Related posts</a></li>
+  <li><a href="#python-packaging-options" id="toc-python-packaging-options" class="nav-link" data-scroll-target="#python-packaging-options">Python packaging options</a></li>
   <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options">Options</a>
   <ul class="collapse">
   <li><a href="#tutorials-and-related-work" id="toc-tutorials-and-related-work" class="nav-link" data-scroll-target="#tutorials-and-related-work">Tutorials and related work</a></li>
@@ -237,10 +238,36 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<p><img src="./logos.png" title="logos" class="img-fluid"></p>
-<p>(Logos are</p>
-<section id="context" class="level1">
-<h1>Context</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="images/azure/pipeline_hydrofc.png" title="Azure pipeline run" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">Azure pipeline run</figcaption><p></p>
+</figure>
+</div>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>For years I’ve been contributing to and maintaining, at work, a <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a>. A centerpiece of this work is a C++ software library (know as swift2 for historical reasons) for ensemble (probabilistic) simulations and forecasting. This library is accessible from R, Python, Matlab etc. The repository currently hosting all this is closed source, for past organisational reasons.</p>
+<p>The Python package <code>swift2</code> has been created relatively recently and can be open sourced. There are technical and visibility incentives for it to have its own repository, despite a few downsides.</p>
+</section>
+<section id="related-posts" class="level1">
+<h1>Related posts</h1>
+<p>Link to the post on hosting documentation and doxybook. nbdev from windows</p>
+</section>
+<section id="python-packaging-options" class="level1">
+<h1>Python packaging options</h1>
+<p>Since I am migrating an existing package from a closed repository to an open one, I may as well consider</p>
+<p>Options with nbdev:</p>
+<ul>
+<li>Positive impression to facilitate exploratory and iterative package development</li>
+<li>Bespoke API documentation; not sure how to make it exhaustive compared to other package documentation</li>
+</ul>
+<p>Poetry: Attempts with pyrefcount. Successful, but not without peculiarities. Not convinced this is worth imposing on developers. Perhaps matters less</p>
+<ul>
+<li>sphinx</li>
+<li>mkdocs</li>
+</ul>
 <p>This is following up on the work done for <a href="https://jmp75.github.io/work-blog/posts/20221116-waa-installers/">previous post</a>. I’ve tested a 32bits build of an application, running it on a Windows 7 64 bits, and it appears to work fine. But a tester encountered problems installing and running it on a Windows 32bits installation.</p>
 <p>There are no options that I can see to install 32bits windows images on Azure DevOps. So, can I find a test image that I can run, preferably on top of a Linux installation?</p>
 <p>“Of course it is entirely feasible”. How?</p>

@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/20230223-cpp-static-analysis/index.html",
       "/posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html",
       "/posts/20221116-waa-installers/index.html",
       "/posts/20221111-gitleaks-config/index.html",
