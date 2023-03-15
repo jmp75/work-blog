@@ -22,11 +22,33 @@ Building a Windows installer for the [software stack for streamflow forecasting]
 
 # Resources
 
+
+https://en.wikipedia.org/wiki/List_of_installation_software
+
+
 https://github.com/kurtanr/WiXInstallerExamples
 Package a Windows installer, perhaps borrowing from the "one click" approach of the WAA tool setup, conceptually. The venerable [Innosetup](https://jrsoftware.org/isinfo.php) may be the way to go.
+
+https://en.wikipedia.org/wiki/Nullsoft_Scriptable_Install_System
 
 https://wixtoolset.org/  WiX v4 is almost here! Let FireGiant help.  
 
 https://wixtoolset.org/docs/wix3/
 
-# Installation
+https://www.youtube.com/watch?v=-Y7dOtciOJw   by https://www.youtube.com/@meschine   https://www.youtube.com/@meschine/streams   playlist is https://www.youtube.com/watch?v=x-E7g5H_1TA&list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6
+
+https://www.joyofsetup.com/tags/wix4/
+
+
+code signing:
+https://wixtoolset.org/docs/reference/signing/
+
+
+# Log of steps taken
+
+Requested a certificate via digicert. Followed [this procedure](https://docs.digicert.com/en/certcentral/manage-certificates/code-signing-certificates/order-a-code-signing-certificate.html). Note the key length is 3K minimum now.
+
+
+https://www.firegiant.com/wix/heatwave/
+
+
