@@ -1,0 +1,32 @@
+---
+title: "C++ static code analysis"
+description: "C++ static code analysis"
+author:
+  - name: J-M
+    url: {}
+date: "2023-02-23"
+categories: ["C++", "memory", "safety"]
+image: ./Cpp.png
+format: 
+  html:
+    toc: true
+engine: knitr
+draft: true
+---
+
+!["C++ logo"](./Cpp.png "C++ logo")
+
+# Background
+
+Building a Windows installer for the [software stack for streamflow forecasting](https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/), with code signing.
+
+# Resources
+
+https://github.com/kurtanr/WiXInstallerExamples
+Package a Windows installer, perhaps borrowing from the "one click" approach of the WAA tool setup, conceptually. The venerable [Innosetup](https://jrsoftware.org/isinfo.php) may be the way to go.
+
+https://wixtoolset.org/  WiX v4 is almost here! Let FireGiant help.  
+
+https://wixtoolset.org/docs/wix3/
+
+# Installation
