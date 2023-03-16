@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2022-11-11">
-<meta name="description" content="Adding rules to a gitleaks configuration to scan git repo for low-medium sensitivity information">
+<meta name="dcterms.date" content="2023-03-16">
+<meta name="description" content="Building a Windows installer with WiX 4 - part 1">
 
-<title>J-M’s ‘lab notebook’ - Custom rules for gitleaks</title>
+<title>J-M’s ‘lab notebook’ - Windows installer with WiX 4 - part 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -174,15 +174,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Custom rules for gitleaks</h1>
+      <h1 class="title">Windows installer with WiX 4 - part 1</h1>
                   <div>
         <div class="description">
-          Adding rules to a gitleaks configuration to scan git repo for low-medium sensitivity information
+          Building a Windows installer with WiX 4 - part 1
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">Security</div>
-                <div class="quarto-category">git</div>
+                <div class="quarto-category">C++</div>
+                <div class="quarto-category">memory</div>
+                <div class="quarto-category">safety</div>
               </div>
                   </div>
   </div>
@@ -200,7 +201,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">November 11, 2022</p>
+        <p class="date">March 16, 2023</p>
       </div>
     </div>
     
@@ -216,14 +217,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#context" id="toc-context" class="nav-link active" data-scroll-target="#context">Context</a></li>
-  <li><a href="#gitleaks" id="toc-gitleaks" class="nav-link" data-scroll-target="#gitleaks">gitleaks</a></li>
-  <li><a href="#log" id="toc-log" class="nav-link" data-scroll-target="#log">Log</a>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#quick-review-and-resources" id="toc-quick-review-and-resources" class="nav-link" data-scroll-target="#quick-review-and-resources">Quick review and resources</a>
   <ul class="collapse">
-  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
-  <li><a href="#trial-basic-use" id="toc-trial-basic-use" class="nav-link" data-scroll-target="#trial-basic-use">Trial basic use</a></li>
-  <li><a href="#custom-rules" id="toc-custom-rules" class="nav-link" data-scroll-target="#custom-rules">Custom rules</a></li>
-  <li><a href="#custom-rule-with-a-low-entropy-threshold" id="toc-custom-rule-with-a-low-entropy-threshold" class="nav-link" data-scroll-target="#custom-rule-with-a-low-entropy-threshold">Custom rule with a low entropy threshold</a></li>
+  <li><a href="#wix" id="toc-wix" class="nav-link" data-scroll-target="#wix">WiX</a></li>
+  </ul></li>
+  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <ul class="collapse">
+  <li><a href="#windows-sandbox" id="toc-windows-sandbox" class="nav-link" data-scroll-target="#windows-sandbox">Windows Sandbox</a></li>
+  <li><a href="#step-1" id="toc-step-1" class="nav-link" data-scroll-target="#step-1">Step 1</a></li>
   </ul></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
@@ -238,149 +240,139 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <figure class="figure">
-<img src="./security_security.png" title="Security, security, security" class="img-fluid figure-img" alt="Black books season 1 episode 5 'The Big Lock-Out'">
+<img src="https://avatars.githubusercontent.com/u/91997072?s=200&amp;v=4.png" title="C++ logo" class="img-fluid figure-img">
 </figure>
-<p></p><figcaption class="figure-caption">The Three S’es, <a href="https://en.wikipedia.org/wiki/Black_Books">from comedy cult Black Books S1E5 ‘The Big Lock-Out’</a></figcaption><p></p>
+<p></p><figcaption class="figure-caption">“WiX logo”</figcaption><p></p>
 </figure>
 </div>
-<section id="context" class="level1">
-<h1>Context</h1>
-<p>Say you inherit custody of large-ish git repositories because e.g.&nbsp;of staff turnover, that may be made public of access down the track. How do you systematically assess whether this internal development does not have sensitive info or downright secret keys buried down in the codebase, present or past in the git history?</p>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>“We” are looking to make the <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a> installable on Windows via an installer, with code signing. There are multiple motivations for this, some of it is perceptions and first impressions for new users. More importantly the code signing and managed installation are particularly important for some users in an operational environment (hydro-electric production, water management).</p>
+<p>I used to produce installable .NET applications way back, but I’ve lost sight of where the state of play is these days. Besides, the stack is not .NET, so it is sime to revisit the field.</p>
 </section>
-<section id="gitleaks" class="level1">
-<h1>gitleaks</h1>
-<div class="callout-note callout callout-style-default callout-captioned">
+<section id="quick-review-and-resources" class="level1">
+<h1>Quick review and resources</h1>
+<p>One list of available installation software is via <a href="https://en.wikipedia.org/wiki/List_of_installation_software">Wikipedia list of installation software</a>. <a href="https://en.wikipedia.org/wiki/Windows_Installer">Orca</a> seems to be the successor of what I used to use (Windows Installer) from Visual Studio way back. <a href="https://en.wikipedia.org/wiki/WiX">WiX</a> is a FOSS option, and version 4 has release candidates as I write. The venerable <a href="https://jrsoftware.org/isinfo.php">Innosetup</a> is also an option. <a href="https://en.wikipedia.org/wiki/Nullsoft_Scriptable_Install_System">NSIS</a>: I think the NSIS option was what I previously used under the hood of what <a href="https://www.electron.build/"><code>electron-builder</code></a>, see <a href="https://jmp75.github.io/work-blog/posts/20221116-waa-installers/">this previous blog post</a> for context, but I may be wrong about that.</p>
+<p>I am partial to trying WiX, and also because this is one of the non-proprietary options that produces a Windows Installer.</p>
+<section id="wix" class="level2">
+<h2 class="anchored" data-anchor-id="wix">WiX</h2>
+<p>Version 3 of the WiX toolset is mostly <a href="https://wixtoolset.org/docs/wix3">documented</a> as of March 2023, V4 is understanbly not as well documented. I was looking for “cheap” options, i.e.&nbsp;adapting a suitable template, but did not find this kind of resource in the WiX doc. A very good third party resource I found is <a href="https://github.com/kurtanr/WiXInstallerExamples">WiX Installer Examples</a>. It is based in WiX 3 for now, but a resource I am likely to look at even if I trial WiX version 4.</p>
+<p>A useful resource to get acquainted with WiX 4, as I write, is a <a href="https://www.youtube.com/watch?v=x-E7g5H_1TA&amp;list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6">playlist of coding dojos</a> (note that episodes are in reverse chronological order) by the <a href="https://www.youtube.com/@meschine">lead developer of WiX, Rob Mensching</a>. The code repository used for the successive sessions may be <a href="https://github.com/DeploymentDojo/BeltTest">here</a>. Note that as these videos were posted weekly, WiX 4 was in preview, so expect that some things there may change, and have changed as we’ll see below.</p>
+<p>There are new project templates in a Visual Studio extension <a href="https://www.firegiant.com/wix/heatwave">Heatwave, by FireGiant</a>, but for this first post I will probably stick to manually crafting the files. Nevertheless, installing the extension brings some intellisense goodness to Visual Studio, so if you have VS you should install the Heatwave extension.</p>
+<p><strong>For subsequent posts</strong> not this present one: we will likely use the WiX doc section on <a href="https://wixtoolset.org/docs/reference/signing/">code signing for WiX</a>, albeit for version 3. Also, requested a certificate via digicert using <a href="https://docs.digicert.com/en/certcentral/manage-certificates/code-signing-certificates/order-a-code-signing-certificate.html">this procedure</a>. Note the key length is 3K minimum now.</p>
+</section>
+</section>
+<section id="walkthrough" class="level1">
+<h1>Walkthrough</h1>
+<p>This part one will be the first baby step. While fundamental concepts in installers are not intrinsically complex, I’m scarred enough to appreciate their complicated nature.</p>
+<p>Let’s adapt a simple installer as per the dojos, and get one of our compiled software libraries copied. The final installer may look very different (project dependencies, file groups, etc.), but this is a few posts down the track.</p>
+<section id="windows-sandbox" class="level2">
+<h2 class="anchored" data-anchor-id="windows-sandbox">Windows Sandbox</h2>
+<p>The dojo playlist has an entry on <a href="https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6">Building a windows sandbox</a>. Sounds like a very good idea. Following the <a href="https://learn.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-overview">Windows Sandbox MS doc</a>.</p>
+<p>I will only give the essential steps, checking the video gives more information.</p>
+<p>in PowerShell as Administrator :</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Note
+Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Upfront disclaimer</strong> I found about gitleaks today only. It looks good to me for what I want. This short post does not imply any suitability or fitness for purpose for your particular need if you have any.</p>
+<p><strong>CAUTION</strong>: the following powershell admin command below will reboot your machine without asking permission.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Enable<span class="op">-</span>WindowsOptionalFeature <span class="op">-</span>FeatureName <span class="st">"Containers-DisposableClientVM"</span> <span class="op">-</span>All <span class="op">-</span>Online</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
-<p>After a very cursory search via google today I landed on <a href="https://github.com/zricethezav/gitleaks">gitleaks</a> (see also <a href="https://gitleaks.io/">https://gitleaks.io/</a> and its <a href="https://blog.gitleaks.io">blog</a>). Out of curiosity I decided to give it a try on some git repositories, and assess whether I could add some custom rules.</p>
+<p>Then as per the <a href="https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6">Building a windows sandbox</a> video, setting up a Windows sandbox file and adapting a little bit the <a href="https://github.com/DeploymentDojo/BeltTest">DeploymentDojo/BeltTest</a> to my context.</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>dojo.wsb</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Configuration</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">MappedFolders</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MappedFolder</span>&gt;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">HostFolder</span>&gt;C:\src\sffs-docs&lt;/<span class="kw">HostFolder</span>&gt;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">SandboxFolder</span>&gt;C:\dojo&lt;/<span class="kw">SandboxFolder</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">MappedFolder</span>&gt;</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">MappedFolders</span>&gt;</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">LogonCommand</span>&gt;</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Command</span>&gt;C:\dojo\wip\dojostart.cmd&lt;/<span class="kw">Command</span>&gt;</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">LogonCommand</span>&gt;</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<p>The cmd file has the very same content as the github repo:</p>
+<div class="cell">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>dojostart.cmd</strong></pre>
+</div>
+<pre class="bat cell-code"><code>start appwiz.cpl
+start "" "C:\dojo"
+start "" "C:\Program Files (x86)"
+@ rem start regedit</code></pre>
+</div>
+</div>
+<p><code>.\dojo.wsb</code> works fine.</p>
 </section>
-<section id="log" class="level1">
-<h1>Log</h1>
-<section id="installation" class="level2">
-<h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<div class="callout-tip callout callout-style-default callout-captioned">
+<section id="step-1" class="level2">
+<h2 class="anchored" data-anchor-id="step-1">Step 1</h2>
+<p>Starting from https://youtu.be/IXc6_i0Pm4E?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6 to adapt to my context</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Wix</span><span class="ot"> xmlns=</span><span class="st">"http://wixtoolset.org/schemas/v4/wxs"</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-1111-1111-1111-b363c7ce3a1e"</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MajorUpgrade</span><span class="ot"> DowngradeErrorMessage=</span><span class="st">"A newer version was detected"</span>/&gt;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Feature</span><span class="ot"> Id=</span><span class="st">"All"</span>&gt;</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span><span class="ot"> Directory=</span><span class="st">"InstallFolder"</span>&gt;</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\swift.dll"</span>/&gt;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Package</span>&gt;</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFilesFolder"</span>&gt;</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">StandardDirectory</span>&gt;</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>wix build .\sf.wxs</code></p>
+<p>error WIX0005: The Wix element contains an unexpected child element ‘StandardDirectory’.</p>
+<p>On a hunch looking at the code repo, I reckon I may try to put the standarddirectory block inside a Fragment. No squigly line anymore.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Wix</span><span class="ot"> xmlns=</span><span class="st">"http://wixtoolset.org/schemas/v4/wxs"</span>&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-8a18-47ea-ae43-b363c7ce3a1e"</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MajorUpgrade</span><span class="ot"> DowngradeErrorMessage=</span><span class="st">"A newer version was detected"</span>/&gt;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Feature</span><span class="ot"> Id=</span><span class="st">"All"</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span><span class="ot"> Directory=</span><span class="st">"InstallFolder"</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\swift.dll"</span>/&gt;</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Package</span>&gt;</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Fragment</span>&gt;</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFilesFolder"</span>&gt;</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">StandardDirectory</span>&gt;</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Fragment</span>&gt;</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and it builds.</p>
+<div class="callout-warning callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Tip
+Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>In general I’d prefer to build tools from source if I can. for gitleaks I figured I needed <code>sudo apt golang</code> to then try <code>make build</code>, but bumped into:</p>
-<pre class="text"><code>config/config.go:4:2: package embed is not in GOROOT (/usr/lib/go-1.15/src/embed)
-detect/detect.go:8:2: package io/fs is not in GOROOT (/usr/lib/go-1.15/src/io/fs)</code></pre>
-<p>which is a bit of a bump for folks not familiar with the <code>go</code> ecosystem. Binary releases are readily available; your choice to install. <a href="https://github.com/zricethezav/gitleaks/issues/1029">See this issue</a>.</p>
+<p>Note: I first launched the “Add or Remove Programs” in the sandbox to check the app installation. But it did not show the installed application, with a continuous spinning wheel. You need to open the older interface with <code>appwiz.cpl</code> (as in the startup batch file)</p>
 </div>
 </div>
-</section>
-<section id="trial-basic-use" class="level2">
-<h2 class="anchored" data-anchor-id="trial-basic-use">Trial basic use</h2>
-<p>Pick a random repo to test, and see what happen.</p>
-<p><code>gitleaks detect -r report.json</code>:</p>
-<pre class="text"><code>6:22PM INF 284 commits scanned.
-6:22PM INF scan completed in 260ms
-6:22PM WRN leaks found: 2</code></pre>
-<p>Huh oh… What? Thankfully this is a false positive: some generated R code uses arbitrary tokens, with no security implications. It does pick the commit at which this information was added.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Description"</span><span class="fu">:</span> <span class="st">"Generic API Key"</span><span class="fu">,</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"StartLine"</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"EndLine"</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">,</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"StartColumn"</span><span class="fu">:</span> <span class="dv">14</span><span class="fu">,</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"EndColumn"</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Match"</span><span class="fu">:</span> <span class="st">"token: 10BE3573-1514-4C36-9D1C-5A225CD40393"</span><span class="fu">,</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Secret"</span><span class="fu">:</span> <span class="st">"10BE3573-1514-4C36-9D1C-5A225CD40393"</span><span class="fu">,</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"File"</span><span class="fu">:</span> <span class="st">"path/to/some/R/RcppExports.R"</span><span class="fu">,</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"SymlinkFile"</span><span class="fu">:</span> <span class="st">""</span><span class="fu">,</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Commit"</span><span class="fu">:</span> <span class="st">"21324567890oiuasheroiuhawoiruhaoiuwrh"</span><span class="fu">,</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Entropy"</span><span class="fu">:</span> <span class="fl">3.6943858</span><span class="fu">,</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Author"</span><span class="fu">:</span> <span class="st">"J-M"</span><span class="fu">,</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Email"</span><span class="fu">:</span> <span class="st">"some.guy@example.com"</span><span class="fu">,</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Date"</span><span class="fu">:</span> <span class="st">"2017-04-05T06:20:11Z"</span><span class="fu">,</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Message"</span><span class="fu">:</span> <span class="st">"Add R package 'blah' wrapping for mylibrary.dll"</span><span class="fu">,</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Tags"</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"RuleID"</span><span class="fu">:</span> <span class="st">"generic-api-key"</span><span class="fu">,</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Fingerprint"</span><span class="fu">:</span> <span class="st">"21324567890oiuasheroiuhawoiruhaoiuwrh:path/to/some/R/RcppExports.R:generic-api-key:2"</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a> <span class="fu">}</span><span class="er">,</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="custom-rules" class="level2">
-<h2 class="anchored" data-anchor-id="custom-rules">Custom rules</h2>
-<p>OK, I get the gist of the tool, and this is appealing.</p>
-<p>Creating a test repository with a readme, to further test default and upcoming custom rules.</p>
-<p>Starting with a segment of the readme like the following, which I expect violates the rul “Generic API Key”</p>
-<pre class="text"><code>username: abcdef
-password: password</code></pre>
-<p>Nope.</p>
-<p>I suspect this is because there is an entropy threshold to consider a password is indeed a secret, rather than a dummy documentation artifact. So, let’s complicate the password:</p>
-<pre class="text"><code>password: ;oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i</code></pre>
-<p>Nope.</p>
-<p>On a complete hunch: because starting character is not a letter or number?</p>
-<pre class="text"><code>password: oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i</code></pre>
-<p>Bingo!, that was it. The underlying regex rules are quite complicated (to me at least), so not quite sure what is going on, but not flagging the line <code>password: ;oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i</code> may be a small flaw in the tool.</p>
-<p>I note that we have a high entropy in the reported match:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  <span class="er">"Match":</span> <span class="er">"password:</span> <span class="er">oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i",</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="er">"Secret":</span> <span class="er">"password:</span> <span class="er">oiaspgoih-1514-4C36-9D1C-poainrpoiunpwe4i",</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="er">"File":</span> <span class="er">"README.md",</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">"SymlinkFile":</span> <span class="er">"",</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">"Commit":</span> <span class="er">"19fbedaa6e0cf9907d8779583aa391f49bb09a03",</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="er">"Entropy":</span> <span class="er">4.3028474,</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="custom-rule-with-a-low-entropy-threshold" class="level2">
-<h2 class="anchored" data-anchor-id="custom-rule-with-a-low-entropy-threshold">Custom rule with a low entropy threshold</h2>
-<p>We create a file <code>~/.config/gitleaks.toml</code>. Let’s say we want to catch anything that remotely looks like a password (though still restricted by lines starting with the characters <code>password</code>):</p>
-<pre class="text"><code># Title for the gitleaks configuration file.
-title = "J-M's gitleaks config"
-[extend]
-# useDefault will extend the base (this) configuration with the default gitleaks config:
-# https://github.com/zricethezav/gitleaks/blob/master/config/gitleaks.toml
-useDefault = true
-
-[[rules]]
-# Unique identifier for this rule
-id = "any-kind-of-password"
-# Short human readable description of the rule.
-description = "Any passwords"
-regex = '''password.*:.*'''
-# Float representing the minimum shannon entropy a regex group must have to be considered a secret.
-entropy = 0</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gitleaks</span> <span class="at">-c</span> ~/.config/gitleaks.toml detect <span class="at">-r</span> report.json</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">{</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Description"</span><span class="fu">:</span> <span class="st">"Any passwords"</span><span class="fu">,</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"StartLine"</span><span class="fu">:</span> <span class="dv">70</span><span class="fu">,</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"EndLine"</span><span class="fu">:</span> <span class="dv">70</span><span class="fu">,</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"StartColumn"</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"EndColumn"</span><span class="fu">:</span> <span class="dv">19</span><span class="fu">,</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Match"</span><span class="fu">:</span> <span class="st">"password: password"</span><span class="fu">,</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Secret"</span><span class="fu">:</span> <span class="st">"password: password"</span><span class="fu">,</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"File"</span><span class="fu">:</span> <span class="st">"README.md"</span><span class="fu">,</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"SymlinkFile"</span><span class="fu">:</span> <span class="st">""</span><span class="fu">,</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Commit"</span><span class="fu">:</span> <span class="st">"5c4782a83541baa26e98f8c162d2eede1744d316"</span><span class="fu">,</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Entropy"</span><span class="fu">:</span> <span class="fl">3.0588138</span><span class="fu">,</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Author"</span><span class="fu">:</span> <span class="st">"J-M"</span><span class="fu">,</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Email"</span><span class="fu">:</span> <span class="st">"blah@blah.au"</span><span class="fu">,</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Date"</span><span class="fu">:</span> <span class="st">"2022-11-11T06:13:53Z"</span><span class="fu">,</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Message"</span><span class="fu">:</span> <span class="st">"Try to trigger rule for password"</span><span class="fu">,</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Tags"</span><span class="fu">:</span> <span class="ot">[]</span><span class="fu">,</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"RuleID"</span><span class="fu">:</span> <span class="st">"any-kind-of-password"</span><span class="fu">,</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"Fingerprint"</span><span class="fu">:</span> <span class="st">"5c4782a83541baa26e98f8c162d2eede1744d316:README.md:any-kind-of-password:70"</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a> <span class="fu">}</span><span class="er">,</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>This appears to be a suitable tool to audit git repositories to detect more or less sensitive information, including with custom criteria. I did find the introductory material is a bit lacking for newcomers, but this is far from a showstopper. And, I know what it’s like…</p>
-<p>I recommend you read <a href="https://blog.gitleaks.io/gitleaks-llc-announcement-d7d06a52e801">this post</a> from the tool creator. Food for thoughts</p>
+<p>So far so good…</p>
 
 
 </section>
