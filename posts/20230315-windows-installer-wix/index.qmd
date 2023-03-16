@@ -1,54 +1,147 @@
 ---
-title: "C++ static code analysis"
-description: "C++ static code analysis"
+title: "Windows installer with WiX 4 - part 1"
+description: "Building a Windows installer with WiX 4 - part 1"
 author:
   - name: J-M
     url: {}
-date: "2023-02-23"
+date: "2023-03-16"
 categories: ["C++", "memory", "safety"]
-image: ./Cpp.png
 format: 
   html:
     toc: true
 engine: knitr
-draft: true
+draft: false
 ---
 
-!["C++ logo"](./Cpp.png "C++ logo")
+!["WiX logo"](https://avatars.githubusercontent.com/u/91997072?s=200&v=4 "C++ logo")
 
 # Background
 
-Building a Windows installer for the [software stack for streamflow forecasting](https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/), with code signing.
+"We" are looking to make the [software stack for streamflow forecasting](https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/) installable on Windows via an installer, with code signing. There are multiple motivations for this, some of it is perceptions and first impressions for new users. More importantly the code signing and managed installation are particularly important for some users in an operational environment (hydro-electric production, water management).
 
-# Resources
+I used to produce installable .NET applications way back, but I've lost sight of where the state of play is these days. Besides, the stack is not .NET, so it is sime to revisit the field.
 
+# Quick review and resources
 
-https://en.wikipedia.org/wiki/List_of_installation_software
+One list of available installation software is via [Wikipedia list of installation software](https://en.wikipedia.org/wiki/List_of_installation_software). [Orca](https://en.wikipedia.org/wiki/Windows_Installer) seems to be the successor of what I used to use (Windows Installer) from Visual Studio way back. [WiX](https://en.wikipedia.org/wiki/WiX) is a FOSS option, and version 4 has release candidates as I write. The venerable [Innosetup](https://jrsoftware.org/isinfo.php) is also an option. [NSIS](https://en.wikipedia.org/wiki/Nullsoft_Scriptable_Install_System): I think the NSIS option was what I previously used  under the hood of what [`electron-builder`](https://www.electron.build/), see [this previous blog post](https://jmp75.github.io/work-blog/posts/20221116-waa-installers/) for context, but I may be wrong about that.
 
+I am partial to trying WiX, and also because this is one of the non-proprietary options that produces a Windows Installer.
 
-https://github.com/kurtanr/WiXInstallerExamples
-Package a Windows installer, perhaps borrowing from the "one click" approach of the WAA tool setup, conceptually. The venerable [Innosetup](https://jrsoftware.org/isinfo.php) may be the way to go.
+## WiX 
 
-https://en.wikipedia.org/wiki/Nullsoft_Scriptable_Install_System
+Version 3 of the WiX toolset is mostly [documented](https://wixtoolset.org/docs/wix3) as of March 2023, V4 is understanbly not as well documented. I was looking for "cheap" options, i.e. adapting a suitable template, but did not find this kind of resource in the WiX doc. A very good third party resource I found is [WiX Installer Examples](https://github.com/kurtanr/WiXInstallerExamples). It is based in WiX 3 for now, but a resource I am likely to look at even if I trial WiX version 4.
 
-https://wixtoolset.org/  WiX v4 is almost here! Let FireGiant help.  
+A useful resource to get acquainted with WiX 4, as I write, is a [playlist of coding dojos](https://www.youtube.com/watch?v=x-E7g5H_1TA&list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6) (note that episodes are in reverse chronological order) by the [lead developer of WiX, Rob Mensching](https://www.youtube.com/@meschine). The code repository used for the successive sessions may be [here](https://github.com/DeploymentDojo/BeltTest). Note that as these videos were posted weekly, WiX 4 was in preview, so expect that some things there may change, and have changed as we'll see below.
 
-https://wixtoolset.org/docs/wix3/
+There are new project templates in a Visual Studio extension [Heatwave, by FireGiant](https://www.firegiant.com/wix/heatwave), but for this first post I will probably stick to manually crafting the files. Nevertheless, installing the extension brings some intellisense goodness to Visual Studio, so if you have VS you should install the Heatwave extension.
 
-https://www.youtube.com/watch?v=-Y7dOtciOJw   by https://www.youtube.com/@meschine   https://www.youtube.com/@meschine/streams   playlist is https://www.youtube.com/watch?v=x-E7g5H_1TA&list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6
+**For subsequent posts** not this present one: we will likely use the WiX doc section on [code signing for WiX](https://wixtoolset.org/docs/reference/signing/), albeit for version 3. Also, requested a certificate via digicert using  [this procedure](https://docs.digicert.com/en/certcentral/manage-certificates/code-signing-certificates/order-a-code-signing-certificate.html). Note the key length is 3K minimum now.
 
-https://www.joyofsetup.com/tags/wix4/
+# Walkthrough
 
+This part one will be the first baby step. While fundamental concepts in installers are not intrinsically complex, I'm scarred enough to appreciate their complicated nature. 
 
-code signing:
-https://wixtoolset.org/docs/reference/signing/
+Let's adapt a simple installer as per the dojos, and get one of our compiled software libraries copied. The final installer may look very different (project dependencies, file groups, etc.), but this is a few posts down the track. 
 
+## Windows Sandbox
 
-# Log of steps taken
+The dojo playlist has an entry on [Building a windows sandbox](https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6). Sounds like a very good idea. Following the [Windows Sandbox MS doc](https://learn.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-overview).
 
-Requested a certificate via digicert. Followed [this procedure](https://docs.digicert.com/en/certcentral/manage-certificates/code-signing-certificates/order-a-code-signing-certificate.html). Note the key length is 3K minimum now.
+I will only give the essential steps, checking the video gives more information.
 
+in PowerShell as Administrator : 
 
-https://www.firegiant.com/wix/heatwave/
+::: {.callout-warning}
 
+**CAUTION**: the following powershell admin command below will reboot your machine without asking permission.
 
+```powershell
+Enable-WindowsOptionalFeature -FeatureName "Containers-DisposableClientVM" -All -Online
+```
+
+:::
+
+Then as per the [Building a windows sandbox](https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6) video, setting up a Windows sandbox file and adapting a little bit the [DeploymentDojo/BeltTest](https://github.com/DeploymentDojo/BeltTest) to my context.
+
+```{xml, filename="dojo.wsb"}
+<Configuration>
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>C:\src\sffs-docs</HostFolder>
+      <SandboxFolder>C:\dojo</SandboxFolder>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>C:\dojo\wip\dojostart.cmd</Command>
+  </LogonCommand>
+</Configuration>
+```
+
+The cmd file has the very same content as the github repo:
+
+```{bat, filename="dojostart.cmd"}
+start appwiz.cpl
+start "" "C:\dojo"
+start "" "C:\Program Files (x86)"
+@ rem start regedit
+```
+
+`.\dojo.wsb` works fine. 
+
+## Step 1
+
+Starting from https://youtu.be/IXc6_i0Pm4E?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6 to adapt to my context
+
+```xml
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="SF" Manufacturer="CSIRO" Version="0.1" UpgradeCode="2e7d7f1d-1111-1111-1111-b363c7ce3a1e">
+    <MajorUpgrade DowngradeErrorMessage="A newer version was detected"/>
+    <Feature Id="All">
+      <Component Directory="InstallFolder">
+        <File Source="C:\local\libs\64\swift.dll"/>
+      </Component>
+    </Feature>
+  </Package>
+  <StandardDirectory Id="ProgramFilesFolder">
+    <Directory Id="InstallFolder" Name="SF">
+    </Directory>
+  </StandardDirectory>
+</Wix>
+```
+
+`wix build .\sf.wxs`
+
+error WIX0005: The Wix element contains an unexpected child element 'StandardDirectory'.
+
+On a hunch looking at the code repo, I reckon I may try to put the standarddirectory block inside a Fragment. No squigly line anymore.
+
+```xml
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="SF" Manufacturer="CSIRO" Version="0.1" UpgradeCode="2e7d7f1d-8a18-47ea-ae43-b363c7ce3a1e">
+    <MajorUpgrade DowngradeErrorMessage="A newer version was detected"/>
+    <Feature Id="All">
+      <Component Directory="InstallFolder">
+        <File Source="C:\local\libs\64\swift.dll"/>
+      </Component>
+    </Feature>
+  </Package>
+  <Fragment>
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="InstallFolder" Name="SF">
+    </Directory>
+  </StandardDirectory>
+  </Fragment>
+</Wix>
+```
+
+and it builds.
+
+::: {.callout-warning}
+
+Note: I first launched the "Add or Remove Programs" in the sandbox to check the app installation. But it did not show the installed application, with a continuous spinning wheel. You need to open the older interface with `appwiz.cpl` (as in the startup batch file)
+
+:::
+
+# Conclusion
+
+So far so good... 
