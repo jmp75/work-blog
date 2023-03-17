@@ -1,0 +1,71 @@
+---
+title: "Windows installer with WiX 4 - part 2"
+description: "Building a Windows installer with WiX 4 - part 2"
+author:
+  - name: J-M
+    url: {}
+date: "2023-03-17"
+categories: ["WiX", "installers", ""]
+format: 
+  html:
+    toc: true
+engine: knitr
+draft: true
+---
+
+!["WiX logo"](https://avatars.githubusercontent.com/u/91997072?s=200&v=4 "WiX logo")
+
+# Background
+
+Follow up on [Windows installer with WiX 4 - part 1](https://jmp75.github.io/work-blog/posts/20230315-windows-installer-wix/)
+
+# Walkthrough
+
+Youpee we could install one file last time. Now emulating the video [Moving beyond Upgrades to Groups and files](https://www.youtube.com/watch?v=ga9M4m6MtSU). 
+
+I have a bunch of files 
+
+swift.dll
+datatypes.dll
+swift.lib
+datatypes.lib
+
+## ComponentGroup
+
+```xml
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="SF" Manufacturer="CSIRO" Version="0.1" UpgradeCode="2e7d7f1d-8a18-47ea-ae43-b363c7ce3a1e">
+    <MajorUpgrade DowngradeErrorMessage="A newer version was detected"/>
+
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="InstallFolder" Name="SF">
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="All">
+      <ComponentGroupRef Id="InstallComponents">
+    </Feature>
+
+    <ComponentGroup Id="InstallComponents" Directory="InstallFolder">
+      <Component>
+        <File Source="C:\local\libs\64\swift.dll"/>
+      </Component>
+    <ComponentGroup>
+
+  </Package>
+</Wix>
+```
+
+TODO Does this compile/install.
+
+## wix project file
+
+```xml
+<Project Sdk="WixToolset.Sdk/4.0.0-rc3">
+</Project>
+```
+
+but will not use project references, probably not anyway. Am building from several solutions and reluctant to change that
+
+# Conclusion
+
