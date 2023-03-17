@@ -183,7 +183,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
                           <div class="quarto-categories">
                 <div class="quarto-category">WiX</div>
                 <div class="quarto-category">installers</div>
-                <div class="quarto-category"></div>
               </div>
                   </div>
   </div>
@@ -221,6 +220,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
   <ul class="collapse">
   <li><a href="#componentgroup" id="toc-componentgroup" class="nav-link" data-scroll-target="#componentgroup">ComponentGroup</a></li>
+  <li><a href="#multiple-files" id="toc-multiple-files" class="nav-link" data-scroll-target="#multiple-files">Multiple files</a></li>
+  <li><a href="#installing-to-a-user-specified-folder" id="toc-installing-to-a-user-specified-folder" class="nav-link" data-scroll-target="#installing-to-a-user-specified-folder">Installing to a user specified folder</a></li>
   </ul></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
@@ -246,33 +247,122 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="walkthrough" class="level1">
 <h1>Walkthrough</h1>
-<p>Youpee we could install one file last time. Now emulating the video <a href="https://www.youtube.com/watch?v=ga9M4m6MtSU">Moving beyond Upgrades to Groups and files</a>.</p>
-<p>I have a bunch of files</p>
-<p>swift.dll datatypes.dll swift.lib datatypes.lib</p>
+<p>Youpee we could install one file last time. Now let’s take a leaf from the video <a href="https://www.youtube.com/watch?v=ga9M4m6MtSU">Moving beyond Upgrades to Groups and files</a>.</p>
+<p>I have a bunch of files with native dynamic libraries and related:</p>
+<ul>
+<li>swift.dll</li>
+<li>datatypes.dll</li>
+<li>swift.lib</li>
+<li>datatypes.lib</li>
+<li>etc. a good dozen of these.</li>
+</ul>
+<p>Let’s try to install these via the installer</p>
+<p>Curiously not forthcoming to figure out how to add all files within a directory, even for <a href="https://wixtoolset.org/docs/v3/howtos/files_and_registry/add_a_file">WiX v3 documentation</a>. There may be a wildcard option, or not. I suppose having list of files explicitely has some merit, but it is tedious to set up. Then again, the vcxproj files I use for c++ also list each files included in a project explicitly.</p>
 <section id="componentgroup" class="level2">
 <h2 class="anchored" data-anchor-id="componentgroup">ComponentGroup</h2>
+<p>We are starting from the following</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Wix</span><span class="ot"> xmlns=</span><span class="st">"http://wixtoolset.org/schemas/v4/wxs"</span>&gt;</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-8a18-47ea-ae43-b363c7ce3a1e"</span>&gt;</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-1111-1111-1111-b363c7ce3a1e"</span>&gt;</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MajorUpgrade</span><span class="ot"> DowngradeErrorMessage=</span><span class="st">"A newer version was detected"</span>/&gt;</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Feature</span><span class="ot"> Id=</span><span class="st">"All"</span>&gt;</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ComponentGroupRef</span><span class="ot"> Id=</span><span class="st">"InstallComponents"</span>&gt;</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">ComponentGroup</span><span class="ot"> Id=</span><span class="st">"InstallComponents"</span>&gt;</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span><span class="ot"> Directory=</span><span class="st">"InstallFolder"</span>&gt;</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\swift.dll"</span>/&gt;</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">ComponentGroup</span>&gt;</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFilesFolder"</span>&gt;</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Directory</span>&gt;</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">StandardDirectory</span>&gt;</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Package</span>&gt;</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFilesFolder"</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">StandardDirectory</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Feature</span><span class="ot"> Id=</span><span class="st">"All"</span>&gt;</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ComponentGroupRef</span><span class="ot"> Id=</span><span class="st">"InstallComponents"</span>/&gt;</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">ComponentGroup</span><span class="ot"> Id=</span><span class="st">"InstallComponents"</span><span class="ot"> Directory=</span><span class="st">"InstallFolder"</span>&gt;</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span>&gt;</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\swift.dll"</span>/&gt;</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">ComponentGroup</span>&gt;</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Package</span>&gt;</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="multiple-files" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-files">Multiple files</h2>
+<p>Let’s try:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Wix</span><span class="ot"> xmlns=</span><span class="st">"http://wixtoolset.org/schemas/v4/wxs"</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-1111-1111-1111-b363c7ce3a1e"</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MajorUpgrade</span><span class="ot"> DowngradeErrorMessage=</span><span class="st">"A newer version was detected"</span>/&gt;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFilesFolder"</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">StandardDirectory</span>&gt;</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Feature</span><span class="ot"> Id=</span><span class="st">"All"</span>&gt;</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ComponentGroupRef</span><span class="ot"> Id=</span><span class="st">"InstallComponents"</span>/&gt;</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">ComponentGroup</span><span class="ot"> Id=</span><span class="st">"InstallComponents"</span><span class="ot"> Directory=</span><span class="st">"InstallFolder"</span>&gt;</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span>&gt;</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\boost_chrono-vc142-mt-gd-x64-1_79.dll"</span>/&gt;</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\boost_chrono-vc142-mt-gd-x64-1_79.lib"</span>/&gt;</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\boost_chrono-vc142-mt-gd-x64-1_79.pdb"</span>/&gt;</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="co">&lt;!-- etc. etc. --&gt;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\yaml-cpp.dll"</span>/&gt;</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\yaml-cpp.lib"</span>/&gt;</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\zlib.lib"</span>/&gt;</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\zlib1.dll"</span>/&gt;</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\zlibstatic.lib"</span>/&gt;</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">ComponentGroup</span>&gt;</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Package</span>&gt;</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>wix build .\sf.wxs</code></p>
+<pre class="text"><code>C:\src\sffs-docs\wip\sf.wxs(16) : error WIX0367: The Component/@Guid attribute's value '*' is not valid for this component because it does not meet the criteria for having an automatically generated guid. Components with more than one file cannot use an automatically generated guid unless a versioned file is the keypath and the other files are unversioned. This component's keypath is not versioned. Create multiple components to use automatically generated guids.</code></pre>
+<p>Very unclear about what KeyPath is about, but the first part of the error message alludes to a missing guid for the component. Guid is indeed an attribute of <code>Component</code>s. Let’s try:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">ComponentGroup</span><span class="ot"> Id=</span><span class="st">"InstallComponents"</span><span class="ot"> Directory=</span><span class="st">"InstallFolder"</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span><span class="ot"> Guid=</span><span class="st">"243e7812-1111-1111-1111-745ba964291a"</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\boost_chrono-vc142-mt-gd-x64-1_79.dll"</span>/&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>wix build .\sf.wxs</code> then works.</p>
+<p>Let’s see with <code>.\dojo.wsb</code>.</p>
+<p>The libraries are installed under “C:Files (x86)”. Can we install to another user specified folder. We need a screen that asks for a location. A side question that pops to mind will be how to handle user-level installation versus admin install, but one thing at a time.</p>
+</section>
+<section id="installing-to-a-user-specified-folder" class="level2">
+<h2 class="anchored" data-anchor-id="installing-to-a-user-specified-folder">Installing to a user specified folder</h2>
+<p>WiX 3 had something like <code>&lt;UIRef Id="WixUI_InstallDir" /&gt;</code> from what I glean, but this seems not to be valid anymore for v4. At the time I write, the <a href="https://wixtoolset.org/docs/reference/schema/wxs/uiref/">new reference doc page</a> does not yet include all information to second guess the syntax/options.</p>
+<p>In the <a href="https://github.com/kurtanr/WiXInstallerExamples">WiXInstallerExamples</a> on github, there is an example that includes a UI element. Let’s try to upgrade this from Visual Studio 2022 to WiX4 and see that we get.</p>
+<p><img src="./wix4_008.png" class="img-fluid"></p>
+<p><img src="./wix4_009.png" class="img-fluid"></p>
+<p>We get a couple of warnings, but otherwise no error.</p>
+<p><img src="./wix4_010.png" class="img-fluid"></p>
+<p>The warnings happen to hint at the fact that the UI elements are in separate nuget packages</p>
+<p><img src="./wix4_011.png" class="img-fluid"></p>
+<p>the wixproj file becomes:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Project</span><span class="ot"> Sdk=</span><span class="st">"WixToolset.Sdk/4.0.0-rc.3"</span>&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">PropertyGroup</span><span class="ot"> Condition=</span><span class="st">" '$(Configuration)|$(Platform)' == 'Debug|x86' "</span>&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">DefineConstants</span>&gt;Debug&lt;/<span class="kw">DefineConstants</span>&gt;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">PropertyGroup</span>&gt;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Content</span><span class="ot"> Include=</span><span class="st">"InstallationStages.wxi"</span> /&gt;</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Content</span><span class="ot"> Include=</span><span class="st">"MyAppendScript.ps1"</span> /&gt;</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PackageReference</span><span class="ot"> Include=</span><span class="st">"WixToolset.UI.wixext"</span><span class="ot"> Version=</span><span class="st">"4.0.0-rc.3"</span> /&gt;</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PackageReference</span><span class="ot"> Include=</span><span class="st">"WixToolset.Util.wixext"</span><span class="ot"> Version=</span><span class="st">"4.0.0-rc.3"</span> /&gt;</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Project</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and the <code>Product.wsx</code> file now contains:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">UI</span><span class="ot"> Id=</span><span class="st">"MyWixUI_InstallDir"</span>&gt;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ui:WixUI</span><span class="ot"> Id=</span><span class="st">"WixUI_InstallDir"</span> /&gt;</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">DialogRef</span><span class="ot"> Id=</span><span class="st">"MyCustomPropertiesDlg"</span> /&gt;</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Publish</span><span class="ot"> Dialog=</span><span class="st">"InstallDirDlg"</span><span class="ot"> Control=</span><span class="st">"Next"</span><span class="ot"> Event=</span><span class="st">"NewDialog"</span><span class="ot"> Value=</span><span class="st">"MyCustomPropertiesDlg"</span><span class="ot"> Order=</span><span class="st">"4"</span><span class="ot"> Condition=</span><span class="st">"WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID=</span><span class="dv">&amp;quot;</span><span class="st">1</span><span class="dv">&amp;quot;</span><span class="st">"</span> /&gt;</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Publish</span><span class="ot"> Dialog=</span><span class="st">"VerifyReadyDlg"</span><span class="ot"> Control=</span><span class="st">"Back"</span><span class="ot"> Event=</span><span class="st">"NewDialog"</span><span class="ot"> Value=</span><span class="st">"MyCustomPropertiesDlg"</span><span class="ot"> Order=</span><span class="st">"1"</span> /&gt;</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">UI</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>OK, a fair bit to digest and explore. This will have to do for today.</p>
 </section>
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
+<p>To be continued…</p>
 
 
 </section>
