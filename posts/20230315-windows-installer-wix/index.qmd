@@ -116,7 +116,9 @@ Starting from [the wsx file in Rob's dojo video](https://youtu.be/IXc6_i0Pm4E?t=
 
 error WIX0005: The Wix element contains an unexpected child element 'StandardDirectory'.
 
-On a hunch after [looking at a subsequent version of the code github repo](https://github.com/DeploymentDojo/BeltTest/blob/75829b79027dcbcb559f7da6aff66752517999cf/BeltTest/BeltTestPackage/Folders.wxs), I reckon I should try to put the `StandardDirectory` block inside a `Fragment`. No squigly line anymore in Visual Studio is a good sign:
+On a hunch after [looking at a subsequent version of the code github repo](https://github.com/DeploymentDojo/BeltTest/blob/75829b79027dcbcb559f7da6aff66752517999cf/BeltTest/BeltTestPackage/Folders.wxs), I reckon I should try to put the `StandardDirectory` block inside a `Fragment`. No squigly line anymore in Visual Studio is a good sign.
+
+Then I finally notice that actually I had the `</Fragment>` in the wrong spot. So either:
 
 ```xml
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
@@ -137,7 +139,26 @@ On a hunch after [looking at a subsequent version of the code github repo](https
 </Wix>
 ```
 
-and yes now it builds.
+or more logical for a single XML file package definition:
+
+```xml
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="SF" Manufacturer="CSIRO" Version="0.1" UpgradeCode="2e7d7f1d-8a18-47ea-ae43-b363c7ce3a1e">
+    <MajorUpgrade DowngradeErrorMessage="A newer version was detected"/>
+    <Feature Id="All">
+      <Component Directory="InstallFolder">
+        <File Source="C:\local\libs\64\swift.dll"/>
+      </Component>
+    </Feature>
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="InstallFolder" Name="SF">
+      </Directory>
+    </StandardDirectory>
+  </Package>
+</Wix>
+```
+
+and yes now it builds. At least I have an inkling of the use of Fragment elements in multiple files.
 
 ::: {.callout-warning}
 
