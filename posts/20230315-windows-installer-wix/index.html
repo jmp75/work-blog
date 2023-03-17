@@ -181,9 +181,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">C++</div>
-                <div class="quarto-category">memory</div>
-                <div class="quarto-category">safety</div>
+                <div class="quarto-category">WiX</div>
+                <div class="quarto-category">installers</div>
+                <div class="quarto-category"></div>
               </div>
                   </div>
   </div>
@@ -240,23 +240,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <figure class="figure">
-<img src="https://avatars.githubusercontent.com/u/91997072?s=200&amp;v=4.png" title="C++ logo" class="img-fluid figure-img">
+<img src="https://avatars.githubusercontent.com/u/91997072?s=200&amp;v=4.png" title="WiX logo" class="img-fluid figure-img">
 </figure>
 <p></p><figcaption class="figure-caption">“WiX logo”</figcaption><p></p>
 </figure>
 </div>
 <section id="background" class="level1">
 <h1>Background</h1>
-<p>“We” are looking to make the <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a> installable on Windows via an installer, with code signing. There are multiple motivations for this, some of it is perceptions and first impressions for new users. More importantly the code signing and managed installation are particularly important for some users in an operational environment (hydro-electric production, water management).</p>
+<p>The <a href="https://github.com/csiro-hydroinformatics/streamflow-forecasting-tools-onboard/">software stack for streamflow forecasting</a> will be made installable on Windows via an installer, with code signing. There are multiple motivations for this, some of it is perceptions and first impressions for new users. More importantly code signing and managed installation are particularly important for some users in an operational environment (hydro-electric production, water management).</p>
 <p>I used to produce installable .NET applications way back, but I’ve lost sight of where the state of play is these days. Besides, the stack is not .NET, so it is sime to revisit the field.</p>
 </section>
 <section id="quick-review-and-resources" class="level1">
 <h1>Quick review and resources</h1>
-<p>One list of available installation software is via <a href="https://en.wikipedia.org/wiki/List_of_installation_software">Wikipedia list of installation software</a>. <a href="https://en.wikipedia.org/wiki/Windows_Installer">Orca</a> seems to be the successor of what I used to use (Windows Installer) from Visual Studio way back. <a href="https://en.wikipedia.org/wiki/WiX">WiX</a> is a FOSS option, and version 4 has release candidates as I write. The venerable <a href="https://jrsoftware.org/isinfo.php">Innosetup</a> is also an option. <a href="https://en.wikipedia.org/wiki/Nullsoft_Scriptable_Install_System">NSIS</a>: I think the NSIS option was what I previously used under the hood of what <a href="https://www.electron.build/"><code>electron-builder</code></a>, see <a href="https://jmp75.github.io/work-blog/posts/20221116-waa-installers/">this previous blog post</a> for context, but I may be wrong about that.</p>
-<p>I am partial to trying WiX, and also because this is one of the non-proprietary options that produces a Windows Installer.</p>
+<p>One list of available installation software is via <a href="https://en.wikipedia.org/wiki/List_of_installation_software">Wikipedia list of installation software</a>. Paid options may be in scope if this brings value, but I’ll first cover open source or “freeware” types. Prior to this port and <em>a priori</em> I considered:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Windows_Installer">Orca</a> seems to be the successor of what I used to use (Windows Installer) from Visual Studio way back.</li>
+<li><a href="https://en.wikipedia.org/wiki/WiX">WiX</a> is a FOSS option, and version 4 has release candidates as I write.</li>
+<li>The venerable <a href="https://jrsoftware.org/isinfo.php">Innosetup</a>.</li>
+<li><a href="https://en.wikipedia.org/wiki/Nullsoft_Scriptable_Install_System">NSIS</a> is also a possible candidate. I think the NSIS option was what I previously used under the hood of what <a href="https://www.electron.build/"><code>electron-builder</code></a>, see <a href="https://jmp75.github.io/work-blog/posts/20221116-waa-installers/">this previous blog post</a> for context, but I may be wrong about that.</li>
+</ul>
+<p>I am partial to trying WiX for this and follow-up post. This is one of the non-proprietary options that produces a Windows Installer.</p>
 <section id="wix" class="level2">
 <h2 class="anchored" data-anchor-id="wix">WiX</h2>
-<p>Version 3 of the WiX toolset is mostly <a href="https://wixtoolset.org/docs/wix3">documented</a> as of March 2023, V4 is understanbly not as well documented. I was looking for “cheap” options, i.e.&nbsp;adapting a suitable template, but did not find this kind of resource in the WiX doc. A very good third party resource I found is <a href="https://github.com/kurtanr/WiXInstallerExamples">WiX Installer Examples</a>. It is based in WiX 3 for now, but a resource I am likely to look at even if I trial WiX version 4.</p>
+<p>Version 3 of the WiX toolset is mostly <a href="https://wixtoolset.org/docs/wix3">documented</a> as of March 2023, V4 is understanbly not as well documented. Notwithing this I was still looking for “cheap” options, i.e.&nbsp;adapting from a suitable template, but did not find this kind of resource in the WiX doc. A very good third party resource I found is <a href="https://github.com/kurtanr/WiXInstallerExamples">WiX Installer Examples</a>. It is based in WiX 3 for now, but a resource I am likely to look at even if I trial WiX version 4.</p>
 <p>A useful resource to get acquainted with WiX 4, as I write, is a <a href="https://www.youtube.com/watch?v=x-E7g5H_1TA&amp;list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6">playlist of coding dojos</a> (note that episodes are in reverse chronological order) by the <a href="https://www.youtube.com/@meschine">lead developer of WiX, Rob Mensching</a>. The code repository used for the successive sessions may be <a href="https://github.com/DeploymentDojo/BeltTest">here</a>. Note that as these videos were posted weekly, WiX 4 was in preview, so expect that some things there may change, and have changed as we’ll see below.</p>
 <p>There are new project templates in a Visual Studio extension <a href="https://www.firegiant.com/wix/heatwave">Heatwave, by FireGiant</a>, but for this first post I will probably stick to manually crafting the files. Nevertheless, installing the extension brings some intellisense goodness to Visual Studio, so if you have VS you should install the Heatwave extension.</p>
 <p><strong>For subsequent posts</strong> not this present one: we will likely use the WiX doc section on <a href="https://wixtoolset.org/docs/reference/signing/">code signing for WiX</a>, albeit for version 3. Also, requested a certificate via digicert using <a href="https://docs.digicert.com/en/certcentral/manage-certificates/code-signing-certificates/order-a-code-signing-certificate.html">this procedure</a>. Note the key length is 3K minimum now.</p>
@@ -268,8 +274,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Let’s adapt a simple installer as per the dojos, and get one of our compiled software libraries copied. The final installer may look very different (project dependencies, file groups, etc.), but this is a few posts down the track.</p>
 <section id="windows-sandbox" class="level2">
 <h2 class="anchored" data-anchor-id="windows-sandbox">Windows Sandbox</h2>
-<p>The dojo playlist has an entry on <a href="https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6">Building a windows sandbox</a>. Sounds like a very good idea. Following the <a href="https://learn.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-overview">Windows Sandbox MS doc</a>.</p>
-<p>I will only give the essential steps, checking the video gives more information.</p>
+<p>The dojo playlist has an episode on <a href="https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6">Building a windows sandbox</a>. I did not know about this, and this sounds like a very good idea. I will only give the essential steps, checking the video gives more information. Following the <a href="https://learn.microsoft.com/en-us/windows/security/threat-protection/windows-sandbox/windows-sandbox-overview">Windows Sandbox MS doc</a>:</p>
 <p>in PowerShell as Administrator :</p>
 <div class="callout-warning callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -281,7 +286,7 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>CAUTION</strong>: the following powershell admin command below will reboot your machine without asking permission.</p>
+<p><strong>CAUTION</strong>: the following powershell admin command below may reboot your machine without asking permission.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Enable<span class="op">-</span>WindowsOptionalFeature <span class="op">-</span>FeatureName <span class="st">"Containers-DisposableClientVM"</span> <span class="op">-</span>All <span class="op">-</span>Online</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
@@ -320,7 +325,7 @@ start "" "C:\Program Files (x86)"
 </section>
 <section id="step-1" class="level2">
 <h2 class="anchored" data-anchor-id="step-1">Step 1</h2>
-<p>Starting from https://youtu.be/IXc6_i0Pm4E?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6 to adapt to my context</p>
+<p>Starting from <a href="https://youtu.be/IXc6_i0Pm4E?t=933">the wsx file in Rob’s dojo video</a> to adapt to my context:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Wix</span><span class="ot"> xmlns=</span><span class="st">"http://wixtoolset.org/schemas/v4/wxs"</span>&gt;</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-1111-1111-1111-b363c7ce3a1e"</span>&gt;</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MajorUpgrade</span><span class="ot"> DowngradeErrorMessage=</span><span class="st">"A newer version was detected"</span>/&gt;</span>
@@ -337,7 +342,8 @@ start "" "C:\Program Files (x86)"
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>wix build .\sf.wxs</code></p>
 <p>error WIX0005: The Wix element contains an unexpected child element ‘StandardDirectory’.</p>
-<p>On a hunch looking at the code repo, I reckon I may try to put the standarddirectory block inside a Fragment. No squigly line anymore.</p>
+<p>On a hunch after <a href="https://github.com/DeploymentDojo/BeltTest/blob/75829b79027dcbcb559f7da6aff66752517999cf/BeltTest/BeltTestPackage/Folders.wxs">looking at a subsequent version of the code github repo</a>, I reckon I should try to put the <code>StandardDirectory</code> block inside a <code>Fragment</code>. No squigly line anymore in Visual Studio is a good sign.</p>
+<p>Then I finally notice that actually I had the <code>&lt;/Fragment&gt;</code> in the wrong spot. So either:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Wix</span><span class="ot"> xmlns=</span><span class="st">"http://wixtoolset.org/schemas/v4/wxs"</span>&gt;</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-8a18-47ea-ae43-b363c7ce3a1e"</span>&gt;</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MajorUpgrade</span><span class="ot"> DowngradeErrorMessage=</span><span class="st">"A newer version was detected"</span>/&gt;</span>
@@ -354,7 +360,22 @@ start "" "C:\Program Files (x86)"
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">StandardDirectory</span>&gt;</span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Fragment</span>&gt;</span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>and it builds.</p>
+<p>or more logical for a single XML file package definition:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Wix</span><span class="ot"> xmlns=</span><span class="st">"http://wixtoolset.org/schemas/v4/wxs"</span>&gt;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Package</span><span class="ot"> Name=</span><span class="st">"SF"</span><span class="ot"> Manufacturer=</span><span class="st">"CSIRO"</span><span class="ot"> Version=</span><span class="st">"0.1"</span><span class="ot"> UpgradeCode=</span><span class="st">"2e7d7f1d-8a18-47ea-ae43-b363c7ce3a1e"</span>&gt;</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MajorUpgrade</span><span class="ot"> DowngradeErrorMessage=</span><span class="st">"A newer version was detected"</span>/&gt;</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Feature</span><span class="ot"> Id=</span><span class="st">"All"</span>&gt;</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span><span class="ot"> Directory=</span><span class="st">"InstallFolder"</span>&gt;</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\swift.dll"</span>/&gt;</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFilesFolder"</span>&gt;</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">StandardDirectory</span>&gt;</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">Package</span>&gt;</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Wix</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and yes now it builds. At least I have an inkling of the use of Fragment elements in multiple files.</p>
 <div class="callout-warning callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -372,7 +393,7 @@ Warning
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>So far so good…</p>
+<p>So far so good for baby step 1. To be continued.</p>
 
 
 </section>
