@@ -2,6 +2,7 @@ _site/
 .*
 /.quarto/
 /_site/
+/_freeze/
 
 *.swp
 ~*

@@ -66,7 +66,7 @@ Enable-WindowsOptionalFeature -FeatureName "Containers-DisposableClientVM" -All 
 
 Then as per the [Building a windows sandbox](https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6) video, setting up a Windows sandbox file and adapting a little bit the [DeploymentDojo/BeltTest](https://github.com/DeploymentDojo/BeltTest) to my context.
 
-```{xml, filename="dojo.wsb"}
+```xml
 <Configuration>
   <MappedFolders>
     <MappedFolder>
@@ -168,4 +168,4 @@ Note: I first launched the "Add or Remove Programs" in the sandbox to check the 
 
 # Conclusion
 
-So far so good for baby step 1. To be continued.
+So far so good for baby step 1. To be continued in [part 2](https://jmp75.github.io/work-blog/posts/20230317-windows-installer-wix).
