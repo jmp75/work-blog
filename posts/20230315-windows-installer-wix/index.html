@@ -291,12 +291,7 @@ Warning
 </div>
 </div>
 <p>Then as per the <a href="https://youtu.be/mn3pA4ABNtQ?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6">Building a windows sandbox</a> video, setting up a Windows sandbox file and adapting a little bit the <a href="https://github.com/DeploymentDojo/BeltTest">DeploymentDojo/BeltTest</a> to my context.</p>
-<div class="cell">
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>dojo.wsb</strong></pre>
-</div>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Configuration</span>&gt;</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Configuration</span>&gt;</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">MappedFolders</span>&gt;</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">MappedFolder</span>&gt;</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">HostFolder</span>&gt;C:\src\sffs-docs&lt;/<span class="kw">HostFolder</span>&gt;</span>
@@ -307,20 +302,11 @@ Warning
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Command</span>&gt;C:\dojo\wip\dojostart.cmd&lt;/<span class="kw">Command</span>&gt;</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">LogonCommand</span>&gt;</span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
 <p>The cmd file has the very same content as the github repo:</p>
-<div class="cell">
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>dojostart.cmd</strong></pre>
-</div>
-<pre class="bat cell-code"><code>start appwiz.cpl
+<pre class="bat"><code>start appwiz.cpl
 start "" "C:\dojo"
 start "" "C:\Program Files (x86)"
 @ rem start regedit</code></pre>
-</div>
-</div>
 <p><code>.\dojo.wsb</code> works fine.</p>
 </section>
 <section id="step-1" class="level2">
@@ -393,7 +379,7 @@ Warning
 </section>
 <section id="conclusion" class="level1">
 <h1>Conclusion</h1>
-<p>So far so good for baby step 1. To be continued.</p>
+<p>So far so good for baby step 1. To be continued in <a href="https://jmp75.github.io/work-blog/posts/20230317-windows-installer-wix">part 2</a>.</p>
 
 
 </section>
