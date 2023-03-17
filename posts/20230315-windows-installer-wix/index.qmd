@@ -82,7 +82,7 @@ Then as per the [Building a windows sandbox](https://youtu.be/mn3pA4ABNtQ?list=P
 
 The cmd file has the very same content as the github repo:
 
-```{bat, filename="dojostart.cmd"}
+```bat
 start appwiz.cpl
 start "" "C:\dojo"
 start "" "C:\Program Files (x86)"
