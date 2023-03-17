@@ -5,7 +5,7 @@ author:
   - name: J-M
     url: {}
 date: "2023-03-17"
-categories: ["WiX", "installers", ""]
+categories: ["WiX", "installers"]
 format: 
   html:
     toc: true
