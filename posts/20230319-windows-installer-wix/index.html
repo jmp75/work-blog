@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2023-03-19">
+<meta name="description" content="Building a Windows installer with WiX 4 - part 3">
+
+<title>J-M’s ‘lab notebook’ - Windows installer with WiX 4 - part 3</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Windows installer with WiX 4 - part 3</h1>
+                  <div>
+        <div class="description">
+          Building a Windows installer with WiX 4 - part 3
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">WiX</div>
+                <div class="quarto-category">installers</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>J-M </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 19, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <ul class="collapse">
+  <li><a href="#making-a-wixproj" id="toc-making-a-wixproj" class="nav-link" data-scroll-target="#making-a-wixproj">Making a wixproj</a></li>
+  <li><a href="#setting-an-environment-variable" id="toc-setting-an-environment-variable" class="nav-link" data-scroll-target="#setting-an-environment-variable">Setting an environment variable</a></li>
+  <li><a href="#adding-another-component-python-wheels" id="toc-adding-another-component-python-wheels" class="nav-link" data-scroll-target="#adding-another-component-python-wheels">Adding another Component: python wheels</a></li>
+  <li><a href="#managing-source-files" id="toc-managing-source-files" class="nav-link" data-scroll-target="#managing-source-files">Managing source files</a></li>
+  <li><a href="#trialling-upgrade-effects" id="toc-trialling-upgrade-effects" class="nav-link" data-scroll-target="#trialling-upgrade-effects">Trialling upgrade effects</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<figure class="figure">
+<img src="https://avatars.githubusercontent.com/u/91997072?s=200&amp;v=4.png" title="WiX logo" class="img-fluid figure-img">
+</figure>
+<p></p><figcaption class="figure-caption">“WiX logo”</figcaption><p></p>
+</figure>
+</div>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>Follow up on <a href="https://jmp75.github.io/work-blog/posts/20230317-windows-installer-wix/">Windows installer with WiX 4 - part 2</a></p>
+<p>Initially, for this post, I thought I would tackle having a UI element in the installer to let the use specify an install directory. However as I looked into it, I could not intuit how the examples I was trying to adapt worked.</p>
+<p>So instead, let’s bed down our efforts so far, expand to several components, and set an environment variable, which is required by the software stack.</p>
+</section>
+<section id="walkthrough" class="level1">
+<h1>Walkthrough</h1>
+<p>I think it may be time to start working not only from the command line and text editor but use the <code>Heatwave</code> extensions from Visual Studio 2022.</p>
+<section id="making-a-wixproj" class="level2">
+<h2 class="anchored" data-anchor-id="making-a-wixproj">Making a wixproj</h2>
+<p>The .wixproj file obtained from the upgrade of the WiX3 example led to:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Project</span><span class="ot"> Sdk=</span><span class="st">"WixToolset.Sdk/4.0.0-rc.3"</span>&gt;</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">PropertyGroup</span><span class="ot"> Condition=</span><span class="st">" '$(Configuration)|$(Platform)' == 'Debug|x86' "</span>&gt;</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">DefineConstants</span>&gt;Debug&lt;/<span class="kw">DefineConstants</span>&gt;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">PropertyGroup</span>&gt;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Content</span><span class="ot"> Include=</span><span class="st">"InstallationStages.wxi"</span> /&gt;</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Content</span><span class="ot"> Include=</span><span class="st">"MyAppendScript.ps1"</span> /&gt;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PackageReference</span><span class="ot"> Include=</span><span class="st">"WixToolset.UI.wixext"</span><span class="ot"> Version=</span><span class="st">"4.0.0-rc.3"</span> /&gt;</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PackageReference</span><span class="ot"> Include=</span><span class="st">"WixToolset.Util.wixext"</span><span class="ot"> Version=</span><span class="st">"4.0.0-rc.3"</span> /&gt;</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Project</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We probably can remove much of it. <code>&lt;Content Include="InstallationStages.wxi" /&gt;</code> defines some properties. I am a bit puzzled that <code>Product.wsx</code> and <code>MyCustomPropertiesDlg.wxs</code> are not included in the project though. May be implicit? It seems so. Same as C# projects, now that I recall.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">Project</span><span class="ot"> Sdk=</span><span class="st">"WixToolset.Sdk/4.0.0-rc.3"</span>&gt;</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PackageReference</span><span class="ot"> Include=</span><span class="st">"WixToolset.UI.wixext"</span><span class="ot"> Version=</span><span class="st">"4.0.0-rc.3"</span> /&gt;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">PackageReference</span><span class="ot"> Include=</span><span class="st">"WixToolset.Util.wixext"</span><span class="ot"> Version=</span><span class="st">"4.0.0-rc.3"</span> /&gt;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">ItemGroup</span>&gt;</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">Project</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="./wix4_012.png" class="img-fluid"></p>
+<p>Let’s try to build from VS2022. It builds in Debug/x64 mode, and:</p>
+<pre class="text"><code>error WIX0204: ICE80: This 64BitComponent filLCSE8SdBZxus.pA1ZmveUFeYihY uses 32BitDirectory InstallFolder </code></pre>
+<p>Fair enough. But what is the 64 bits equivalent?</p>
+<p><code>&lt;StandardDirectory Id="ProgramFilesFolder"&gt;</code> is probably a 32bits location by default. The <a href="https://wixtoolset.org/docs/reference/schema/wxs/standarddirectorytype/">StandardDirectoryType reference doc</a> lists <code>ProgramFiles64Folder</code> as possible Id.</p>
+<p>OK, it builds.</p>
+<p>It is probably time to set up a dedicated git repository. <a href="https://github.com/csiro-hydroinformatics/sf-installer">sf-installer</a></p>
+<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer/tree/fda17e609e784791935b45f96e0c79a6dd2cc307">at commit fda17e609e784791935b45f96e0c79a6dd2cc307</a></p>
+</section>
+<section id="setting-an-environment-variable" class="level2">
+<h2 class="anchored" data-anchor-id="setting-an-environment-variable">Setting an environment variable</h2>
+<p><a href="https://csiro-hydroinformatics.github.io/streamflow-forecasting-tools-onboard/doc/installation/install_windows.html">Installing SF on Windows</a> includes setting up an environment variable <code>LIBRARY_PATH</code> to a partent of the path where binaries are installed. We make our installer a bit more consistent with that manual procedure.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFiles64Folder"</span>&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"LibsFolder"</span><span class="ot"> Name=</span><span class="st">"libs"</span>&gt;</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"Libs64Folder"</span><span class="ot"> Name=</span><span class="st">"64"</span>&gt;</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>          &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">StandardDirectory</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And I somehow figured that I need to add an Environment element like so.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span><span class="ot"> Guid=</span><span class="st">"243e7812-1111-1111-1111-123456789112"</span>&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">Environment</span><span class="ot"> Id=</span><span class="st">"library_path"</span><span class="ot"> Action=</span><span class="st">"set"</span><span class="ot"> Name=</span><span class="st">"LIBRARY_PATH"</span><span class="ot"> Value=</span><span class="st">"c:\Program Files\SF\libs"</span><span class="ot"> Separator=</span><span class="st">";"</span><span class="ot"> System=</span><span class="st">"yes"</span><span class="ot"> Part=</span><span class="st">"last"</span><span class="ot"> Permanent=</span><span class="st">"true"</span>/&gt;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\libs\64\boost_chrono-vc142-mt-gd-x64-1_79.dll"</span>/&gt;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A priori I do not know how to pass such a variable to the value in XML file. Thankfully the <a href="https://subscription.packtpub.com/book/web-development/9781784393212/13/ch13lvl1sec81/setting-an-environment-variable">WiX Cookbook - setting up an environment variable</a> has an example that includes using <code>[INSTALLFOLDER]</code> which looks like some form of variable substitution.</p>
+<p>So, trying</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Environment</span><span class="ot"> Id=</span><span class="st">"library_path"</span><span class="ot"> Action=</span><span class="st">"set"</span><span class="ot"> Name=</span><span class="st">"LIBRARY_PATH"</span><span class="ot"> Value=</span><span class="st">"[LibsFolder]"</span><span class="ot"> Separator=</span><span class="st">";"</span><span class="ot"> System=</span><span class="st">"yes"</span><span class="ot"> Part=</span><span class="st">"last"</span><span class="ot"> Permanent=</span><span class="st">"true"</span>/&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And after installation in the sandbox, the new environment variable appears fine in a new CMD prompt: <code>echo %LIBRARY_PATH%</code> returns <code>C:\Program Files\SF\libs\</code>.</p>
+<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer/tree/4d8d1d7c8b50221c7f63af3aa96115c438cb5055">at commit 4d8d1d7c8b50221c7f63af3aa96115c438cb5055</a></p>
+</section>
+<section id="adding-another-component-python-wheels" class="level2">
+<h2 class="anchored" data-anchor-id="adding-another-component-python-wheels">Adding another Component: python wheels</h2>
+<p>The software stack comprises installable python wheels. Let’s create a directory structure to install to. Note that the installation for the wheels is just copying them; the variety of ways these can be used on the installed machine is too wide.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">StandardDirectory</span><span class="ot"> Id=</span><span class="st">"ProgramFiles64Folder"</span>&gt;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"InstallFolder"</span><span class="ot"> Name=</span><span class="st">"SF"</span>&gt;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"LibsFolder"</span><span class="ot"> Name=</span><span class="st">"libs"</span>&gt;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>          &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"Libs64Folder"</span><span class="ot"> Name=</span><span class="st">"64"</span>&gt;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>          &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">Directory</span><span class="ot"> Id=</span><span class="st">"PythonPkgsFolder"</span><span class="ot"> Name=</span><span class="st">"python"</span>&gt;</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Directory</span>&gt;</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">StandardDirectory</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Our new component. Note that adding to the already existing ComponentGroup leads to a failure to compile. Not entirely clear to me why, but this probably makes sense this way anyway.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">ComponentGroup</span><span class="ot"> Id=</span><span class="st">"InstallPyComponentsTest"</span><span class="ot"> Directory=</span><span class="st">"PythonPkgsFolder"</span>&gt;</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">Component</span><span class="ot"> Guid=</span><span class="st">"aaaa7812-1111-1111-1111-123456789112"</span>&gt;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">File</span><span class="ot"> Source=</span><span class="st">"C:\local\python\uchronia-2.3.7-py2.py3-none-any.whl"</span>/&gt;</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>      &lt;/<span class="kw">Component</span>&gt;</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">ComponentGroup</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And for our set of features, “All”</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">Feature</span><span class="ot"> Id=</span><span class="st">"All"</span>&gt;</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ComponentGroupRef</span><span class="ot"> Id=</span><span class="st">"InstallComponentsTest"</span>/&gt;</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ComponentGroupRef</span><span class="ot"> Id=</span><span class="st">"InstallPyComponentsTest"</span>/&gt;</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer/tree/012521407cc63e1233ff40a784d17b5f43dc6caf">at commit 012521407cc63e1233ff40a784d17b5f43dc6caf</a></p>
+</section>
+<section id="managing-source-files" class="level2">
+<h2 class="anchored" data-anchor-id="managing-source-files">Managing source files</h2>
+<p>Looking forward to expand this installer, I have two topics I need to sort out:</p>
+<ul>
+<li>If I include header files as an option to install this will be a very large amount (if including boost) or at least unwieldy to handle.</li>
+<li>The python wheels such as <code>uchronia-2.3.7-py2.py3-none-any.whl</code> may change names with successive installers. This will also happen, though less frequently, for binary files when upgrading versions of e.g.&nbsp;Boost.</li>
+</ul>
+<p>The page <a href="https://wixtoolset.org/docs/v3/howtos/general/specifying_source_files/">specifying source files</a> does not really cover either topic.</p>
+<p>Bob Arnson wrote about <a href="https://www.joyofsetup.com/2008/12/30/paying-for-upgrades/">Paying for upgrades</a> 15 years ago, but probably still has relevance.</p>
+<p>Rob Mensching has a couple of episodes on version upgrades and effects on files, that relates to this. <a href="https://www.youtube.com/watch?v=s1ZdtkD5lZg&amp;list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6&amp;index=7">The Problem with Same Version Upgrades</a> and <a href="https://www.youtube.com/watch?v=s1ZdtkD5lZg&amp;list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6&amp;index=8">The Real Problem with Same Version Upgrades in WiX v4</a></p>
+<p>The <a href="https://wixtoolset.org/docs/v3/xsd/wix/component/"><code>UninstallWhenSuperseded</code> attribute of the <code>Component</code></a> may be of use, to force an uninstallation before reinstall. If this is what it does, this has ramifications for install speed, but preferable nevertheless.</p>
+</section>
+<section id="trialling-upgrade-effects" class="level2">
+<h2 class="anchored" data-anchor-id="trialling-upgrade-effects">Trialling upgrade effects</h2>
+<p>Let’s set up an experiment. We build an installer with a <code>uchronia-2.3.7-py2.py3-none-any.whl</code> being installed. Then we simulate a new installer with a higher version number, and a changed file <code>uchronia-2.3.8-py2.py3-none-any.whl</code></p>
+<p>Rob demos how to pass preprocessor variables in <a href="https://youtu.be/g1PBKhq2oe8?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6&amp;t=685">All the Ways to Change. Variables and Variables. Directories and Properties t=685</a>.</p>
+<p>Let’s set up a <code>Version=0.1.0.0</code> and <code>Version="$(Version)"</code> in the wsx file. Build, and save the installer in a <code>0.1</code> folder.</p>
+<p>Now let’s change <code>&lt;File Source="C:\local\python\uchronia-2.3.7-py2.py3-none-any.whl"/&gt;</code> to <code>File Source="C:\local\python\uchronia-2.3.8-py2.py3-none-any.whl"/&gt;</code> and create that wheel file. Build with <code>Version=0.1.0.1</code> and back up the installer.</p>
+<p>We now have a baseline folder <code>0.1</code>, and several newer ones with respectrive versions <code>0.1.0.1</code> <code>0.1.1.0</code> <code>0.2.0.0</code></p>
+<p>If we install version <code>0.1.0.1</code> on top of <code>0.1</code>, the following happens:</p>
+<p><img src="wix4_013.png" class="img-fluid"></p>
+<p>I think this is exactly what Rob demonstrated in his “The Problem with Same Version Upgrades” videos, and I expected this. This is less intuitive to deduce what would happen if we install version <code>0.1.1.0</code> on top of <code>0.1</code>. And the result is:</p>
+<p><img src="wix4_014.png" class="img-fluid"></p>
+<p><code>uchronia-2.3.7-py2.py3-none-any.whl</code> has been removed! This is actually a behavior we want.</p>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>Enough for today. This is starting to take shape, but as expected quite a bit more work than the naive would have guessed.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0.</div>   
+  </div>
+</footer>
+
+
+
+</body></html>

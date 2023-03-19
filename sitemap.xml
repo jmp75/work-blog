@@ -2,102 +2,106 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://jmp75.github.io/work-blog/notes.html</loc>
-    <lastmod>2023-03-17T05:29:47.469Z</lastmod>
+    <lastmod>2023-03-19T08:33:13.151Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/index.html</loc>
-    <lastmod>2023-03-17T05:29:47.957Z</lastmod>
+    <lastmod>2023-03-19T08:33:13.627Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230223-cpp-static-analysis/index.html</loc>
-    <lastmod>2023-03-17T05:29:48.393Z</lastmod>
+    <lastmod>2023-03-19T08:33:13.995Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-09-11-cpp-code-wasm.html</loc>
-    <lastmod>2023-03-17T05:29:48.857Z</lastmod>
+    <lastmod>2023-03-19T08:33:14.415Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221116-waa-installers/index.html</loc>
-    <lastmod>2023-03-17T05:29:49.341Z</lastmod>
+    <lastmod>2023-03-19T08:33:14.903Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-05-28-hydstra-rest-data.html</loc>
-    <lastmod>2023-03-17T05:29:49.625Z</lastmod>
+    <lastmod>2023-03-19T08:33:15.159Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221111-gitleaks-config/index.html</loc>
-    <lastmod>2023-03-17T05:29:49.989Z</lastmod>
+    <lastmod>2023-03-19T08:33:15.519Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-07-03-lithology-classification-hugging-face-3.html</loc>
-    <lastmod>2023-03-17T05:29:50.397Z</lastmod>
+    <lastmod>2023-03-19T08:33:15.887Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-26-vcpp-compilation-upgrade.html</loc>
-    <lastmod>2023-03-17T05:29:50.849Z</lastmod>
+    <lastmod>2023-03-19T08:33:16.304Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-08-09-python-profiling-interop.html</loc>
-    <lastmod>2023-03-17T05:29:51.173Z</lastmod>
+    <lastmod>2023-03-19T08:33:16.592Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221008-nbdev-windows-2/index.html</loc>
-    <lastmod>2023-03-17T05:29:51.621Z</lastmod>
+    <lastmod>2023-03-19T08:33:16.988Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-13-lithology-classification-hugging-face-2.html</loc>
-    <lastmod>2023-03-17T05:29:52.249Z</lastmod>
+    <lastmod>2023-03-19T08:33:17.500Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-08-22-doxygen-doxybook-mkdocs.html</loc>
-    <lastmod>2023-03-17T05:29:52.653Z</lastmod>
+    <lastmod>2023-03-19T08:33:17.904Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230317-windows-installer-wix/index.html</loc>
-    <lastmod>2023-03-17T05:29:53.045Z</lastmod>
+    <lastmod>2023-03-19T08:33:18.300Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-18-conda-channels-prep-work.html</loc>
-    <lastmod>2023-03-17T05:29:53.301Z</lastmod>
+    <lastmod>2023-03-19T08:33:18.508Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jmp75.github.io/work-blog/posts/20230319-windows-installer-wix/index.html</loc>
+    <lastmod>2023-03-19T08:33:18.912Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230315-windows-installer-wix/index.html</loc>
-    <lastmod>2023-03-17T05:29:53.729Z</lastmod>
+    <lastmod>2023-03-19T08:33:19.312Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-07-31-azure-pipeline-vcpp-stack.html</loc>
-    <lastmod>2023-03-17T05:29:54.065Z</lastmod>
+    <lastmod>2023-03-19T08:33:19.604Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-09-03-c-api-wrapper-generation.html</loc>
-    <lastmod>2023-03-17T05:29:54.581Z</lastmod>
+    <lastmod>2023-03-19T08:33:20.056Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-07-27-azure-devops-negative-experience.html</loc>
-    <lastmod>2023-03-17T05:29:54.821Z</lastmod>
+    <lastmod>2023-03-19T08:33:20.308Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-04-conda-packages-conda-forge.html</loc>
-    <lastmod>2023-03-17T05:29:55.281Z</lastmod>
+    <lastmod>2023-03-19T08:33:20.744Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221007-nbdev-windows/index.html</loc>
-    <lastmod>2023-03-17T05:29:55.721Z</lastmod>
+    <lastmod>2023-03-19T08:33:21.124Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-01-lithology-classification-hugging-face.html</loc>
-    <lastmod>2023-03-17T05:29:56.061Z</lastmod>
+    <lastmod>2023-03-19T08:33:21.604Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html</loc>
-    <lastmod>2023-03-17T05:29:56.465Z</lastmod>
+    <lastmod>2023-03-19T08:33:21.973Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-10-conda-packages-conda-forge-2.html</loc>
-    <lastmod>2023-03-17T05:29:56.905Z</lastmod>
+    <lastmod>2023-03-19T08:33:22.361Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/about.html</loc>
-    <lastmod>2023-03-17T05:29:57.089Z</lastmod>
+    <lastmod>2023-03-19T08:33:22.541Z</lastmod>
   </url>
 </urlset>

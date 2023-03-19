@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/20230319-windows-installer-wix/index.html",
       "/posts/20230317-windows-installer-wix/index.html",
       "/posts/20230315-windows-installer-wix/index.html",
       "/posts/20230223-cpp-static-analysis/index.html",
