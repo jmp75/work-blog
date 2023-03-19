@@ -1,0 +1,46 @@
+---
+title: "Windows installer with WiX 4 - part 3"
+description: "Building a Windows installer with WiX 4 - part 3"
+author:
+  - name: J-M
+    url: {}
+date: "2023-03-XX"
+categories: ["WiX", "installers"]
+format: 
+  html:
+    toc: true
+engine: knitr
+draft: true
+---
+
+!["WiX logo"](https://avatars.githubusercontent.com/u/91997072?s=200&v=4 "WiX logo")
+
+# Background
+
+Follow up on [Windows installer with WiX 4 - part 2](https://jmp75.github.io/work-blog/posts/20230317-windows-installer-wix/)
+
+Initially, for this post, I thought I would tackle having a UI element in the installer to let the use specify an install directory. However as I looked into it, I could not intuit how the examples I was trying to adapt worked.
+
+# Walkthrough
+
+I spend a bit of time looking at the features of the VS2022 extension. See [HeatWave! The New Hotness for WiX v4](https://www.youtube.com/watch?v=PXqCZwNPMKE&list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6&index=13). I do not locate a graphical way to add a user interface element to the installer. So, it is probably back to the code editor.
+
+## UI for install folder
+
+I am working from [WiXInstallerExamples/09_InstallerWithUserInterface](https://github.com/kurtanr/WiXInstallerExamples/tree/main/09_InstallerWithUserInterface), step 9 in a tutorial, to a dialog for the user to define the install folder. So, this is actually not the most trivial endeavour. Check out that readme for details about what is going on.
+
+There seems to be quite a few moving parts. I considered reusing almost _verbatim_ and get it to hopefully work, before considering shortening if at all possible, but balked at it. 
+
+What I see in the WiX converted from 3 to 4 is:
+
+```xml
+  <StandardDirectory Id="ProgramFilesFolder">
+    <Directory Id="MY_INSTALL_LOCATION" Name="09_InstallerWithUserInterface" />
+  </StandardDirectory>
+```
+
+I cannot comprehend how this can be customised via a UI. If it can, I am at a loss as intuiting the mechanism. 
+
+So instead, trying to get UI custom location using a variable:
+
+https://youtu.be/g1PBKhq2oe8?list=PLDlzbQXIs18slmqmdlS10_de_Cps-QRg6&t=701
