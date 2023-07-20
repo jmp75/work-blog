@@ -53,7 +53,7 @@ These C++, Python and R packages are in the following source code repositories.
   * [jsoncpp](https://github.com/csiro-hydroinformatics/jsoncpp)
   * [threadpool](https://github.com/csiro-hydroinformatics/threadpool)
 * Open source repositories with generic capabilities:
-  * [rcpp-interop-commons](https://github.com/csiro-hydroinformatics/rcpp-interop-commons): supporting C API interoperability with Python, R, etc.
+  * [c-interop](https://github.com/csiro-hydroinformatics/c-interop): supporting C API interoperability with Python, R, etc.
   * [moirai](https://github.com/csiro-hydroinformatics/moirai): Manage C++ Objects's lifetime when exposed through a C API
   * [pyrefcount](https://github.com/csiro-hydroinformatics/pyrefcount): Reference counting facilities for Python
   * [wila](https://github.com/csiro-hydroinformatics/wila): C++ header-only metaheuristics optimisation

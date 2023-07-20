@@ -1,0 +1,148 @@
+---
+title: "Exploring HydroMT - part 1"
+description: "Exploring HydroMT - part 1. Going through a 'getting started' example, and exploring from here on."
+author:
+  - name: J-M
+    url: {}
+date: "2023-07-20"
+categories: ["HydroMT", "python", "hydrology"]
+format: 
+  html:
+    toc: true
+engine: knitr
+draft: false
+---
+
+!["HydroMT logo"](https://deltares.github.io/hydromt/latest/_static/hydromt-icon.svg "HydroMT logo"){width=200px}
+
+# Background
+
+I recently attended the MODSIM 2023 conference and inadvertently missed the presentation [Towards scalable and reproducible hydrological modelling with HydroMT: A proof of concept for Australia](https://modsim2023.exordo.com/programme/presentation/323). `HydroMT` is a toolset I'd really like to understand better, notably to assess whether I can manage workflows built upon our [Streamflow Forecasting](https://csiro-hydroinformatics.github.io/streamflow-forecasting-tools-onboard/) tools. 
+
+The value proposition of HydroMT resonates with me. I keep being surprised by the dearth of facilities in easily exploiting temporal and geospatial data for building hydrologic models. 
+
+So, heading to the page [HydroMT: Automated and reproducible model building and analysis](https://deltares.github.io/hydromt/latest/index.html) to explore it.
+
+# Walkthrough
+
+This post will be about the first hands on familiarisation with the toolset and its existing plug-ins. No point jumping the gun and investigating plugins before I "grok" the existing tools. I expect this will be not be without friction anyway, as getting throught the introductory material of a third party software toolset is rarely smooth sailing, as I am aware the reverse is true of the software tools I aothor or contribute to.s 
+
+## Installing
+
+Not installing in dev mode by default. Will start as a normal user.
+
+HydroMT is readily available from `conda-forge` and installs flawlessly on my Linux box:
+
+```sh
+mamba create -n hydromt -c conda-forge python=3.9 hydromt hydromt_wflow
+mamba activate hydromt
+hydromt --models
+```
+
+```text
+model plugins:
+ - wflow (hydromt_wflow 0.2.1)
+ - wflow_sediment (hydromt_wflow 0.2.1)
+generic models (hydromt 0.8.0):
+ - grid_model
+ - lumped_model
+ - network_model
+```
+
+There is a bit of variation in the doc compared to this output of `hydromt --models`. Which is fine.
+
+```sh
+mkdir -p ~/data/hydromt
+cd ~/data/hydromt
+# NOTE: save as `build_wflow.ini` not `wflow_build.ini` to be consistent with the upcoming command invocation `hydromt build`.
+# Otherwise you'll get error OSError: Config not found at /home/xxxyyy/data/hydromt/build_wflow.ini
+curl -o build_wflow.ini https://raw.githubusercontent.com/Deltares/hydromt_wflow/main/examples/wflow_build.ini
+```
+
+```sh
+hydromt build wflow ./wflow_test -r "{'subbasin': [12.2051, 45.8331], 'strord': 4}" -vv -i build_wflow.ini
+```
+
+```test
+ValueError: Model wflow has no method "setup_outlets"
+```
+
+The class `WflowModel` has a method `setup_outlets` though, in the file [wflow.py](https://github.com/Deltares/hydromt_wflow/blob/main/hydromt_wflow/wflow.py#L933).
+
+Not sure where to go from this. May be something to feed back to authors if I do not overlook something.
+
+## Debugging
+
+Setting up launch.json file for VSCode:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/xxxyyy/mambaforge/envs/hydromt/bin/hydromt",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "build",
+                "wflow",
+                "/home/xxxyyy/data/hydromt/wflow_test",
+                "-r",
+                "\"{'subbasin': [12.2051, 45.8331], 'strord': 4}\"",
+                "-vv",
+                "-i",
+                "/home/xxxyyy/data/hydromt/build_wflow.ini"
+            ]
+            // "cwd": "/home/xxxyyy/data/hydromt"
+        }
+    ]
+}
+```
+
+This launches the process, but I cannot put breakpoints in most of the files though, not sure why. So, installing hydromt packages in dev mode to dig a bit further:
+
+`conda remove --force hydromt hydromt_wflow` (note that this has to be `conda`, `mamba` still tries to uninstall dependencies even with `--force`)
+
+```sh
+cd ~/src/hydromt
+pip install -e .
+cd ../hydromt_wflow/
+pip install -e .
+```
+
+Can we reproduce the error if installed from  the lates source?
+
+```sh
+cd ~/data/hydromt 
+hydromt build wflow ./wflow_test -r "{'subbasin': [12.2051, 45.8331], 'strord': 4}" -vv -i build_wflow.ini
+```
+
+Well, no... this time:
+
+```text
+FileNotFoundError: No such file or catalog key: merit_hydro
+```
+
+See page [Pre-defined data catalogs](https://deltares.github.io/hydromt/latest/user_guide/data_existing_cat.html#existing-catalog): "The `deltares_data` catalog is only available within the Deltares network. However a selection of this data for a the Piave basin (Northern Italy) is available online in the `artifact_data`". `merit_hydro` is under the "artifact_data - topography" tab. 
+
+`ds_org = self.data_catalog.get_rasterdataset(hydrography_fn)` where `hydrography_fn` is equal to "merit_hydro"
+
+The [Data Overview](https://deltares.github.io/hydromt/latest/user_guide/data_overview.html  ) page states that:
+
+::: {.callout-tip}
+
+If no yaml file is provided to the CLI build or update methods or to `DataCatalog`, HydroMT will use the data stored in the `artifact_data` which contains an extract of global data for a small region around the Piave river in Northern Italy.
+
+:::
+
+# Taking stock
+
+I've not managed to run an example from the "Getting Started" page, but this is OK. I know first hand how difficult it is to provide and maintain even a simple example that runs out of the box, especially for a new user. I gather that this is a matter to download sample data from somewhere and put it in a local directory.
+
+I have attempted similar management of data provisions through [time series stores](https://github.com/csiro-hydroinformatics/uchronia-time-series/blob/main/datatypes/include/datatypes/time_series_store.hpp) and time series libraries. The data catalogue of HydroMT appears to be a broadly similar abstraction, at a higher level of granularity and for several types of spatial or temporal data.
+
+To be continued.
+
