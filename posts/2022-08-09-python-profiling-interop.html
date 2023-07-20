@@ -392,12 +392,12 @@ Wall time: 440 ms</code></pre>
         1    0.000    0.000    0.441    0.441 /home/abcdef/src/datatypes/bindings/python/uchronia/uchronia/internals.py:74(f)
         1    0.000    0.000    0.441    0.441 /home/abcdef/src/datatypes/bindings/python/uchronia/uchronia/internals.py:79(internal_get_single_model_time_series)
         1    0.002    0.002    0.441    0.441 /home/abcdef/src/swift/bindings/python/swift2/swift2/wrap/swift_wrap_custom.py:216(get_played_pkg)
-        1    0.000    0.000    0.438    0.438 /home/abcdef/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/cffi/marshal.py:386(geom_to_xarray_time_series)
-        1    0.000    0.000    0.368    0.368 /home/abcdef/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/cffi/marshal.py:367(ts_geom_to_even_time_index)
-        1    0.000    0.000    0.368    0.368 /home/abcdef/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/timeseries.py:22(create_even_time_index)
-        1    0.368    0.368    0.368    0.368 /home/abcdef/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/timeseries.py:25(&lt;listcomp&gt;)
+        1    0.000    0.000    0.438    0.438 /home/abcdef/src/c-interop/bindings/python/cinterop/cinterop/cffi/marshal.py:386(geom_to_xarray_time_series)
+        1    0.000    0.000    0.368    0.368 /home/abcdef/src/c-interop/bindings/python/cinterop/cinterop/cffi/marshal.py:367(ts_geom_to_even_time_index)
+        1    0.000    0.000    0.368    0.368 /home/abcdef/src/c-interop/bindings/python/cinterop/cinterop/timeseries.py:22(create_even_time_index)
+        1    0.368    0.368    0.368    0.368 /home/abcdef/src/c-interop/bindings/python/cinterop/cinterop/timeseries.py:25(&lt;listcomp&gt;)
        16    0.000    0.000    0.071    0.004 /home/abcdef/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/dataarray.py:365(__init__)
-        1    0.000    0.000    0.070    0.070 /home/abcdef/src/rcpp-interop-commons/bindings/python/cinterop/cinterop/cffi/marshal.py:356(create_ensemble_series)
+        1    0.000    0.000    0.070    0.070 /home/abcdef/src/c-interop/bindings/python/cinterop/cinterop/cffi/marshal.py:356(create_ensemble_series)
         9    0.000    0.000    0.070    0.008 /home/abcdef/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/variable.py:74(as_variable)
         1    0.000    0.000    0.070    0.070 /home/abcdef/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/dataarray.py:90(_infer_coords_and_dims)
        36    0.000    0.000    0.070    0.002 /home/abcdef/miniconda/envs/hydrofc/lib/python3.9/site-packages/xarray/core/variable.py:181(as_compatible_data)
@@ -414,8 +414,8 @@ Wall time: 440 ms</code></pre>
 </code></pre>
 </div>
 </div>
-<p>in a file rcpp-interop-commons/bindings/python/cinterop/cinterop/timeseries.py the function <code>create_even_time_index</code> appears to be where a lengthy operation occurs. More precisely, when this function does a list comprehension (<code>listcomp</code>). Note that I infer this because in the <code>cumtime</code> (cumulative time) column there is a drop from 0.396 ms for <code>listcomp</code> to 0.071 for the rest of the operations under this function. I think this is the right way to interpret it in this case, but it may not be the case in other profiling context.</p>
-<p>The code for <code>create_even_time_index</code> is at <a href="https://github.com/csiro-hydroinformatics/rcpp-interop-commons/blob/f7dff4b83d8f01a8ae71e16fb903b80fa4f23f5d/bindings/python/cinterop/cinterop/timeseries.py#L22">this permalink</a></p>
+<p>in a file c-interop/bindings/python/cinterop/cinterop/timeseries.py the function <code>create_even_time_index</code> appears to be where a lengthy operation occurs. More precisely, when this function does a list comprehension (<code>listcomp</code>). Note that I infer this because in the <code>cumtime</code> (cumulative time) column there is a drop from 0.396 ms for <code>listcomp</code> to 0.071 for the rest of the operations under this function. I think this is the right way to interpret it in this case, but it may not be the case in other profiling context.</p>
+<p>The code for <code>create_even_time_index</code> is at <a href="https://github.com/csiro-hydroinformatics/c-interop/blob/f7dff4b83d8f01a8ae71e16fb903b80fa4f23f5d/bindings/python/cinterop/cinterop/timeseries.py#L22">this permalink</a></p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_even_time_index(start:ConvertibleToTimestamp, time_step_seconds:<span class="bu">int</span>, n:<span class="bu">int</span>) <span class="op">-&gt;</span> List:</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> as_timestamp(start)</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    delta_t <span class="op">=</span> np.timedelta64(time_step_seconds, <span class="st">'s'</span>)</span>
