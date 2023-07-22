@@ -2,114 +2,118 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://jmp75.github.io/work-blog/notes.html</loc>
-    <lastmod>2023-07-20T06:19:57.150Z</lastmod>
+    <lastmod>2023-07-22T09:48:15.518Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/index.html</loc>
-    <lastmod>2023-07-20T06:19:57.746Z</lastmod>
+    <lastmod>2023-07-22T09:48:16.218Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230223-cpp-static-analysis/index.html</loc>
-    <lastmod>2023-07-20T06:19:58.206Z</lastmod>
+    <lastmod>2023-07-22T09:48:16.650Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230330-windows-installer-wix/index.html</loc>
-    <lastmod>2023-07-20T06:19:58.650Z</lastmod>
+    <lastmod>2023-07-22T09:48:17.274Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-09-11-cpp-code-wasm.html</loc>
-    <lastmod>2023-07-20T06:19:59.138Z</lastmod>
+    <lastmod>2023-07-22T09:48:17.742Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221116-waa-installers/index.html</loc>
-    <lastmod>2023-07-20T06:19:59.682Z</lastmod>
+    <lastmod>2023-07-22T09:48:18.334Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-05-28-hydstra-rest-data.html</loc>
-    <lastmod>2023-07-20T06:19:59.962Z</lastmod>
+    <lastmod>2023-07-22T09:48:18.678Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221111-gitleaks-config/index.html</loc>
-    <lastmod>2023-07-20T06:20:00.426Z</lastmod>
+    <lastmod>2023-07-22T09:48:19.114Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jmp75.github.io/work-blog/posts/2023-07-22-sankey-diagrams-python/notebook.html</loc>
+    <lastmod>2023-07-22T09:48:19.850Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-07-03-lithology-classification-hugging-face-3.html</loc>
-    <lastmod>2023-07-20T06:20:00.838Z</lastmod>
+    <lastmod>2023-07-22T09:48:20.250Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-26-vcpp-compilation-upgrade.html</loc>
-    <lastmod>2023-07-20T06:20:01.294Z</lastmod>
+    <lastmod>2023-07-22T09:48:20.702Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-08-09-python-profiling-interop.html</loc>
-    <lastmod>2023-07-20T06:20:01.626Z</lastmod>
+    <lastmod>2023-07-22T09:48:21.042Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221008-nbdev-windows-2/index.html</loc>
-    <lastmod>2023-07-20T06:20:02.110Z</lastmod>
+    <lastmod>2023-07-22T09:48:21.482Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-13-lithology-classification-hugging-face-2.html</loc>
-    <lastmod>2023-07-20T06:20:02.706Z</lastmod>
+    <lastmod>2023-07-22T09:48:22.054Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-08-22-doxygen-doxybook-mkdocs.html</loc>
-    <lastmod>2023-07-20T06:20:03.142Z</lastmod>
+    <lastmod>2023-07-22T09:48:22.482Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230317-windows-installer-wix/index.html</loc>
-    <lastmod>2023-07-20T06:20:03.550Z</lastmod>
+    <lastmod>2023-07-22T09:48:22.906Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-18-conda-channels-prep-work.html</loc>
-    <lastmod>2023-07-20T06:20:03.810Z</lastmod>
+    <lastmod>2023-07-22T09:48:23.138Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230319-windows-installer-wix/index.html</loc>
-    <lastmod>2023-07-20T06:20:04.274Z</lastmod>
+    <lastmod>2023-07-22T09:48:23.606Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230315-windows-installer-wix/index.html</loc>
-    <lastmod>2023-07-20T06:20:04.710Z</lastmod>
+    <lastmod>2023-07-22T09:48:24.042Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-07-31-azure-pipeline-vcpp-stack.html</loc>
-    <lastmod>2023-07-20T06:20:05.094Z</lastmod>
+    <lastmod>2023-07-22T09:48:24.374Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-09-03-c-api-wrapper-generation.html</loc>
-    <lastmod>2023-07-20T06:20:05.846Z</lastmod>
+    <lastmod>2023-07-22T09:48:25.154Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-07-27-azure-devops-negative-experience.html</loc>
-    <lastmod>2023-07-20T06:20:06.158Z</lastmod>
+    <lastmod>2023-07-22T09:48:25.442Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-04-conda-packages-conda-forge.html</loc>
-    <lastmod>2023-07-20T06:20:06.630Z</lastmod>
+    <lastmod>2023-07-22T09:48:25.894Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221007-nbdev-windows/index.html</loc>
-    <lastmod>2023-07-20T06:20:07.098Z</lastmod>
+    <lastmod>2023-07-22T09:48:26.326Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-01-lithology-classification-hugging-face.html</loc>
-    <lastmod>2023-07-20T06:20:07.906Z</lastmod>
+    <lastmod>2023-07-22T09:48:27.130Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html</loc>
-    <lastmod>2023-07-20T06:20:08.370Z</lastmod>
+    <lastmod>2023-07-22T09:48:27.590Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/20230720-hydromt/index.html</loc>
-    <lastmod>2023-07-20T06:20:08.806Z</lastmod>
+    <lastmod>2023-07-22T09:48:27.990Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/posts/2022-06-10-conda-packages-conda-forge-2.html</loc>
-    <lastmod>2023-07-20T06:20:09.274Z</lastmod>
+    <lastmod>2023-07-22T09:48:28.462Z</lastmod>
   </url>
   <url>
     <loc>https://jmp75.github.io/work-blog/about.html</loc>
-    <lastmod>2023-07-20T06:20:09.486Z</lastmod>
+    <lastmod>2023-07-22T09:48:28.686Z</lastmod>
   </url>
 </urlset>
