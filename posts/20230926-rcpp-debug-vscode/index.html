@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2023-07-20">
-<meta name="description" content="Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.">
+<meta name="dcterms.date" content="2023-09-24">
+<meta name="description" content="Debugging Rcpp and C++ code from visual studio code">
 
-<title>J-M’s ‘lab notebook’ - Exploring HydroMT - part 1</title>
+<title>J-M’s ‘lab notebook’ - Debugging Rcpp and C++ code from visual studio code</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -152,16 +152,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Exploring HydroMT - part 1</h1>
+      <h1 class="title">Debugging Rcpp and C++ code from visual studio code</h1>
                   <div>
         <div class="description">
-          Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.
+          Debugging Rcpp and C++ code from visual studio code
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">HydroMT</div>
-                <div class="quarto-category">python</div>
-                <div class="quarto-category">hydrology</div>
+                <div class="quarto-category">debugging</div>
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">Rcpp</div>
+                <div class="quarto-category">C++</div>
               </div>
                   </div>
   </div>
@@ -179,7 +180,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 20, 2023</p>
+        <p class="date">September 24, 2023</p>
       </div>
     </div>
     
@@ -195,13 +196,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a>
+  <ul class="collapse">
+  <li><a href="#problem-description" id="toc-problem-description" class="nav-link" data-scroll-target="#problem-description">Problem description</a></li>
+  </ul></li>
   <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
   <ul class="collapse">
-  <li><a href="#installing" id="toc-installing" class="nav-link" data-scroll-target="#installing">Installing</a></li>
-  <li><a href="#debugging" id="toc-debugging" class="nav-link" data-scroll-target="#debugging">Debugging</a></li>
+  <li><a href="#compiling-c-libraries-in-debug-mode" id="toc-compiling-c-libraries-in-debug-mode" class="nav-link" data-scroll-target="#compiling-c-libraries-in-debug-mode">Compiling C++ libraries in debug mode</a></li>
+  <li><a href="#build-the-rcpp-glue-code-in-debug-mode" id="toc-build-the-rcpp-glue-code-in-debug-mode" class="nav-link" data-scroll-target="#build-the-rcpp-glue-code-in-debug-mode">Build the Rcpp glue code in debug mode</a></li>
+  <li><a href="#creating-a-vscode-debug-configuration" id="toc-creating-a-vscode-debug-configuration" class="nav-link" data-scroll-target="#creating-a-vscode-debug-configuration">Creating a VSCode debug configuration</a></li>
+  <li><a href="#launch-r" id="toc-launch-r" class="nav-link" data-scroll-target="#launch-r">Launch R</a></li>
+  <li><a href="#setting-up-breakpoints" id="toc-setting-up-breakpoints" class="nav-link" data-scroll-target="#setting-up-breakpoints">Setting up breakpoints</a></li>
   </ul></li>
-  <li><a href="#taking-stock" id="toc-taking-stock" class="nav-link" data-scroll-target="#taking-stock">Taking stock</a></li>
   </ul>
 </nav>
     </div>
@@ -211,109 +217,174 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://deltares.github.io/hydromt/latest/_static/hydromt-icon.svg" title="HydroMT logo" class="img-fluid figure-img" width="200"></p>
-<figcaption class="figure-caption">“HydroMT logo”</figcaption>
-</figure>
-</div>
 <section id="background" class="level1">
 <h1>Background</h1>
-<p>I recently attended the MODSIM 2023 conference and inadvertently missed the presentation <a href="https://modsim2023.exordo.com/programme/presentation/323">Towards scalable and reproducible hydrological modelling with HydroMT: A proof of concept for Australia</a>. <code>HydroMT</code> is a toolset I’d really like to understand better, notably to assess whether I can manage workflows built upon our <a href="https://csiro-hydroinformatics.github.io/streamflow-forecasting-tools-onboard/">Streamflow Forecasting</a> tools.</p>
-<p>The value proposition of HydroMT resonates with me. I keep being surprised by the dearth of facilities in easily exploiting temporal and geospatial data for building hydrologic models.</p>
-<p>So, heading to the page <a href="https://deltares.github.io/hydromt/latest/index.html">HydroMT: Automated and reproducible model building and analysis</a> to explore it.</p>
-</section>
-<section id="walkthrough" class="level1">
-<h1>Walkthrough</h1>
-<p>This post will be about the first hands on familiarisation with the toolset and its existing plug-ins. No point jumping the gun and investigating plugins before I “grok” the existing tools. I expect this will be not be without friction anyway, as getting throught the introductory material of a third party software toolset is rarely smooth sailing, as I am aware the reverse is true of the software tools I aothor or contribute to.s</p>
-<section id="installing" class="level2">
-<h2 class="anchored" data-anchor-id="installing">Installing</h2>
-<p>Not installing in dev mode by default. Will start as a normal user.</p>
-<p>HydroMT is readily available from <code>conda-forge</code> and installs flawlessly on my Linux box:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="at">-n</span> hydromt <span class="at">-c</span> conda-forge python=3.9 hydromt hydromt_wflow</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> activate hydromt</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> <span class="at">--models</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>model plugins:
- - wflow (hydromt_wflow 0.2.1)
- - wflow_sediment (hydromt_wflow 0.2.1)
-generic models (hydromt 0.8.0):
- - grid_model
- - lumped_model
- - network_model</code></pre>
-<p>There is a bit of variation in the doc compared to this output of <code>hydromt --models</code>. Which is fine.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/data/hydromt</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/data/hydromt</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: save as `build_wflow.ini` not `wflow_build.ini` to be consistent with the upcoming command invocation `hydromt build`.</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Otherwise you'll get error OSError: Config not found at /home/xxxyyy/data/hydromt/build_wflow.ini</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-o</span> build_wflow.ini https://raw.githubusercontent.com/Deltares/hydromt_wflow/main/examples/wflow_build.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> build wflow ./wflow_test <span class="at">-r</span> <span class="st">"{'subbasin': [12.2051, 45.8331], 'strord': 4}"</span> <span class="at">-vv</span> <span class="at">-i</span> build_wflow.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="test"><code>ValueError: Model wflow has no method "setup_outlets"</code></pre>
-<p>The class <code>WflowModel</code> has a method <code>setup_outlets</code> though, in the file <a href="https://github.com/Deltares/hydromt_wflow/blob/main/hydromt_wflow/wflow.py#L933">wflow.py</a>.</p>
-<p>Not sure where to go from this. May be something to feed back to authors if I do not overlook something.</p>
-</section>
-<section id="debugging" class="level2">
-<h2 class="anchored" data-anchor-id="debugging">Debugging</h2>
-<p>Setting up launch.json file for VSCode:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"version"</span><span class="fu">:</span> <span class="st">"0.2.0"</span><span class="fu">,</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"configurations"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Python: Current File"</span><span class="fu">,</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"python"</span><span class="fu">,</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"/home/xxxyyy/mambaforge/envs/hydromt/bin/hydromt"</span><span class="fu">,</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"console"</span><span class="fu">:</span> <span class="st">"integratedTerminal"</span><span class="fu">,</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"justMyCode"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"args"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">"build"</span><span class="ot">,</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">"wflow"</span><span class="ot">,</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">"/home/xxxyyy/data/hydromt/wflow_test"</span><span class="ot">,</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-r"</span><span class="ot">,</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"</span><span class="ch">\"</span><span class="st">{'subbasin': [12.2051, 45.8331], 'strord': 4}</span><span class="ch">\"</span><span class="st">"</span><span class="ot">,</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-vv"</span><span class="ot">,</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-i"</span><span class="ot">,</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"/home/xxxyyy/data/hydromt/build_wflow.ini"</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            <span class="ot">]</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>            <span class="er">//</span> <span class="st">"cwd"</span><span class="er">:</span> <span class="st">"/home/xxxyyy/data/hydromt"</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This launches the process, but I cannot put breakpoints in most of the files though, not sure why. So, installing hydromt packages in dev mode to dig a bit further:</p>
-<p><code>conda remove --force hydromt hydromt_wflow</code> (note that this has to be <code>conda</code>, <code>mamba</code> still tries to uninstall dependencies even with <code>--force</code>)</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/src/hydromt</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../hydromt_wflow/</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Can we reproduce the error if installed from the lates source?</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/data/hydromt </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> build wflow ./wflow_test <span class="at">-r</span> <span class="st">"{'subbasin': [12.2051, 45.8331], 'strord': 4}"</span> <span class="at">-vv</span> <span class="at">-i</span> build_wflow.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Well, no… this time:</p>
-<pre class="text"><code>FileNotFoundError: No such file or catalog key: merit_hydro</code></pre>
-<p>See page <a href="https://deltares.github.io/hydromt/latest/user_guide/data_existing_cat.html#existing-catalog">Pre-defined data catalogs</a>: “The <code>deltares_data</code> catalog is only available within the Deltares network. However a selection of this data for a the Piave basin (Northern Italy) is available online in the <code>artifact_data</code>”. <code>merit_hydro</code> is under the “artifact_data - topography” tab.</p>
-<p><code>ds_org = self.data_catalog.get_rasterdataset(hydrography_fn)</code> where <code>hydrography_fn</code> is equal to “merit_hydro”</p>
-<p>The <a href="https://deltares.github.io/hydromt/latest/user_guide/data_overview.html">Data Overview</a> page states that:</p>
-<div class="callout callout-style-default callout-tip callout-titled">
+<p>I am dusting off a codebase for water quality modelling in lakes. This is C++ code compiled to a dynamic library, and accessible from R using Rcpp for glue code.</p>
+<p>A few years ago found out about <a href="https://github.com/renkun-ken/vscode-rcpp-demo">https://github.com/renkun-ken/vscode-rcpp-demo</a>, and this got me started debugging C++ code run from R process, using VSCode.</p>
+<section id="problem-description" class="level2">
+<h2 class="anchored" data-anchor-id="problem-description">Problem description</h2>
+<p>Running the model from its R package, I bump into an issue running a funciton for hydrodynamic simulation:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ResetRecorders(lms)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">SimpleIceModel_R</span>(lms)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">HydrodynamicSimul_R</span>(lms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>which results in the following error and stack trace:</p>
+<pre class="text"><code>Error: Cannot assign a value to an empty vector
+
+3. stop(structure(list(message = "Cannot assign a value to an empty vector",
+call = NULL, cppstack = NULL), class = c("std::runtime_error",
+"C++Error", "error", "condition")))
+2. HydrodynamicSimul_Rcpp(simulation)
+1. HydrodynamicSimul_R(lms)</code></pre>
+<div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Tip
+Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If no yaml file is provided to the CLI build or update methods or to <code>DataCatalog</code>, HydroMT will use the data stored in the <code>artifact_data</code> which contains an extract of global data for a small region around the Piave river in Northern Italy.</p>
+<p><strong>CAUTION</strong>: Do you <em>really</em> need to use a debugger…</p>
+<p>While “Cannot assign a value to an empty vector” sounds like generic warning from a standard library, in this case this happened to be a custom message that has a match in a full text search of the codebase, and a clue as to what may be happening. It is easy to end up with blinkers using an interactive debugger, where sometimes stepping back and thinking may be the shortest path to resolution.</p>
+<p>Be it as it may, I need to document the debugging setup in this post for future reference. Let’s assume we do really need a debugger…</p>
 </div>
 </div>
+<p>The last function in the R call stack is:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>HydrodynamicSimul_Rcpp <span class="op">&lt;-</span> function<span class="op">(</span>simulation<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    invisible<span class="op">(.</span>Call<span class="op">(</span><span class="ch">'_</span><span class="er">lakeoned_HydrodynamicSimul_Rcpp</span><span class="ch">'</span><span class="op">,</span> PACKAGE <span class="op">=</span> <span class="ch">'l</span><span class="er">akeoned_r</span><span class="ch">'</span><span class="op">,</span> simulation<span class="op">))</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Re-running after setting in R:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">error=</span>recover)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>does not provide additional insight. We need to interactively debug the C++ code to locate the issue.</p>
 </section>
 </section>
-<section id="taking-stock" class="level1">
-<h1>Taking stock</h1>
-<p>I’ve not managed to run an example from the “Getting Started” page, but this is OK. I know first hand how difficult it is to provide and maintain even a simple example that runs out of the box, especially for a new user. I gather that this is a matter to download sample data from somewhere and put it in a local directory.</p>
-<p>I have attempted similar management of data provisions through <a href="https://github.com/csiro-hydroinformatics/uchronia-time-series/blob/main/datatypes/include/datatypes/time_series_store.hpp">time series stores</a> and time series libraries. The data catalogue of HydroMT appears to be a broadly similar abstraction, at a higher level of granularity and for several types of spatial or temporal data.</p>
-<p>To be continued.</p>
+<section id="walkthrough" class="level1">
+<h1>Walkthrough</h1>
+<section id="compiling-c-libraries-in-debug-mode" class="level2">
+<h2 class="anchored" data-anchor-id="compiling-c-libraries-in-debug-mode">Compiling C++ libraries in debug mode</h2>
+<p><strong>Assumption</strong>: you are using Linux and the gnu toolchain.</p>
+<p>Prerequisite: <code>sudo apt install gdb</code></p>
+<p>The C++ model is a dynamic library compiled with, well, any C++ compiler, but in practice <code>g++</code>. The compilation is managed using <code>cmake</code> with a pattern similar to <a href="https://github.com/csiro-hydroinformatics/moirai">this library</a>.</p>
+<p>I use a shell variable <code>CM</code> which is a shortcut to generate the makefiles from <code>CMakeLists.txt</code>, and <code>echo $CM</code> returns:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> <span class="at">-DCMAKE_CXX_COMPILER</span><span class="op">=</span>g++ <span class="at">-DCMAKE_C_COMPILER</span><span class="op">=</span>gcc <span class="at">-DCMAKE_INSTALL_PREFIX</span><span class="op">=</span>/usr/local <span class="at">-DCMAKE_PREFIX_PATH</span><span class="op">=</span>/usr/local <span class="at">-DCMAKE_MODULE_PATH</span><span class="op">=</span>/usr/local/share/cmake/Modules/ <span class="at">-DCMAKE_BUILD_TYPE</span><span class="op">=</span>Release <span class="at">-DBUILD_SHARED_LIBS</span><span class="op">=</span>ON ..</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To compile in Debug mode let us use <code>-DCMAKE_BUILD_TYPE=Debug</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="va">CM</span><span class="op">=</span><span class="st">"cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local -DCMAKE_MODULE_PATH=/usr/local/share/cmake/Modules/ -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON .."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I can then recompile my shared library for lake modelling, and optionally its dependencies (moirai):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${GITHUB_REPOS}</span>/moirai</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> build <span class="kw">;</span> <span class="bu">cd</span> build</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="va">$CLEAN_BUILD</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="va">$CM</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="va">$MAKE_CMD</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> make install</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${GITHUB_REPOS}</span>/path/to/lake_model_src/</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> build <span class="kw">;</span> <span class="bu">cd</span> build</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">$CLEAN_BUILD</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="va">$CM</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="va">$MAKE_CMD</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> make install</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="build-the-rcpp-glue-code-in-debug-mode" class="level2">
+<h2 class="anchored" data-anchor-id="build-the-rcpp-glue-code-in-debug-mode">Build the Rcpp glue code in debug mode</h2>
+<p>The issue may be in the Rcpp glue code used for the R package. Compiling this in debug mode can be achieved with custom c++ compilation flags such as in <a href="https://github.com/csiro-hydroinformatics/uchronia-time-series/blob/main/bindings/R/pkgs/uchronia/src/Makevars">this Makevars file</a>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode makefile code-with-copy"><code class="sourceCode makefile"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For debugging the bindings</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">CPP_LANG_FLAGS</span> <span class="ch">=</span><span class="st"> --std=c++0x -g -O0 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="creating-a-vscode-debug-configuration" class="level2">
+<h2 class="anchored" data-anchor-id="creating-a-vscode-debug-configuration">Creating a VSCode debug configuration</h2>
+<p>We need to define a configuration in the project “launch.json” file of the VSCode debugger. See <a href="https://code.visualstudio.com/docs/cpp/launch-json-reference">code.visualstudio.com “Configure C/C++ debugging”</a> for reference.</p>
+<p>I end up setting up the following configuration in <code>launch.json</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    <span class="er">"configurations":</span> <span class="ot">[</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"(gdb) Attach to R process"</span><span class="fu">,</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"cppdbg"</span><span class="fu">,</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"attach"</span><span class="fu">,</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"/usr/lib/R/bin/exec/R"</span><span class="fu">,</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"processId"</span><span class="fu">:</span> <span class="st">"${command:pickProcess}"</span><span class="fu">,</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"additionalSOLibSearchPath"</span><span class="fu">:</span> <span class="st">"/home/per202/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build"</span><span class="fu">,</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"symbolLoadInfo"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"loadAll"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"exceptionList"</span><span class="fu">:</span> <span class="st">"liblakeoned.*so*;lakeoned_r.*so*"</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>            <span class="fu">},</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"setupCommands"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                <span class="fu">{</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Enable pretty-printing for gdb"</span><span class="fu">,</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"text"</span><span class="fu">:</span> <span class="st">"-enable-pretty-printing"</span><span class="fu">,</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>                    <span class="dt">"ignoreFailures"</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                <span class="fu">}</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>            <span class="ot">]</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I cannot remember why I turn off loading all symbols (<code>"loadAll": false,</code>) in <code>symbolLoadInfo</code>, probably because this was sluggish for no benefit (no debug symbols to load). Instead I specify specific libraries for which to seek to load debug symbols:</p>
+<ul>
+<li><code>liblakeoned.*so*</code> for the shared library with the core modelling code</li>
+<li><code>lakeoned_r.*so*</code> for the shared library with the Rcpp code</li>
+</ul>
+<p>I think I do need to specify the location of the program to attach to, using <code>"program": "/usr/lib/R/bin/exec/R",</code>. For an R session from the command line this is definitely ran from the entry point <code>/usr/lib/R/bin/exec/R</code>. Note that if you attach to a process run from RStudio, this seems to be another entry point, perhaps <code>/usr/lib/rstudio/resources/app/bin/rsession</code>. I’ve not yet tested.</p>
+</section>
+<section id="launch-r" class="level2">
+<h2 class="anchored" data-anchor-id="launch-r">Launch R</h2>
+<p>Launching <code>R</code> from the command line, then loading my lake modelling package:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lakeoned)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>to attach from VSCode to the process:</p>
+<p><img src="./attach-r-process.png" class="img-fluid"></p>
+<p>you can then search by string, for instance <code>exec/R</code></p>
+<p><img src="./attach-r-session-process.png" class="img-fluid"></p>
+<p>and once you accept and attach, the VSCode “Debug Console” window reports the following:</p>
+<pre class="text"><code>Loaded '/usr/lib/R/site-library/xts/libs/xts.so'. Cannot find or open the symbol file.
+Loaded '/home/per202/R/local/lakeoned/libs/lakeoned_r.so'. Symbols loaded.
+Loaded '/usr/local/lib/liblakeoned.so.4'. Symbols loaded.
+Loaded '/usr/local/lib/libmoirai.so.1'. Cannot find or open the symbol file.
+Loaded '/usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.74.0'. Cannot find or open the symbol file.</code></pre>
+<p>We have symbols loaded for out <code>lakeoned</code> libraries or bindings, but not the <code>libmoirai</code> library. <code>additionalSOLibSearchPath</code> contains “/home/per202/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build” but does not contain a path to debug symbols for libmoirai.so.1 hence <code>symbols not found</code>. This is probably not essential, so we’ll keep things are they are.</p>
+<p>Let’s try to catch the exception by setting up to catch all exceptions in VSCode:</p>
+<p><img src="./break-on-all-cpp-exceptions.png" class="img-fluid"></p>
+<p>And run our problematic function from R:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">HydrodynamicSimul_R</span>(lms)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And… no VSCode debugger activation. Just the same error message in the R terminal</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I am not totally sure of the cause, but I think this is because <code>Rcpp</code> has its own error trapping and handling.</p>
+</div>
+</div>
+<p>Let’s then have a specific set of break points in the codebase to try to diagnose:</p>
+</section>
+<section id="setting-up-breakpoints" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-breakpoints">Setting up breakpoints</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> HydrodynamicSimul<span class="op">(</span>LAKE_MODEL_SIMULATION_PTR simulation<span class="op">)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    TRY_START</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">auto</span> sim <span class="op">=</span> LAKE_MODEL_SIMULATION_DYNCAST<span class="op">(</span>simulation<span class="op">);</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    sim<span class="op">-&gt;</span>HydrodynamicSimul<span class="op">();</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    INTERCEPT_STD_EXCEPTION</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s set up a breakpoint at the line <code>auto sim = LAKE_MODEL_SIMULATION_DYNCAST(simulation);</code>.</p>
+<p><img src="add-breakpoint-cpp.png" class="img-fluid"></p>
+<p>Now if we re-run from R <code>HydrodynamicSimul_R(lms)</code>, we do have the expected break in VSCode, <em>hooray!</em></p>
+<p><img src="breakpoint-stop.png" class="img-fluid"></p>
+<p>stepping through gradually helps figure out where things go awry:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> t <span class="op">&lt;</span> Nt<span class="op">;</span> t<span class="op">++)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        DoHourlyHydroSimulation<span class="op">();</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        etc<span class="op">();</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and <em>in fine</em> this is indeed a custom error message (remember the warning at the start of the post?), which hints at a lack of proper initialisation of receiving vectors for model outputs.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> n <span class="op">=</span> to<span class="op">.</span>size<span class="op">();</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>n <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        lakeoned<span class="op">::</span>exceptions<span class="op">::</span>ThrowInvalidOperation<span class="op">(</span><span class="st">"Cannot assign a value to an empty vector"</span><span class="op">);</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
