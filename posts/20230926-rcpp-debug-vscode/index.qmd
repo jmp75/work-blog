@@ -134,7 +134,7 @@ I end up setting up the following configuration in `launch.json`:
             "processId": "${command:pickProcess}",
             "MIMode": "gdb",
             "miDebuggerPath": "gdb",
-            "additionalSOLibSearchPath": "/home/per202/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build",
+            "additionalSOLibSearchPath": "/home/xyz123/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build",
             "symbolLoadInfo": {
                 "loadAll": false,
                 "exceptionList": "liblakeoned.*so*;lakeoned_r.*so*"
@@ -177,13 +177,13 @@ and once you accept and attach, the VSCode "Debug Console" window reports the fo
 
 ```text
 Loaded '/usr/lib/R/site-library/xts/libs/xts.so'. Cannot find or open the symbol file.
-Loaded '/home/per202/R/local/lakeoned/libs/lakeoned_r.so'. Symbols loaded.
+Loaded '/home/xyz123/R/local/lakeoned/libs/lakeoned_r.so'. Symbols loaded.
 Loaded '/usr/local/lib/liblakeoned.so.4'. Symbols loaded.
 Loaded '/usr/local/lib/libmoirai.so.1'. Cannot find or open the symbol file.
 Loaded '/usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.74.0'. Cannot find or open the symbol file.
 ```
 
-We have symbols loaded for out `lakeoned` libraries or bindings, but not the `libmoirai` library. `additionalSOLibSearchPath` contains "/home/per202/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build" but does not contain a path to debug symbols for libmoirai.so.1 hence `symbols not found`. This is probably not essential, so we'll keep things are they are.
+We have symbols loaded for out `lakeoned` libraries or bindings, but not the `libmoirai` library. `additionalSOLibSearchPath` contains "/home/xyz123/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build" but does not contain a path to debug symbols for libmoirai.so.1 hence `symbols not found`. This is probably not essential, so we'll keep things are they are.
 
 Let's try to catch the exception by setting up to catch all exceptions in VSCode:
 
