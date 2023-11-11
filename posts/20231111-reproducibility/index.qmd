@@ -1,0 +1,251 @@
+---
+title: "Reproducing past results in scientific computing"
+description: "Computational reproducibility is hard work, even when you've done a good job to prepare for it"
+author:
+  - name: J-M
+    url: {}
+date: "2023-11-11"
+categories: ["reproducibility", "versioning", "git"]
+format: 
+  html:
+    toc: true
+engine: knitr
+draft: false
+---
+
+# Background
+
+We've been looking at some unit tests, or rather acceptance tests, and we decided to set up a system where we can wind back the versions of the various codebases to a particular point in past time and see retrospectively which results passed or failed.
+
+I'd like to think that the scientific community relying on computational models (i.e. the vast majority these days) has made significant improvements towards being able to reproduce past results. Using `git` or other versioning system you fancy is one cornerstone, and another increasingly is using controlled environments for software dependencies, such as `docker` and `conda`.
+
+Yet, it is only when one really needs to do a form of forensic reconstruction that one really asses how reproducible things are.
+
+# Build pipeline
+
+To give a bit more concrete context, the code looked at in this post for retrospective reproducibility is a subset of a streamflow modelling suite whose build pipeline is detailed in [another, previous blog post](https://jmp75.github.io/work-blog/posts/2022-07-31-azure-pipeline-vcpp-stack.html).
+
+Since the whole build pipeline is centered around a set of commit hashes to identify which versions to get, in theory this is a perfect setup to wind back the clock to the past and run unit tests. 
+
+However...
+
+The build pipeline builds debian packages that were introduced possibly after when the date for which we need to rerun tests. There are also some lurking assumptions leaking, for instance some Makefile targets may have appeared over time, cmake config files adapted over time for underlying changes in third party libraries. Also, the build pipeline is (well, was) using the latest `Ubuntu` image to build with, and we will need to decide on a past image.
+
+# Building a time travel machine
+
+There are several aspects that control the environment and content of what we set up to reproduce past results
+
+* Operating system and version. For this post I consider Linux Debian and its [history of releases](https://en.wikipedia.org/wiki/Debian_version_history). A priori for the past few years we may need to build docker images for `bullseye`, `buster`, perhaps even `stretch`. I do not recall in details which I was using at various times
+* Then there are the versions of the dependency libraries e.g. `netCDF`, `boost`, `g++`. In general there are not parallel versions of these for a given image, though this may be something you need to consider for full reproducibility.
+* Then there are versions of dependency libraries we manage. We have been using `git` for a decade, so a priori we are in a good place on this front to be precise about restoring past versions of codebases.
+
+## What I want
+
+We want a command line tool that sets up, compiles, installs and runs tests. Two arguments at least a priori: date, and operating system information.
+
+```sh
+./run-ut.sh 2017-06-02 "Dockerfile-buster"
+```
+
+We set up two levels of docker images: one with third party software pre-installed (to avoid redoing it every time we try a new date), and one with our custom material.
+
+## Docker
+
+### Base images with third party material
+
+A priori, setting up a couple of base images for debian buster, bullseye etc. at roughly given arbitrary dates in the past should be enough, rather than looking for tagged debian images for every single date in the past.
+
+::: {.callout-caution}
+With hindsight, I should have considered bulding a debian image on the fly closer to the date itself as well. I thought this was overkill, but later in the post this was proven, perhaps, not to be (`g++` version). 
+:::
+
+Two docker files, similar except the tag they start from: 
+
+```docker
+FROM debian:bullseye-20220711-slim as deb-bullseye-202207
+```
+
+```docker
+FROM debian:buster-20200720-slim as deb-buster-202007
+```
+
+::: {.callout-note}
+
+I noticed afterwards that it is possible to [Use an ARG in Dockerfile FROM for dynamic image specification](https://www.jeffgeerling.com/blog/2017/use-arg-dockerfile-dynamic-image-specification). This may come in handy if you build your own time machine to avoid ducplicated Docker files.
+
+::: 
+
+Otherwise the install consists of installing dependencies and compilers:
+
+```sh
+RUN apt-get update --yes && \
+  apt-get install --yes --no-install-recommends \
+  libboost-system-dev \
+  libboost-date-time-dev \
+  
+```
+
+Note of course that this assumes that there is no significant change in the versions of e.g. `boost` that may impact our test results, and that boost as it was e.g. on 2022-07-11 in Debian bullseye is good enough.
+
+### Images with custom material
+
+We devise dockerfiles for images with out custom material such as the test data, and build scripts.
+
+```text
+COPY /mytestdata/ /tmp/mytestdata/
+WORKDIR /internal
+COPY ./entrypoint.sh /internal
+COPY ./build_test_product.sh /internal
+COPY ./funcs /internal
+COPY ./Makefile-cfutils /internal
+COPY ./Makefile-threadpool /internal
+
+ENTRYPOINT ["./entrypoint.sh"]
+```
+
+## checking out codebases
+
+`entrypoint.sh` checks out codebases. Our stack has several. We can use arrays to loop for some operations
+
+```sh
+declare -a reponames_private_checkout=( numerical-sl-cpp \
+datatypes \
+swift \
+qpp )
+
+declare -a reponames_pub_deps=( moirai \
+c-interop \
+threadpool \
+config-utils \
+wila )
+
+# turn the detached message off
+git config --global advice.detachedHead false
+```
+
+Getting to the crux of it, we check out these codebases and determine which point to wind them back to, as specified by an argument `at_date_time`
+
+```sh
+for f in ${reponames_pub_deps[@]} ; do
+  ret_code=0;
+  cd ${GITHUB_REPOS} \
+    && git clone https://github.com/csiro-hydroinformatics/${f}.git \
+    && cd $f \
+    && cmt_hash=`_get_hash ${at_date_time}` \
+    && git checkout ${cmt_hash} \
+    && git log -n 1 \
+    || ret_code=1;
+
+  _exit_if_failed $ret_code "Failed to clone $f"
+done
+```
+
+`_get_hash` is a bash function to get the hash of the last git commit prior to a given date, key to the whole exercise of course.
+
+```sh
+_get_hash () {
+  _at_time=$1
+  _cwd=`pwd`
+  git log --until="${_at_time}" -n 1 | grep ^commit | awk -F'[ ]' '{print $2 }'
+}
+```
+
+`_get_hash 2020-01-01` returns a commit hash such as `11a4f90ba83765a45fd456b612cc611654613c3c` which is the last commit on the current checked out branch before the date `2020-01-01`.
+
+::: {.callout-tip}
+
+`git log --until` will look for the commit log ancestry in the branch currently checked out, _not_ a global search through all commits and all branches. Beware of codebases with multiple tips. If you have a codebase with a lot of branches not yet merged, or if your repo checks out an older branch by default, you may need to check out the relevant branch i.e. `git checkout main` or whichever is relevant to your case before using `_get_hash`.
+
+:::
+
+## Patching things up
+
+We had to prepare a couple of `Makefile`s to patch up the codebases. Note that patching should occur _after_ checking out at the desired commit.
+
+For instance prior to a certain date the Makefile for `threadpool` did not have an install target, and I (or someone else) added it. To avoid handling special cases let's just patch the code with a copy.
+
+```sh
+cd ${GITHUB_REPOS}/threadpool \
+  && git checkout master \
+  && cmt_hash=`_get_hash ${at_date_time}` \
+  && git checkout ${cmt_hash} \
+  && git log -n 1 \
+  && cp -f /internal/Makefile-threadpool ./Makefile \
+  || ret_code=1;
+```
+
+## Compiling and installing
+
+Time to install out libraries. Thanks to some uniformity in the use of `cmake` we can loop over repos:
+
+```sh
+for f in ${reponames_pub_deps_cmake[@]} ; do
+  ret_code=0
+  cd ${GITHUB_REPOS}/${f} \
+    && mkdir -p build ; cd build \
+    && $CLEAN_BUILD \
+    && $CM \
+    && $MAKE_CMD \
+    && $SUDO_CMD make install || ret_code=1;
+  _exit_if_failed $ret_code "Failed to install $f"
+done
+```
+
+::: {.callout-warning}
+
+It is worth noting at this point that for one of the codebases above, namely [`wila`](https://github.com/csiro-hydroinformatics/wila), for some dates in the past e.g. 2017-07 I could not have a successful compilation due to syntax error. This is probably due to using a version of `g++` released no earlier than 2020, which may have been more strict with C++ syntax.
+
+This is another instance making the point of this post, and why full reproduciliblity is hard. 
+
+:::
+
+## Re-running unit tests
+
+The unit tests we want to re-run in this case are command line executables built with the [Catch C++](https://github.com/catchorg/Catch2) framework.
+
+It is invoked using a helper bash function `_run_cli_unit_test` to wrap messages and handle behavior depending on the return code.
+
+`_run_cli_unit_test ${SRC_ROOT}/mylib/testlibmylib/build testmylib ${_exit}`
+
+```sh
+_run_cli_unit_test () {
+    build_dir=$1
+    exe_name=$2
+    _eif=${3-0} # exit if failed
+    _rc=0
+    if [ ! -e ${build_dir} ]; then
+        echo "FAILED: directory not found: ${build_dir}";
+        _rc=127;
+    else
+        cd ${build_dir};
+        if [ ! -e ${exe_name} ]; then
+            echo "FAILED: file ${exe_name} not found in ${build_dir}";
+            _rc=127;
+        else
+            ./${exe_name}
+            ret_code=$?
+            if [ $ret_code != 0 ]; then 
+                echo FAILED: unit test ${exe_name} return code is not 0 but $ret_code
+                _rc=$ret_code;
+            fi
+        fi
+    fi
+    if [ $_eif != 0 ]; then
+        _exit_if_failed $_rc "unit tests ${exe_name}"
+    fi
+    return $_rc
+}
+```
+
+# Conclusion
+
+Maintaining a robust and useful test harness is hard, harder in some domains of scientific computing where tests on stochastic and complicated elements can only really be acceptance tests. If a change in the algorithm or random number seeding occurs, scientists may overlook, skip or delay the update of accepted new reference results. The vagaries of research project and funding changes make it difficult to maintain long-lived software assets.
+
+This post outlines the main lessons from a practical instance needing to re-wind back and re-run unit tests. All in all, the fundamentals were right and it is gratifying to get the dividends of consistent use of `git` as a foundation.
+
+A couple of things highlighted by this exercise in reproducibility
+
+* Using "the latest version of a docker image" may be all right for your build pipelines to get build artifacts that are contemporary, but this is important to try to think ahead of when you will need to get back to an older image. For instance a change of version in `g++` may be relevant to your outcome, as was the case for me.
+* You may have to patch up codebases to cater for possible changes in the build steps over past time. 
+* Test data sets may also need to be versioned. Large binary data is cumbersome to manage via git, however. [`git large file storage`](https://git-lfs.com/) may be an option to manage data versions via git without the ugliness of large git repo sizes, not to mention the file size limits. 
+* It is a bit like backups: it is not untill you have to restore the backups that you know your backup system works. Do yourself a favor and try to go through an exercise in reproducibility on a substantial codebase that has lived several years, before you are forced to do it. 
