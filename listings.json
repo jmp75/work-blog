@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/20231111-reproducibility/index.html",
+      "/posts/20231003-air2stream-f90wrap/index.html",
       "/posts/20230926-rcpp-debug-vscode/index.html",
       "/posts/2023-07-22-sankey-diagrams-python/notebook.html",
       "/posts/20230720-hydromt/index.html",
