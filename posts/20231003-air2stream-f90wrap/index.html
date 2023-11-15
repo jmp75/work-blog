@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2023-10-03">
 <meta name="description" content="Python wrapper for the the Fortran program air2stream using f90wrap">
 
-<title>J-M’s ‘lab notebook’ - Wrapping air2stream with f90wrap</title>
+<title>J-M’s ‘lab notebook’ - Wrapping air2stream to access it from Python - part 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -118,7 +118,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Wrapping air2stream with f90wrap</h1>
+      <h1 class="title">Wrapping air2stream to access it from Python - part 1</h1>
                   <div>
         <div class="description">
           Python wrapper for the the Fortran program air2stream using f90wrap
@@ -172,12 +172,6 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#log" id="toc-log" class="nav-link" data-scroll-target="#log">Log</a>
-  <ul class="collapse">
-  <li><a href="#setting-up-unit-tests" id="toc-setting-up-unit-tests" class="nav-link" data-scroll-target="#setting-up-unit-tests">Setting up unit tests</a></li>
-  <li><a href="#compiling-for-dynamically-loading-from-python" id="toc-compiling-for-dynamically-loading-from-python" class="nav-link" data-scroll-target="#compiling-for-dynamically-loading-from-python">compiling for dynamically loading from Python</a></li>
-  </ul></li>
-  <li><a href="#observations-and-notes" id="toc-observations-and-notes" class="nav-link" data-scroll-target="#observations-and-notes">Observations and notes</a></li>
   </ul>
 </nav>
     </div>
@@ -189,6 +183,9 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="background" class="level1">
 <h1>Background</h1>
+<div class="{callout-note}">
+<p>Since writing this post I got in touch with the authors of <code>air2stream</code> in Oct 2023. They have a post-doc porting this work to Python or perhaps Julia.</p>
+</div>
 <p><code>air2stream</code> is a <a href="https://github.com/spiccolroaz/air2stream">model to predict River Water Temperature (RWT) using air temperature and discharge.</a>. A project I work on intend to use it for simulation and forecasting of river water temperature, as part of a system where Python is likely to be the common interface language.</p>
 <p>This post starts with the guess that I will end up using <a href="https://doi.org/10.1088/1361-648X/AB82D2"><code>f90wrap</code></a> to generate glue code, something I’ve already used to <a href="https://mssanz.org.au/modsim2023/files/perraud130.pdf">wrap a Fortran code (WAA tool)</a> and transition to Python. That said, I’ll consider other options on the table, not only for the sake of exercise but for future project needs, so the end target may well be a complete rewrite to Python.</p>
 </section>
@@ -199,7 +196,7 @@ ul.task-list li input[type="checkbox"] {
 <p>There is no match for a package <code>air2stream</code> on the <a href="https://pypi.org">Python Package Index (PyPI)</a>.</p>
 <section id="options" class="level2">
 <h2 class="anchored" data-anchor-id="options">Options</h2>
-<p>One can slice things up in many ways, but broadly speaking:</p>
+<p>One can slice things up in many ways, but broadly speaking the options are:</p>
 <ul>
 <li><p>use the command line tool as-is and deal with input-output from Python</p></li>
 <li><p>wrapping with Fortran-Python interop glue code</p></li>
@@ -248,33 +245,17 @@ ul.task-list li input[type="checkbox"] {
 <p>Back in 2019 I used <code>f90wrap</code> to wrap a Fortran 90 codebase (<a href="https://mssanz.org.au/modsim2023/files/perraud130.pdf">Design and implementation of a software tool supporting the Inter-Provincial Water Apportionment Accord in Pakistan</a>). This was to help validate a new implementation in “pure” Python. In 2019 <code>f2py</code> was not an option as fortran90, in particular custom types, was not supported. In 2023, however, it appears to be the case.</p>
 <section id="resources" class="level3">
 <h3 class="anchored" data-anchor-id="resources">Resources</h3>
-<p>https://www.matecdev.com/posts/fortran-in-python.html</p>
+<p>Main resources on Fortran/python interop:</p>
+<p><a href="https://doi.org/10.1088/1361-648X/AB82D2"><code>f90wrap</code></a> and the <a href="https://github.com/jameskermode/f90wrap">f90wrap github repo</a></p>
+<p><a href="https://www.matecdev.com/posts/fortran-in-python.html">How to Call Fortran from Python</a></p>
 <p><a href="https://www.matecdev.com/posts/fortran-legacy-code.html">How to Work with Legacy Fortran Code: A Short Guideline</a> interesting read</p>
-<p>https://fortranwiki.org/fortran/show/Python has a few dead or stale links, but informative still.</p>
-<p>https://github.com/tchlux/fmodpy</p>
-<ul>
-<li>f2py is <a href="https://docs.scipy.org/doc/numpy/f2py/index.html">now part of numpy</a> (Beware not to use the legacy packages on pypi and conda, if they are still available at the time of writing)</li>
-</ul>
-</section>
-</section>
-</section>
-<section id="log" class="level1">
-<h1>Log</h1>
-<p>I start from the version of <code>air2stream</code> at a <a href="https://github.com/jmp75/air2stream/tree/v1.2.0">v1.2.0</a>, a tag which reflects faithfully the version advertised in papers and third party documentation, I think.</p>
-<p>Following the build instructions using <code>cmake</code> just works fine, on my Linux desktop at least, and the sample calibration using included sample data runs fine as well. A good starting point.</p>
-<section id="setting-up-unit-tests" class="level2">
-<h2 class="anchored" data-anchor-id="setting-up-unit-tests">Setting up unit tests</h2>
-</section>
-<section id="compiling-for-dynamically-loading-from-python" class="level2">
-<h2 class="anchored" data-anchor-id="compiling-for-dynamically-loading-from-python">compiling for dynamically loading from Python</h2>
-</section>
-</section>
-<section id="observations-and-notes" class="level1">
-<h1>Observations and notes</h1>
-<p>The modern fortran plugin for VSCode says it is not compatible with fortran breakpoint support: “Modern Fortran is not compatible with Fortran Breakpoint Support. Breakpoint support is handled natively in Modern Fortran. Please Disable/Uninstall: Fortran Breakpoint Support.”</p>
-<p>Also says: It is highly recommended to use the fortls to enable IDE features like hover, peeking, GoTos and many more. For a full list of features the language server adds see: https://github.com/gnikit/fortls</p>
+<p><a href="https://fortranwiki.org/fortran/show/Python">Python page in Fortran Wiki</a> has a few dead or stale links, but is informative still.</p>
+<p><a href="https://github.com/tchlux/fmodpy">fmodpy</a> is something I may not have noticed a few years ago. It looks neat, but this is unclear how it could work in a program with multilple files.</p>
+<p><code>f2py</code> is <a href="https://docs.scipy.org/doc/numpy/f2py/index.html">now part of numpy</a> (Beware not to use the legacy packages on pypi and conda, if they are still available at the time of writing)</p>
 
 
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->

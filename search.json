@@ -987,6 +987,34 @@
     "text": "Resources\nURLs which may or may not have influenced this work:\n\nConda-forge default azure pipeline\nazure devops pipeline variables\nvisual-studio-build-tools-2017-silent-install may be handy if 2017 builds are needed e.g for conda.\nWindows2019 image environment\nAzure pipelines for Marian NMT\nTrigger Build Task"
   },
   {
+    "objectID": "posts/20231003-air2stream-f90wrap/index.html",
+    "href": "posts/20231003-air2stream-f90wrap/index.html",
+    "title": "Wrapping air2stream to access it from Python - part 1",
+    "section": "",
+    "text": "Since writing this post I got in touch with the authors of air2stream in Oct 2023. They have a post-doc porting this work to Python or perhaps Julia.\n\nair2stream is a model to predict River Water Temperature (RWT) using air temperature and discharge.. A project I work on intend to use it for simulation and forecasting of river water temperature, as part of a system where Python is likely to be the common interface language.\nThis post starts with the guess that I will end up using f90wrap to generate glue code, something I’ve already used to wrap a Fortran code (WAA tool) and transition to Python. That said, I’ll consider other options on the table, not only for the sake of exercise but for future project needs, so the end target may well be a complete rewrite to Python."
+  },
+  {
+    "objectID": "posts/20231003-air2stream-f90wrap/index.html#options",
+    "href": "posts/20231003-air2stream-f90wrap/index.html#options",
+    "title": "Wrapping air2stream to access it from Python - part 1",
+    "section": "Options",
+    "text": "Options\nOne can slice things up in many ways, but broadly speaking the options are:\n\nuse the command line tool as-is and deal with input-output from Python\nwrapping with Fortran-Python interop glue code\nre-write to a “pure” Python package\nre-write to a Python package with Cython for performance sensitive parts\nuse the command line tool as-is and deal with input-output from Python\n\nusing the reference implementation\nlittle risk of bugs\ntedious input/output code\npossibly not scalable to a system or some use cases\n\nwrapping with Fortran-Python interop glue code\n\nusing the reference implementation with minimal changes\nmoderate risks of bugs\nmove away from rigid file system for I/O\ngrey-box access to model states\npossibly not scalable to a system or some use cases\n\nre-write to a “pure” Python package\n\ncontemporary mainstream language, better long term maintenance\nneeds stringent side by side testing for validation against reference implementation\nrisks of bugs moderate to likely (notwithsanding tests)\nruntime performance degradation likely\npossibly less ownership from initial authors.\nconcurrent implementation if the Fortran implementation is further evolved.\n\nre-write to a Python package with Cython for performance sensitive parts\n\nMostly same as previous, except:\n\nlittle runtime performance degradation"
+  },
+  {
+    "objectID": "posts/20231003-air2stream-f90wrap/index.html#assessing-the-prior-air2stream-codebase",
+    "href": "posts/20231003-air2stream-f90wrap/index.html#assessing-the-prior-air2stream-codebase",
+    "title": "Wrapping air2stream to access it from Python - part 1",
+    "section": "Assessing the prior air2stream codebase",
+    "text": "Assessing the prior air2stream codebase\nair2stream seems written in a Fortran90 syntax. Although in includes a calibration procedure the codebase is rather compact, with the core subroutines fitting in a file with ~500 lines of code. A fork of it already includes additional material with cmake to facilitate compilation, so I start from this fork to create my air2stream fork.\nAIR2STREAM_MODULES.f90 has global variables, so far as I recall my last foray into Fortran code. Effectively, if we wrap the code as-is we cannot create multiple instances of models within the same process."
+  },
+  {
+    "objectID": "posts/20231003-air2stream-f90wrap/index.html#fortran-wrapping-tools",
+    "href": "posts/20231003-air2stream-f90wrap/index.html#fortran-wrapping-tools",
+    "title": "Wrapping air2stream to access it from Python - part 1",
+    "section": "Fortran wrapping tools",
+    "text": "Fortran wrapping tools\nBack in 2019 I used f90wrap to wrap a Fortran 90 codebase (Design and implementation of a software tool supporting the Inter-Provincial Water Apportionment Accord in Pakistan). This was to help validate a new implementation in “pure” Python. In 2019 f2py was not an option as fortran90, in particular custom types, was not supported. In 2023, however, it appears to be the case.\n\nResources\nMain resources on Fortran/python interop:\nf90wrap and the f90wrap github repo\nHow to Call Fortran from Python\nHow to Work with Legacy Fortran Code: A Short Guideline interesting read\nPython page in Fortran Wiki has a few dead or stale links, but is informative still.\nfmodpy is something I may not have noticed a few years ago. It looks neat, but this is unclear how it could work in a program with multilple files.\nf2py is now part of numpy (Beware not to use the legacy packages on pypi and conda, if they are still available at the time of writing)"
+  },
+  {
     "objectID": "posts/2022-07-27-azure-devops-negative-experience.html",
     "href": "posts/2022-07-27-azure-devops-negative-experience.html",
     "title": "A whinge about Azure Devops",
