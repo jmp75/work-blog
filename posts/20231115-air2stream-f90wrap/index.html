@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.358">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2023-11-15">
+<meta name="description" content="Python wrapper for the the Fortran program air2stream using f90wrap">
+
+<title>J-M’s ‘lab notebook’ - Wrapping air2stream to access it from Python - part 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Wrapping air2stream to access it from Python - part 2</h1>
+                  <div>
+        <div class="description">
+          Python wrapper for the the Fortran program air2stream using f90wrap
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">python</div>
+                <div class="quarto-category">f90wrap</div>
+                <div class="quarto-category">code generation</div>
+                <div class="quarto-category">Fortran</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="true">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 15, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#development-environment-and-code-editor" id="toc-development-environment-and-code-editor" class="nav-link" data-scroll-target="#development-environment-and-code-editor">Development environment and code editor</a></li>
+  <li><a href="#method" id="toc-method" class="nav-link" data-scroll-target="#method">Method</a></li>
+  <li><a href="#wrapping-air2stream-with-f90wrap" id="toc-wrapping-air2stream-with-f90wrap" class="nav-link" data-scroll-target="#wrapping-air2stream-with-f90wrap">Wrapping <code>air2stream</code> with <code>f90wrap</code></a>
+  <ul class="collapse">
+  <li><a href="#running-as-is" id="toc-running-as-is" class="nav-link" data-scroll-target="#running-as-is">Running as-is</a></li>
+  <li><a href="#refactor-the-io-into-an-api" id="toc-refactor-the-io-into-an-api" class="nav-link" data-scroll-target="#refactor-the-io-into-an-api">Refactor the I/O into an API</a>
+  <ul class="collapse">
+  <li><a href="#side-effects" id="toc-side-effects" class="nav-link" data-scroll-target="#side-effects">side effects</a></li>
+  </ul></li>
+  <li><a href="#does-it-compile" id="toc-does-it-compile" class="nav-link" data-scroll-target="#does-it-compile">Does it compile</a></li>
+  <li><a href="#dont-delay-gratfication---wrapping-in-python-with-f90wrap" id="toc-dont-delay-gratfication---wrapping-in-python-with-f90wrap" class="nav-link" data-scroll-target="#dont-delay-gratfication---wrapping-in-python-with-f90wrap">Don’t delay gratfication - wrapping in Python with <code>f90wrap</code></a></li>
+  <li><a href="#installing-f90wrap" id="toc-installing-f90wrap" class="nav-link" data-scroll-target="#installing-f90wrap">Installing <code>f90wrap</code></a></li>
+  <li><a href="#generating-wrappers-for-air2stream" id="toc-generating-wrappers-for-air2stream" class="nav-link" data-scroll-target="#generating-wrappers-for-air2stream">Generating wrappers for <code>air2stream</code></a>
+  <ul class="collapse">
+  <li><a href="#f90wrap_air2stream_modules.f90" id="toc-f90wrap_air2stream_modules.f90" class="nav-link" data-scroll-target="#f90wrap_air2stream_modules.f90">f90wrap_AIR2STREAM_MODULES.f90</a></li>
+  <li><a href="#f90wrap_toplevel.f90" id="toc-f90wrap_toplevel.f90" class="nav-link" data-scroll-target="#f90wrap_toplevel.f90">f90wrap_toplevel.f90</a></li>
+  <li><a href="#a2s.py" id="toc-a2s.py" class="nav-link" data-scroll-target="#a2s.py">A2S.py</a></li>
+  </ul></li>
+  <li><a href="#compiling-_a2s" id="toc-compiling-_a2s" class="nav-link" data-scroll-target="#compiling-_a2s">Compiling <code>_A2S</code></a>
+  <ul class="collapse">
+  <li><a href="#recompile-with--fpic" id="toc-recompile-with--fpic" class="nav-link" data-scroll-target="#recompile-with--fpic">Recompile with <code>-fPIC</code></a></li>
+  </ul></li>
+  <li><a href="#does-it-work" id="toc-does-it-work" class="nav-link" data-scroll-target="#does-it-work">Does it work?</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="background" class="level1">
+<h1>Background</h1>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>air2stream</code> is being ported to Python or perhaps Julia. The work described here may be obsolete by the time you read.</p>
+</div>
+</div>
+<p>This is a follow up on <a href="https://jmp75.github.io/work-blog/posts/20231003-air2stream-f90wrap/">Wrapping air2stream to access it from Python - part 1</a>.</p>
+<p>Due to some project timelines, I have to provide an <code>air2stream</code> python interface ASAP even if it is to be superseded by a “pure” python implementation in the future.</p>
+</section>
+<section id="development-environment-and-code-editor" class="level1">
+<h1>Development environment and code editor</h1>
+<p>It is really important to have a development environment that helps you and is pleasant to work with. There is a subjective part to assessing it, but for this post I would suggest you consider <a href="https://code.visualstudio.com">Visual Studio Code</a> with the extensions <a href="https://marketplace.visualstudio.com/items?itemName=fortran-lang.linter-gfortran">Modern Fortran</a> and <a href="https://marketplace.visualstudio.com/items?itemName=ekibun.fortranbreaker">Fortran Breakpoint Support</a>, although we may not use the second yet in this post.</p>
+</section>
+<section id="method" class="level1">
+<h1>Method</h1>
+<p>I had initially thought for this post I would follow the guidelines in the post <a href="https://www.matecdev.com/posts/fortran-legacy-code.html">How to Work with Legacy Fortran Code: A Short Guideline</a>. I would reengineer a bit of the Fortran code itself to make it more like a “grey box” where model inputs, parameters and outputs can be set or gotten “in memory” rather than using input/output files.</p>
+<p>However I quickly found out that there was value in just trying to wrap the Fortran program <em>as is</em> upfront, and delay any redesign of the Fortran code.</p>
+<p>The main features of “How to Work with Legacy Fortran Code: A Short Guideline” below remain valid considerations; we’ll just dive deeper in to them in another post.</p>
+<ul>
+<li>Make system-level tests</li>
+<li>Modularize the code and remove COMMON blocks</li>
+<li>Remove global variables and specify argument’s intent</li>
+<li>Gradually add more tests while improving code quality.</li>
+</ul>
+</section>
+<section id="wrapping-air2stream-with-f90wrap" class="level1">
+<h1>Wrapping <code>air2stream</code> with <code>f90wrap</code></h1>
+<p>First, just make sure you can run the program as is as it will be a reference point for testing correctness after Python wrapping and eventual code redesign.</p>
+<section id="running-as-is" class="level2">
+<h2 class="anchored" data-anchor-id="running-as-is">Running as-is</h2>
+<p>My <a href="https://github.com/jmp75/air2stream/blob/v1.2.0/src">fork of air2stream at v1.2.0</a> is the starting point. It includes a handy build system using <code>cmake</code> already contributed by someone else. Sample data is included in the codebase and <code>cmake ../src/; make</code> works absolutely fine on Linux: <code>[100%] Built target air2stream</code>.</p>
+<p>From within the “build” folder, <code>./air2stream -f ../input.txt</code> leads to an error: air2stream expects some files alongside the executable. So, <code>cp air2stream  ; cd ..</code>. <code>./air2stream -f ./input.txt</code> then runs and performs a calibration. It takes a few dozen of seconds to complete the calibration.</p>
+<p>I do note something the program outputs, hopefully not of practical concern but time will tell.</p>
+<pre class="text"><code>Note: The following floating-point exceptions are signalling: IEEE_INVALID_FLAG IEEE_OVERFLOW_FLAG</code></pre>
+<p>The <code>input.txt</code> includes comments on the meaning of inputs, which is neat.</p>
+<p>There are different run modes: calibration, simulation. Not sure what controls which mode it runs in. <code>SUBROUTINE read_calibration</code> <code>PSO               ! optimization algorithm:</code> which actually could be valued as ‘FORWARD’ although this is not documented.</p>
+</section>
+<section id="refactor-the-io-into-an-api" class="level2">
+<h2 class="anchored" data-anchor-id="refactor-the-io-into-an-api">Refactor the I/O into an API</h2>
+<p>While this post will focus on <code>f90wrap</code> rather than reengineering the program, let’s look at adding one new subroutine to help test <em>in memory</em>.</p>
+<p>Most if not all subroutines appear to be without arguments and use the commondata module with global variables. At least, they seem to all be in one file.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>set_input(a,b,c);</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fortran_main();</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>get_output(x,y,z);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>One of the first subroutines called by the program is <code>SUBROUTINE read_calibration</code> which reads a file <code>inputfile</code>.</p>
+<p>All of the information is read and stored in global variables : <code>air_station</code>, <code>water_station</code>, etc., but they are already in a common module (file) rather than peppered through the code, which is a good starting point.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">! read input information</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">OPEN(unit</span><span class="kw">=</span><span class="dv">1</span>,<span class="fu">file</span><span class="kw">=</span>inputfile,<span class="fu">status</span><span class="kw">=</span><span class="st">'old'</span>,<span class="fu">action</span><span class="kw">=</span><span class="st">'read'</span><span class="fu">)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span>                           <span class="co">! header</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> name                      <span class="co">! name of folder</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> air_station               <span class="co">! name/ID of the air station</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> water_station             <span class="co">! name/ID of the water station</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> series                    <span class="co">! type of series: c=continuous, m=mean year</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> time_res                  <span class="co">! time resolution: 1d=daily, nw=n weeks (n=1,2,...), 1m=monthly</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> version                   <span class="co">! version: 3,4,5,7,8 parameters</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> Tice_cover                <span class="co">! Threshold temperature for ice formation</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> fun_obj                   <span class="co">! objective function: KGE, NSE, RMS</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> mod_num                   <span class="co">! mod_num :   RK4 , EUL , RK2 , CRN</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> runmode                   <span class="co">! optimization algorithm: PSO or LATHYP</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> prc                       <span class="co">! minimum percentage of data in input: 0...1</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> n_run                     <span class="co">! number of iterations</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> mineff_index              <span class="co">! index for the minimum efficiency that the code memorizes</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">CLOSE(</span><span class="dv">1</span><span class="fu">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let us write an additional <code>SUBROUTINE set_calibration_param</code> which takes parameters as arguments to the subroutine. We have to prefix the argument names to avoid clashes with global variables (so far as I know Fortran anyway).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SUBROUTINE</span> set_calibration_param( <span class="kw">&amp;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    name_p,  <span class="kw">&amp;</span>             <span class="co">! name of folder</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    air_station_p,  <span class="kw">&amp;</span>      <span class="co">! name/ID of the air station</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    water_station_p,  <span class="kw">&amp;</span>    <span class="co">! name/ID of the water station</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    series_p,  <span class="kw">&amp;</span>           <span class="co">! type of series: c=continuous, m=mean year</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    time_res_p,  <span class="kw">&amp;</span>         <span class="co">! time resolution: 1d=daily, nw=n weeks (n=1,2,...), 1m=monthly</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    version_p,  <span class="kw">&amp;</span>          <span class="co">! version: 3,4,5,7,8 parameters</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    Tice_cover_p,  <span class="kw">&amp;</span>       <span class="co">! Threshold temperature for ice formation</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    fun_obj_p,  <span class="kw">&amp;</span>          <span class="co">! objective function: KGE, NSE, RMS</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    mod_num_p,  <span class="kw">&amp;</span>          <span class="co">! mod_num :   RK4 , EUL , RK2 , CRN</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    runmode_p,  <span class="kw">&amp;</span>          <span class="co">! optimization algorithm: PSO or LATHYP</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    prc_p,  <span class="kw">&amp;</span>              <span class="co">! minimum percentage of data in input: 0...1</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    n_run_p,  <span class="kw">&amp;</span>            <span class="co">! number of iterations</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    mineff_index_p  <span class="kw">&amp;</span>      <span class="co">! index for the minimum efficiency that the code memorizes</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">IMPLICIT</span> <span class="kw">NONE</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">USE</span> commondata</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">CHARACTER(LEN=30)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> name_p, air_station_p, water_station_p, runmode_p</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">CHARACTER(LEN=3)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> time_res_p, fun_obj_p, mod_num_p</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">REAL(KIND=8)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> Tice_cover_p, prc_p, mineff_index_p</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">INTEGER</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> n_run_p, version_p</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">CHARACTER(LEN=1)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> series_p</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    name<span class="kw">=</span>name_p</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    air_station<span class="kw">=</span>air_station_p</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    water_station<span class="kw">=</span>water_station_p</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    series<span class="kw">=</span>series_p</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    time_res<span class="kw">=</span>time_res_p</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    version<span class="kw">=</span>version_p</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    Tice_cover<span class="kw">=</span>Tice_cover_p</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    fun_obj<span class="kw">=</span>fun_obj_p</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    mod_num<span class="kw">=</span>mod_num_p</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    runmode<span class="kw">=</span>runmode_p</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    prc<span class="kw">=</span>prc_p</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    n_run<span class="kw">=</span>n_run_p</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    mineff_index<span class="kw">=</span>mineff_index_p</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    station<span class="kw">=</span><span class="fu">TRIM</span>(air_station)<span class="kw">//</span><span class="st">'_'</span><span class="kw">//</span><span class="fu">TRIM</span>(water_station)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="side-effects" class="level3">
+<h3 class="anchored" data-anchor-id="side-effects">side effects</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">! subfolder creation is system-specific</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">! #ifdef _WIN32</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">!   call system('mkdir ' // TRIM(name)//'\output_'//TRIM(version)//'\')</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">! #else</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">!   call system('mkdir -p ' // folder)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">! #endif</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">IF</span> (runmode <span class="op">.eq.</span> <span class="st">'FORWARD'</span>) <span class="kw">THEN</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">OPEN(unit</span><span class="kw">=</span><span class="dv">1</span>,<span class="fu">file</span><span class="kw">=</span><span class="fu">TRIM</span>(name)<span class="kw">//</span><span class="st">'/parameters_forward.txt'</span>,<span class="fu">status</span><span class="kw">=</span><span class="st">'old'</span>,<span class="fu">action</span><span class="kw">=</span><span class="st">'read'</span><span class="fu">)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> (par(i), i<span class="kw">=</span><span class="dv">1</span>,n_par)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ELSE IF</span> (runmode <span class="op">.eq.</span> <span class="st">'PSO'</span>) <span class="kw">THEN</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">! read PSO parameters</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">OPEN(unit</span><span class="kw">=</span><span class="dv">1</span>,<span class="fu">file</span><span class="kw">=</span><span class="st">'PSO.txt'</span>,<span class="fu">status</span><span class="kw">=</span><span class="st">'old'</span>,<span class="fu">action</span><span class="kw">=</span><span class="st">'read'</span><span class="fu">)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span>           <span class="co">! header</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> n_particles</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> c1,c2</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">READ(</span><span class="dv">1</span>,<span class="fu">*)</span> wmax,wmin</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">CLOSE(</span><span class="dv">1</span><span class="fu">)</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">END IF</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>        <span class="kw">IF</span> (version <span class="op">==</span> <span class="dv">3</span>) <span class="kw">THEN</span>                                      <span class="co">!air2stream with 3 parameters</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>            parmin(<span class="dv">4</span>)<span class="kw">=</span><span class="dv">0</span>;    parmax(<span class="dv">4</span>)<span class="kw">=</span><span class="dv">0</span>;    flag_par(<span class="dv">4</span>)<span class="kw">=</span><span class="cn">.false.</span>;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            parmin(<span class="dv">5</span>)<span class="kw">=</span><span class="dv">0</span>;    parmax(<span class="dv">5</span>)<span class="kw">=</span><span class="dv">0</span>;    flag_par(<span class="dv">5</span>)<span class="kw">=</span><span class="cn">.false.</span>;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            parmin(<span class="dv">6</span>)<span class="kw">=</span><span class="dv">0</span>;    parmax(<span class="dv">6</span>)<span class="kw">=</span><span class="dv">0</span>;    flag_par(<span class="dv">6</span>)<span class="kw">=</span><span class="cn">.false.</span>;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>            parmin(<span class="dv">7</span>)<span class="kw">=</span><span class="dv">0</span>;    parmax(<span class="dv">7</span>)<span class="kw">=</span><span class="dv">0</span>;    flag_par(<span class="dv">7</span>)<span class="kw">=</span><span class="cn">.false.</span>;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>            parmin(<span class="dv">8</span>)<span class="kw">=</span><span class="dv">0</span>;    parmax(<span class="dv">8</span>)<span class="kw">=</span><span class="dv">0</span>;    flag_par(<span class="dv">8</span>)<span class="kw">=</span><span class="cn">.false.</span>;</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">END IF</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">! read T series (calibration)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">CALL read_Tseries('c')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="does-it-compile" class="level2">
+<h2 class="anchored" data-anchor-id="does-it-compile">Does it compile</h2>
+<p><code>cd build ; make</code></p>
+<pre class="text"><code>   85 |     IMPLICIT NONE
+      |                 2 
+   86 |     USE commondata
+      |                  1
+Error: USE statement at (1) cannot follow IMPLICIT NONE statement at (2)</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> 16%] Building Fortran <span class="er">object</span> <span class="ex">CMakeFiles/air2stream.dir/AIR2STREAM_READ.f90.o</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> 33%] Linking Fortran <span class="er">executable</span> <span class="ex">air2stream</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">[100%]</span> Built target air2stream</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="dont-delay-gratfication---wrapping-in-python-with-f90wrap" class="level2">
+<h2 class="anchored" data-anchor-id="dont-delay-gratfication---wrapping-in-python-with-f90wrap">Don’t delay gratfication - wrapping in Python with <code>f90wrap</code></h2>
+</section>
+<section id="installing-f90wrap" class="level2">
+<h2 class="anchored" data-anchor-id="installing-f90wrap">Installing <code>f90wrap</code></h2>
+<p>The <a href="https://github.com/jameskermode/f90wrap">github repo for f90wrap</a> has a readme with options and instructions for installing. <code>f90wrap</code> is available on conda-forge and you can do e.g.&nbsp;<code>mamba install f90wrap</code>. If you use virtual environments <code>pip install f90wrap</code>.</p>
+</section>
+<section id="generating-wrappers-for-air2stream" class="level2">
+<h2 class="anchored" data-anchor-id="generating-wrappers-for-air2stream">Generating wrappers for <code>air2stream</code></h2>
+<p>The <a href="https://github.com/jameskermode/f90wrap">github repo for f90wrap</a> has generic instructions and many sample for background. However in this section I will directly reuse a particular “recipe” I devised a couple of years ago.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">F90_FILES</span><span class="op">=</span><span class="st">"AIR2STREAM_MAIN.f90  AIR2STREAM_MODULES.f90  AIR2STREAM_READ.f90  AIR2STREAM_RUNMODE.f90  AIR2STREAM_SUBROUTINES.f90"</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="va">OBJ_FILES</span><span class="op">=</span><span class="st">"AIR2STREAM_MAIN.o  AIR2STREAM_MODULES.o  AIR2STREAM_READ.o  AIR2STREAM_RUNMODE.o  AIR2STREAM_SUBROUTINES.o"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="va">MODULE_NAME</span><span class="op">=</span>A2S</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${HOME}</span>/src/air2stream/src</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># if we are re-running f90wrap I found this was better to first clean up generated files for a clean slate.</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> f90wrap_<span class="pp">*</span>.f90 <span class="pp">*</span>.o</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> _<span class="va">${MODULE_NAME}</span><span class="pp">*</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="va">${MODULE_NAME}</span>.py</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> __pycache__</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="ex">f90wrap</span> <span class="at">-m</span> <span class="va">${MODULE_NAME}</span> <span class="va">$F90_FILES</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>f90wrap</code> seems to do its job and will have output a fair few things to the standard output, such as:</p>
+<pre class="text"><code>Kind map (also saved to .f2py_f2cmap)
+{}
+
+Constructors:
+('initialise_ptr', 'initialise', 'allocate')
+[etc.]
+INFO:f90wrap.pywrapgen:PythonWrapperGenerator visiting routine set_calibration_param
+[etc.]</code></pre>
+<p>It has created three additional files:</p>
+<ul>
+<li>f90wrap_AIR2STREAM_MODULES.f90</li>
+<li>f90wrap_toplevel.f90</li>
+<li>A2S.py</li>
+</ul>
+<section id="f90wrap_air2stream_modules.f90" class="level3">
+<h3 class="anchored" data-anchor-id="f90wrap_air2stream_modules.f90">f90wrap_AIR2STREAM_MODULES.f90</h3>
+<p>Looking into <code>f90wrap_AIR2STREAM_MODULES.f90</code>, <code>f90wrap</code> was able to create getter/setter functions for global variables, which is neat.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">subroutine</span> f90wrap_commondata__get__Tice_cover(f90wrap_Tice_cover)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">use</span> commondata, <span class="kw">only</span>: commondata_Tice_cover <span class="kw">=</span><span class="op">&gt;</span> Tice_cover</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">implicit</span> <span class="kw">none</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real(4)</span>, <span class="dt">intent(out)</span> <span class="dt">::</span> f90wrap_Tice_cover</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    f90wrap_Tice_cover <span class="kw">=</span> commondata_Tice_cover</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">end subroutine</span> f90wrap_commondata__get__Tice_cover</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="kw">subroutine</span> f90wrap_commondata__set__Tice_cover(f90wrap_Tice_cover)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">use</span> commondata, <span class="kw">only</span>: commondata_Tice_cover <span class="kw">=</span><span class="op">&gt;</span> Tice_cover</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">implicit</span> <span class="kw">none</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real(4)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> f90wrap_Tice_cover</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    commondata_Tice_cover <span class="kw">=</span> f90wrap_Tice_cover</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="kw">end subroutine</span> f90wrap_commondata__set__Tice_cover</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="f90wrap_toplevel.f90" class="level3">
+<h3 class="anchored" data-anchor-id="f90wrap_toplevel.f90">f90wrap_toplevel.f90</h3>
+<p>The wrappers fo the top-level subroutines include one for our new <code>set_calibration_param</code> subroutine. Note that it is a wrapper that appears not to do much except pass arguments through, although we notice that some of the arguments are of kind <code>real(4)</code> rather than <code>real(8)</code>. In other circumstance with more complicated types I would expect some form of marshalling. In particular subroutines with arguments of array types, for instance, <code>real, dimension(:)</code> will have a more sophisticated wrapper, but this is a topic for another post.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">subroutine</span> f90wrap_set_calibration_param(name_p, air_station_p, water_station_p, series_p, time_res_p, version_p, <span class="kw">&amp;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    tice_cover_p, fun_obj_p, mod_num_p, runmode_p, prc_p, n_run_p, mineff_index_p)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">implicit</span> <span class="kw">none</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">external</span> set_calibration_param</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(30)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> name_p</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(30)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> air_station_p</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(30)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> water_station_p</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(1)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> series_p</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(3)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> time_res_p</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">integer</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> version_p</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real(4)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> tice_cover_p</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(3)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> fun_obj_p</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(3)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> mod_num_p</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">character(30)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> runmode_p</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real(4)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> prc_p</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">integer</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> n_run_p</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">real(4)</span>, <span class="dt">intent(in)</span> <span class="dt">::</span> mineff_index_p</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">call</span> set_calibration_param(name_p, air_station_p, water_station_p, series_p, time_res_p, version_p, tice_cover_p, <span class="kw">&amp;</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        fun_obj_p, mod_num_p, runmode_p, prc_p, n_run_p, mineff_index_p)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="kw">end subroutine</span> f90wrap_set_calibration_param</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="a2s.py" class="level3">
+<h3 class="anchored" data-anchor-id="a2s.py">A2S.py</h3>
+<p>The python file contains the wrapper function <code>set_calibration_param</code>. The generated code does not include type hints, but a useful docstring nevertheless with types.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> set_calibration_param(name_p, air_station_p, water_station_p, series_p, <span class="op">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    time_res_p, version_p, tice_cover_p, fun_obj_p, mod_num_p, runmode_p, prc_p, <span class="op">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    n_run_p, mineff_index_p):</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">    set_calibration_param(name_p, air_station_p, water_station_p, series_p, </span><span class="ch">\</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">        time_res_p, version_p, tice_cover_p, fun_obj_p, mod_num_p, runmode_p, prc_p, </span><span class="ch">\</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">        n_run_p, mineff_index_p)</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Defined at AIR2STREAM_READ.f90 lines 72-158</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">    ----------</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">    name_p : str</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">    air_station_p : str</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">    water_station_p : str</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">    series_p : str</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">    time_res_p : str</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">    version_p : int</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">    tice_cover_p : float</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">    fun_obj_p : str</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">    mod_num_p : str</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">    runmode_p : str</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">    prc_p : float</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">    n_run_p : int</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">    mineff_index_p : float</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>    _A2S.f90wrap_set_calibration_param(name_p<span class="op">=</span>name_p, air_station_p<span class="op">=</span>air_station_p, <span class="op">\</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>        water_station_p<span class="op">=</span>water_station_p, series_p<span class="op">=</span>series_p, time_res_p<span class="op">=</span>time_res_p, <span class="op">\</span></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>        version_p<span class="op">=</span>version_p, tice_cover_p<span class="op">=</span>tice_cover_p, fun_obj_p<span class="op">=</span>fun_obj_p, <span class="op">\</span></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>        mod_num_p<span class="op">=</span>mod_num_p, runmode_p<span class="op">=</span>runmode_p, prc_p<span class="op">=</span>prc_p, n_run_p<span class="op">=</span>n_run_p, <span class="op">\</span></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>        mineff_index_p<span class="op">=</span>mineff_index_p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It is unclear what <code>_A2S.f90wrap_set_calibration_param</code> is, <code>_A2S</code> is the bit of native code (dynamic library) that deals with the Python-Fortran interop, and is currently missing. VScode reports:</p>
+<pre class="text"><code>Import "_A2S" could not be resolvedPylancereportMissingImports</code></pre>
+</section>
+</section>
+<section id="compiling-_a2s" class="level2">
+<h2 class="anchored" data-anchor-id="compiling-_a2s">Compiling <code>_A2S</code></h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I know upfront that <code>-fPIC</code> compilation option is required, which is not necessarily obvious from the f90wrap documentation, otherwise an error of the type “relocation R_X86_64_PC32 against symbol `__forecastdata_MOD_er_inflow’ can not be used when making a shared object.”. We’ll deliberately overlook this option for a while.</p>
+</div>
+</div>
+<p>Let’s compile the fortran source files to the object files.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gfortran</span> <span class="at">-c</span> <span class="va">$F90_FILES</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And… compilation fails. It also includes a <code>f951: some warnings being treated as errors</code></p>
+<p>The types of errors range from:</p>
+<pre class="text"><code>AIR2STREAM_READ.f90:222:55:
+
+  222 |   call system('mkdir ' // TRIM(name)//'\output_'//TRIM(version)//'\')
+      |                                                       1
+Error: 'string' argument of 'trim' intrinsic at (1) must be CHARACTER</code></pre>
+<p>There are a bunch of lines that sound like the compiler by default expects a maximum number of columns: <code>Error: Line truncated at (1) [-Werror=line-truncation]</code>. Ah, punchcards hangovers. Subsequent cryptic syntax errors such as the following are probably false positives consequence of the line truncation.</p>
+<pre class="text"><code>AIR2STREAM_SUBROUTINES.f90:71:132:
+
+   71 |                 Twat_mod(j+1) = ( Twat_mod(j) + 0.5d0/DD_j*(par(1)+par(2)*Tair(j)-par(3)*Twat_mod(j)+ theta_j*(par(5)+par(6)*COS(2.d0*pi*((tt(j))-par(7)))-par(8)*Twat_mod(j))) + &amp;
+      |                                                                                                                                    1
+Error: Missing exponent in real number at (1)</code></pre>
+<p>We could compile the program with <code>cmake</code>; what <code>gfortran</code> options were used? in the CMakeLists.txt we find:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode cmake code-with-copy"><code class="sourceCode cmake"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="dv">CMAKE_Fortran_COMPILER_ID</span> <span class="ot">MATCHES</span> GNU)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">set</span>(<span class="dv">CMAKE_Fortran_FLAGS</span>         <span class="st">"</span><span class="dv">${CMAKE_Fortran_FLAGS}</span><span class="st"> -ffree-form -ffree-line-length-0 -cpp -Wall -static"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">set</span>(<span class="dv">CMAKE_Fortran_FLAGS_DEBUG</span>   <span class="st">"-O0 -g3"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">set</span>(<span class="dv">CMAKE_Fortran_FLAGS_RELEASE</span> <span class="st">"-Ofast -ffast-math -march=native"</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="cf">endif</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>OK, let’s hold on release flags, but try with “free form” flags:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gfortran</span> <span class="at">-c</span> <span class="va">$F90_FILES</span>  <span class="at">-ffree-form</span> <span class="at">-ffree-line-length-0</span> <span class="at">-cpp</span> <span class="at">-Wall</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>OK, it works. we now have the modules object files <code>*.o</code>. We should be able to link them to a shared library using <code>f2py-f90wrap</code>:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">f2py-f90wrap</span> <span class="at">-c</span> <span class="at">-m</span> _<span class="va">${MODULE_NAME}</span> f90wrap_<span class="pp">*</span>.f90 <span class="va">$OBJ_FILES</span> <span class="op">&gt;</span> wrapping.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>But we hit a snag. First, there are some warnings about possible value conversion with loss of precision., which may be expected though. Still, duly noted:</p>
+<pre class="text"><code>f90wrap_AIR2STREAM_MODULES.f90:252:25:
+
+  252 |     f90wrap_Tice_cover = commondata_Tice_cover
+      |                         1
+Warning: Possible change of value in conversion from REAL(8) to REAL(4) at (1) [-Wconversion]</code></pre>
+<p>Side note: the visual studio code extensions are doing a good job of noticing this too.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./conversion_loss_vscode.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Conversion loss warning with VSCode IDE</figcaption>
+</figure>
+</div>
+<p>Indeed the core model state is <code>REAL(KIND=8) :: Tice_cover</code> but exposed by the wrapper as a <code>Real(4)</code>. kindmap option in <a href="https://github.com/jameskermode/f90wrap">f90wrap</a>? not sure.</p>
+<p>The above are warnings. The real showstopper is a <code>relocation R_X86_64_PC32 against symbol '__commondata_MOD_parmin' can not be used when making a shared object; recompile with -fPIC</code>. At least it is helpfully flagging what is missing.</p>
+<pre class="text"><code>INFO: /usr/bin/gfortran -Wall -g -Wall -g -shared /tmp/tmpgbms1uza/tmp/tmpgbms1uza/src.linux-x86_64-3.9/_A2Smodule.o /tmp/tmpgbms1uza/tmp/tmpgbms1uza/src.linux-x86_64-3.9/fortranobject.o /tmp/tmpgbms1uza/f90wrap_AIR2STREAM_MODULES.o /tmp/tmpgbms1uza/f90wrap_toplevel.o /tmp/tmpgbms1uza/tmp/tmpgbms1uza/src.linux-x86_64-3.9/_A2S-f2pywrappers.o AIR2STREAM_MAIN.o AIR2STREAM_MODULES.o AIR2STREAM_READ.o AIR2STREAM_RUNMODE.o AIR2STREAM_SUBROUTINES.o -L/usr/Cellar/gcc/12.2.0/bin/../lib/gcc/current/gcc/x86_64-pc-linux-gnu/12/../../.. -L/usr/Cellar/gcc/12.2.0/bin/../lib/gcc/current/gcc/x86_64-pc-linux-gnu/12/../../.. -lgfortran -o ./_A2S.cpython-39-x86_64-linux-gnu.so
+/usr/bin/ld: AIR2STREAM_SUBROUTINES.o: warning: relocation against `__commondata_MOD_theta_j1' in read-only section `.text'
+/usr/bin/ld: AIR2STREAM_MAIN.o: relocation R_X86_64_PC32 against symbol `__commondata_MOD_parmin' can not be used when making a shared object; recompile with -fPIC
+/usr/bin/ld: final link failed: bad value
+collect2: error: ld returned 1 exit status
+error: Command "/usr/bin/gfortran -Wall -g -Wall -g -shared /tmp/tmpgbms1uza/tmp/tmpgbms1uza/src.linux-x86_64-3.9/_A2Smodule.o /tmp/tmpgbms1uza/tmp/tmpgbms1uza/src.linux-x86_64-3.9/fortranobject.o /tmp/tmpgbms1uza/f90wrap_AIR2STREAM_MODULES.o /tmp/tmpgbms1uza/f90wrap_toplevel.o /tmp/tmpgbms1uza/tmp/tmpgbms1uza/src.linux-x86_64-3.9/_A2S-f2pywrappers.o AIR2STREAM_MAIN.o AIR2STREAM_MODULES.o AIR2STREAM_READ.o AIR2STREAM_RUNMODE.o AIR2STREAM_SUBROUTINES.o -L/usr/Cellar/gcc/12.2.0/bin/../lib/gcc/current/gcc/x86_64-pc-linux-gnu/12/../../.. -L/usr/Cellar/gcc/12.2.0/bin/../lib/gcc/current/gcc/x86_64-pc-linux-gnu/12/../../.. -lgfortran -o ./_A2S.cpython-39-x86_64-linux-gnu.so" failed with exit status 1</code></pre>
+<section id="recompile-with--fpic" class="level3">
+<h3 class="anchored" data-anchor-id="recompile-with--fpic">Recompile with <code>-fPIC</code></h3>
+<p>The <code>-fPIC</code> optiosn indeed seems to resolve the issue</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gfortran</span> <span class="at">-c</span> <span class="va">$F90_FILES</span> <span class="at">-fPIC</span> <span class="at">-ffree-form</span> <span class="at">-ffree-line-length-0</span> <span class="at">-cpp</span> <span class="at">-Wall</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="ex">f2py-f90wrap</span> <span class="at">-c</span> <span class="at">-m</span> _<span class="va">${MODULE_NAME}</span> f90wrap_<span class="pp">*</span>.f90 <span class="va">$OBJ_FILES</span> <span class="op">&gt;</span> wrapping.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We now can see a new file <code>_A2S.cpython-39-x86_64-linux-gnu.so</code>. What’s in it? <code>ldd _A2S.cpython-39-x86_64-linux-gnu.so</code> reports</p>
+<pre class="text"><code>        linux-vdso.so.1 (0x00007fff56ab0000)
+        libgfortran.so.5 =&gt; /lib/x86_64-linux-gnu/libgfortran.so.5 (0x00007f01bf800000)
+        libm.so.6 =&gt; /lib/x86_64-linux-gnu/libm.so.6 (0x00007f01bfb6b000)
+        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007f01bf61f000)
+        libquadmath.so.0 =&gt; /lib/x86_64-linux-gnu/libquadmath.so.0 (0x00007f01bfb24000)
+        libgcc_s.so.1 =&gt; /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f01bfb04000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f01bfcae000)</code></pre>
+<p>and <code>nm _A2S.cpython-39-x86_64-linux-gnu.so | less</code> reports functions entry points such as:</p>
+<pre class="text"><code>0000000000035a80 d doc_f2py_rout__A2S_f90wrap_set_calibration_param</code></pre>
+<p>OK, so this is black magic. Interop can be a scary field, but tools like <code>f90wrap</code> are here to shield you from this, so just enjoy the ride!</p>
+</section>
+</section>
+<section id="does-it-work" class="level2">
+<h2 class="anchored" data-anchor-id="does-it-work">Does it work?</h2>
+<p>From your conda environment where you had installed <code>f90wrap</code>, let’s try to load this new python module:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">mycondaenv</span><span class="kw">)</span><span class="ex">$</span> python</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>And it all looks like it is working just fine! Is this just not beautiful?</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>Python <span class="fl">3.9.15</span> <span class="op">|</span> packaged by conda<span class="op">-</span>forge <span class="op">|</span> (main, Nov <span class="dv">22</span> <span class="dv">2022</span>, <span class="dv">15</span>:<span class="dv">55</span>:<span class="dv">0</span><span class="er">3</span>) </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>[GCC <span class="fl">10.4.0</span>] on linux</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>Type <span class="st">"help"</span>, <span class="st">"copyright"</span>, <span class="st">"credits"</span> <span class="kw">or</span> <span class="st">"license"</span> <span class="cf">for</span> more information.</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> A2S</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">dir</span>(A2S)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>[<span class="st">'Commondata'</span>, <span class="st">'_A2S'</span>, <span class="st">'__builtins__'</span>, <span class="st">'__cached__'</span>, <span class="st">'__doc__'</span>, <span class="st">'__file__'</span>, <span class="st">'__loader__'</span>, <span class="st">'__name__'</span>, <span class="st">'__package__'</span>, <span class="st">'__spec__'</span>, <span class="st">'absolute_import'</span>, <span class="st">'aggregation'</span>, <span class="st">'best'</span>, <span class="st">'call_model'</span>, <span class="st">'commondata'</span>, <span class="st">'division'</span>, <span class="st">'f90wrap'</span>, <span class="st">'forward'</span>, <span class="st">'forward_mode'</span>, <span class="st">'funcobj'</span>, <span class="st">'leap_year'</span>, <span class="st">'lh_mode'</span>, <span class="st">'logging'</span>, <span class="st">'numpy'</span>, <span class="st">'parse_command_args'</span>, <span class="st">'print_byebye'</span>, <span class="st">'print_function'</span>, <span class="st">'print_help'</span>, <span class="st">'pso_mode'</span>, <span class="st">'read_calibration'</span>, <span class="st">'read_tseries'</span>, <span class="st">'read_validation'</span>, <span class="st">'rk4_air2stream'</span>, <span class="st">'set_calibration_param'</span>, <span class="st">'shuffle'</span>, <span class="st">'statis'</span>, <span class="st">'sub_1'</span>]</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can start to poke the model state. Even uninitialised values have handled gracefully:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> A2S.commondata.tair</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>Traceback (most recent call last):</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  File <span class="st">"&lt;stdin&gt;"</span>, line <span class="dv">1</span>, <span class="kw">in</span> <span class="op">&lt;</span>module<span class="op">&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  File <span class="st">"/home/per202/src/air2stream/src/A2S.py"</span>, line <span class="dv">413</span>, <span class="kw">in</span> tair</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    tair <span class="op">=</span> f90wrap.runtime.get_array(f90wrap.runtime.sizeof_fortran_t,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="pp">ValueError</span>: array <span class="kw">is</span> NULL</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> A2S.commondata.n_tot</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> A2S.commondata.time_res</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="st">b''</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>A word of caution though, beware which python environment from which you load the wrapper module though. For instance if I load from my base conda environment:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">mycondaenv</span><span class="kw">)</span><span class="ex">$</span> conda deactivate</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span><span class="ex">$</span> python</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then the wrapper module <code>A2S</code> fails to load.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>Python <span class="fl">3.10.8</span> <span class="op">|</span> packaged by conda<span class="op">-</span>forge <span class="op">|</span> (main, Nov <span class="dv">22</span> <span class="dv">2022</span>, <span class="dv">0</span><span class="er">8</span>:<span class="dv">26</span>:<span class="dv">0</span><span class="er">4</span>) [GCC <span class="fl">10.4.0</span>] on linux</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>Type <span class="st">"help"</span>, <span class="st">"copyright"</span>, <span class="st">"credits"</span> <span class="kw">or</span> <span class="st">"license"</span> <span class="cf">for</span> more information.</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> A2S</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>Traceback (most recent call last):</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  File <span class="st">"&lt;stdin&gt;"</span>, line <span class="dv">1</span>, <span class="kw">in</span> <span class="op">&lt;</span>module<span class="op">&gt;</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  File <span class="st">"/home/per202/src/air2stream/src/A2S.py"</span>, line <span class="dv">2</span>, <span class="kw">in</span> <span class="op">&lt;</span>module<span class="op">&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> _A2S</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="pp">ModuleNotFoundError</span>: No module named <span class="st">'_A2S'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I am not sure why, whether <code>f90wrap</code> is required in the environment (whichi is likely, and would be understandable). Also the python versions differ <code>Python 3.9.15</code> versus <code>Python 3.10.8</code>, and <code>_A2S.cpython-39-x86_64-linux-gnu.so</code> may work with the former only and be incompatible with the latter.</p>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>We’ve successfully wrapped a Fortran 90 program as is with <code>f90wrap</code>, and it looks like it is doing a great job to generate meaningful wrapper functions even without reengineering the Fortran code.</p>
+<p>To be continued.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        for (let i = 0; i < 2; i++) {
+          container.appendChild(note.children[i].cloneNode(true));
+        }
+        return container.innerHTML
+      } else {
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        console.log("RESIZE");
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
