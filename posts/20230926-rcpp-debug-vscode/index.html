@@ -305,7 +305,7 @@ Warning
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"processId"</span><span class="fu">:</span> <span class="st">"${command:pickProcess}"</span><span class="fu">,</span></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"MIMode"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"miDebuggerPath"</span><span class="fu">:</span> <span class="st">"gdb"</span><span class="fu">,</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"additionalSOLibSearchPath"</span><span class="fu">:</span> <span class="st">"/home/per202/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build"</span><span class="fu">,</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"additionalSOLibSearchPath"</span><span class="fu">:</span> <span class="st">"/home/xyz123/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build"</span><span class="fu">,</span></span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"symbolLoadInfo"</span><span class="fu">:</span> <span class="fu">{</span></span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"loadAll"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>                <span class="dt">"exceptionList"</span><span class="fu">:</span> <span class="st">"liblakeoned.*so*;lakeoned_r.*so*"</span></span>
@@ -336,11 +336,11 @@ Warning
 <p><img src="./attach-r-session-process.png" class="img-fluid"></p>
 <p>and once you accept and attach, the VSCode “Debug Console” window reports the following:</p>
 <pre class="text"><code>Loaded '/usr/lib/R/site-library/xts/libs/xts.so'. Cannot find or open the symbol file.
-Loaded '/home/per202/R/local/lakeoned/libs/lakeoned_r.so'. Symbols loaded.
+Loaded '/home/xyz123/R/local/lakeoned/libs/lakeoned_r.so'. Symbols loaded.
 Loaded '/usr/local/lib/liblakeoned.so.4'. Symbols loaded.
 Loaded '/usr/local/lib/libmoirai.so.1'. Cannot find or open the symbol file.
 Loaded '/usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.74.0'. Cannot find or open the symbol file.</code></pre>
-<p>We have symbols loaded for out <code>lakeoned</code> libraries or bindings, but not the <code>libmoirai</code> library. <code>additionalSOLibSearchPath</code> contains “/home/per202/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build” but does not contain a path to debug symbols for libmoirai.so.1 hence <code>symbols not found</code>. This is probably not essential, so we’ll keep things are they are.</p>
+<p>We have symbols loaded for out <code>lakeoned</code> libraries or bindings, but not the <code>libmoirai</code> library. <code>additionalSOLibSearchPath</code> contains “/home/xyz123/src/aquawatch-inception/lake/LAKEoneD/lake_lib/build” but does not contain a path to debug symbols for libmoirai.so.1 hence <code>symbols not found</code>. This is probably not essential, so we’ll keep things are they are.</p>
 <p>Let’s try to catch the exception by setting up to catch all exceptions in VSCode:</p>
 <p><img src="./break-on-all-cpp-exceptions.png" class="img-fluid"></p>
 <p>And run our problematic function from R:</p>
@@ -380,6 +380,7 @@ Warning
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        DoHourlyHydroSimulation<span class="op">();</span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        etc<span class="op">();</span></span>
 <span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="call-stack-cpp.png" class="img-fluid"></p>
 <p>and <em>in fine</em> this is indeed a custom error message (remember the warning at the start of the post?), which hints at a lack of proper initialisation of receiving vectors for model outputs.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> n <span class="op">=</span> to<span class="op">.</span>size<span class="op">();</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>n <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>

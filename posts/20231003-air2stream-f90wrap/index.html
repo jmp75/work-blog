@@ -185,8 +185,18 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="background" class="level1">
 <h1>Background</h1>
-<div class="{callout-note}">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Since writing this post I got in touch with the authors of <code>air2stream</code> in Oct 2023. They have a post-doc porting this work to Python or perhaps Julia.</p>
+</div>
 </div>
 <p><code>air2stream</code> is a <a href="https://github.com/spiccolroaz/air2stream">model to predict River Water Temperature (RWT) using air temperature and discharge.</a>. A project I work on intend to use it for simulation and forecasting of river water temperature, as part of a system where Python is likely to be the common interface language.</p>
 <p>This post starts with the guess that I will end up using <a href="https://doi.org/10.1088/1361-648X/AB82D2"><code>f90wrap</code></a> to generate glue code, something I’ve already used to <a href="https://mssanz.org.au/modsim2023/files/perraud130.pdf">wrap a Fortran code (WAA tool)</a> and transition to Python. That said, I’ll consider other options on the table, not only for the sake of exercise but for future project needs, so the end target may well be a complete rewrite to Python.</p>

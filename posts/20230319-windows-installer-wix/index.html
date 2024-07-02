@@ -259,8 +259,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Fair enough. But what is the 64 bits equivalent?</p>
 <p><code>&lt;StandardDirectory Id="ProgramFilesFolder"&gt;</code> is probably a 32bits location by default. The <a href="https://wixtoolset.org/docs/reference/schema/wxs/standarddirectorytype/">StandardDirectoryType reference doc</a> lists <code>ProgramFiles64Folder</code> as possible Id.</p>
 <p>OK, it builds.</p>
-<p>It is probably time to set up a dedicated git repository. <a href="https://github.com/csiro-hydroinformatics/sf-installer">sf-installer</a></p>
-<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer/tree/fda17e609e784791935b45f96e0c79a6dd2cc307">at commit fda17e609e784791935b45f96e0c79a6dd2cc307</a></p>
+<p>It is probably time to set up a dedicated git repository. <a href="https://github.com/csiro-hydroinformatics/sf-installer-draft">sf-installer-draft</a></p>
+<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/fda17e609e784791935b45f96e0c79a6dd2cc307">at commit fda17e609e784791935b45f96e0c79a6dd2cc307</a></p>
 </section>
 <section id="setting-an-environment-variable" class="level2">
 <h2 class="anchored" data-anchor-id="setting-an-environment-variable">Setting an environment variable</h2>
@@ -282,7 +282,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>So, trying</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">Environment</span><span class="ot"> Id=</span><span class="st">"library_path"</span><span class="ot"> Action=</span><span class="st">"set"</span><span class="ot"> Name=</span><span class="st">"LIBRARY_PATH"</span><span class="ot"> Value=</span><span class="st">"[LibsFolder]"</span><span class="ot"> Separator=</span><span class="st">";"</span><span class="ot"> System=</span><span class="st">"yes"</span><span class="ot"> Part=</span><span class="st">"last"</span><span class="ot"> Permanent=</span><span class="st">"true"</span>/&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>And after installation in the sandbox, the new environment variable appears fine in a new CMD prompt: <code>echo %LIBRARY_PATH%</code> returns <code>C:\Program Files\SF\libs\</code>.</p>
-<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer/tree/4d8d1d7c8b50221c7f63af3aa96115c438cb5055">at commit 4d8d1d7c8b50221c7f63af3aa96115c438cb5055</a></p>
+<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/4d8d1d7c8b50221c7f63af3aa96115c438cb5055">at commit 4d8d1d7c8b50221c7f63af3aa96115c438cb5055</a></p>
 </section>
 <section id="adding-another-component-python-wheels" class="level2">
 <h2 class="anchored" data-anchor-id="adding-another-component-python-wheels">Adding another Component: python wheels</h2>
@@ -308,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ComponentGroupRef</span><span class="ot"> Id=</span><span class="st">"InstallComponentsTest"</span>/&gt;</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      &lt;<span class="kw">ComponentGroupRef</span><span class="ot"> Id=</span><span class="st">"InstallPyComponentsTest"</span>/&gt;</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">Feature</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer/tree/012521407cc63e1233ff40a784d17b5f43dc6caf">at commit 012521407cc63e1233ff40a784d17b5f43dc6caf</a></p>
+<p>At this point, repo <a href="https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/012521407cc63e1233ff40a784d17b5f43dc6caf">at commit 012521407cc63e1233ff40a784d17b5f43dc6caf</a></p>
 </section>
 <section id="managing-source-files" class="level2">
 <h2 class="anchored" data-anchor-id="managing-source-files">Managing source files</h2>
