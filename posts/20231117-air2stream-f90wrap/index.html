@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2023-07-20">
-<meta name="description" content="Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.">
+<meta name="dcterms.date" content="2023-11-15">
+<meta name="description" content="Python wrapper for the the Fortran program air2stream using f90wrap">
 
-<title>J-M’s ‘lab notebook’ - Exploring HydroMT - part 1</title>
+<title>J-M’s ‘lab notebook’ - Wrapping air2stream to access it from Python - part 3</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -153,16 +153,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Exploring HydroMT - part 1</h1>
+      <h1 class="title">Wrapping air2stream to access it from Python - part 3</h1>
                   <div>
         <div class="description">
-          Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.
+          Python wrapper for the the Fortran program air2stream using f90wrap
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">HydroMT</div>
                 <div class="quarto-category">python</div>
-                <div class="quarto-category">hydrology</div>
+                <div class="quarto-category">f90wrap</div>
+                <div class="quarto-category">code generation</div>
+                <div class="quarto-category">Fortran</div>
               </div>
                   </div>
   </div>
@@ -180,7 +181,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 20, 2023</p>
+        <p class="date">November 15, 2023</p>
       </div>
     </div>
     
@@ -197,12 +198,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
-  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <li><a href="#method" id="toc-method" class="nav-link" data-scroll-target="#method">Method</a></li>
+  <li><a href="#new-api-for-air2stream" id="toc-new-api-for-air2stream" class="nav-link" data-scroll-target="#new-api-for-air2stream">New API for <code>air2stream</code></a>
   <ul class="collapse">
-  <li><a href="#installing" id="toc-installing" class="nav-link" data-scroll-target="#installing">Installing</a></li>
-  <li><a href="#debugging" id="toc-debugging" class="nav-link" data-scroll-target="#debugging">Debugging</a></li>
+  <li><a href="#packaging" id="toc-packaging" class="nav-link" data-scroll-target="#packaging">Packaging</a></li>
+  <li><a href="#array-allocation" id="toc-array-allocation" class="nav-link" data-scroll-target="#array-allocation">array allocation</a></li>
+  <li><a href="#recap-on-compiling" id="toc-recap-on-compiling" class="nav-link" data-scroll-target="#recap-on-compiling">recap on compiling</a></li>
   </ul></li>
-  <li><a href="#taking-stock" id="toc-taking-stock" class="nav-link" data-scroll-target="#taking-stock">Taking stock</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -213,106 +216,186 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://deltares.github.io/hydromt/latest/_static/hydromt-icon.svg" title="HydroMT logo" class="img-fluid figure-img" width="200"></p>
-<figcaption>“HydroMT logo”</figcaption>
-</figure>
-</div>
 <section id="background" class="level1">
 <h1>Background</h1>
-<p>I recently attended the MODSIM 2023 conference and inadvertently missed the presentation <a href="https://modsim2023.exordo.com/programme/presentation/323">Towards scalable and reproducible hydrological modelling with HydroMT: A proof of concept for Australia</a>. <code>HydroMT</code> is a toolset I’d really like to understand better, notably to assess whether I can manage workflows built upon our <a href="https://csiro-hydroinformatics.github.io/streamflow-forecasting-tools-onboard/">Streamflow Forecasting</a> tools.</p>
-<p>The value proposition of HydroMT resonates with me. I keep being surprised by the dearth of facilities in easily exploiting temporal and geospatial data for building hydrologic models.</p>
-<p>So, heading to the page <a href="https://deltares.github.io/hydromt/latest/index.html">HydroMT: Automated and reproducible model building and analysis</a> to explore it.</p>
-</section>
-<section id="walkthrough" class="level1">
-<h1>Walkthrough</h1>
-<p>This post will be about the first hands on familiarisation with the toolset and its existing plug-ins. No point jumping the gun and investigating plugins before I “grok” the existing tools. I expect this will be not be without friction anyway, as getting throught the introductory material of a third party software toolset is rarely smooth sailing, as I am aware the reverse is true of the software tools I aothor or contribute to.s</p>
-<section id="installing" class="level2">
-<h2 class="anchored" data-anchor-id="installing">Installing</h2>
-<p>Not installing in dev mode by default. Will start as a normal user.</p>
-<p>HydroMT is readily available from <code>conda-forge</code> and installs flawlessly on my Linux box:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="at">-n</span> hydromt <span class="at">-c</span> conda-forge python=3.9 hydromt hydromt_wflow</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> activate hydromt</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> <span class="at">--models</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>model plugins:
- - wflow (hydromt_wflow 0.2.1)
- - wflow_sediment (hydromt_wflow 0.2.1)
-generic models (hydromt 0.8.0):
- - grid_model
- - lumped_model
- - network_model</code></pre>
-<p>There is a bit of variation in the doc compared to this output of <code>hydromt --models</code>. Which is fine.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/data/hydromt</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/data/hydromt</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: save as `build_wflow.ini` not `wflow_build.ini` to be consistent with the upcoming command invocation `hydromt build`.</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Otherwise you'll get error OSError: Config not found at /home/xxxyyy/data/hydromt/build_wflow.ini</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-o</span> build_wflow.ini https://raw.githubusercontent.com/Deltares/hydromt_wflow/main/examples/wflow_build.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> build wflow ./wflow_test <span class="at">-r</span> <span class="st">"{'subbasin': [12.2051, 45.8331], 'strord': 4}"</span> <span class="at">-vv</span> <span class="at">-i</span> build_wflow.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="test"><code>ValueError: Model wflow has no method "setup_outlets"</code></pre>
-<p>The class <code>WflowModel</code> has a method <code>setup_outlets</code> though, in the file <a href="https://github.com/Deltares/hydromt_wflow/blob/main/hydromt_wflow/wflow.py#L933">wflow.py</a>.</p>
-<p>Not sure where to go from this. May be something to feed back to authors if I do not overlook something.</p>
-</section>
-<section id="debugging" class="level2">
-<h2 class="anchored" data-anchor-id="debugging">Debugging</h2>
-<p>Setting up launch.json file for VSCode:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"version"</span><span class="fu">:</span> <span class="st">"0.2.0"</span><span class="fu">,</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"configurations"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Python: Current File"</span><span class="fu">,</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"python"</span><span class="fu">,</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"/home/xxxyyy/mambaforge/envs/hydromt/bin/hydromt"</span><span class="fu">,</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"console"</span><span class="fu">:</span> <span class="st">"integratedTerminal"</span><span class="fu">,</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"justMyCode"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"args"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">"build"</span><span class="ot">,</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">"wflow"</span><span class="ot">,</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">"/home/xxxyyy/data/hydromt/wflow_test"</span><span class="ot">,</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-r"</span><span class="ot">,</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"</span><span class="ch">\"</span><span class="st">{'subbasin': [12.2051, 45.8331], 'strord': 4}</span><span class="ch">\"</span><span class="st">"</span><span class="ot">,</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-vv"</span><span class="ot">,</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-i"</span><span class="ot">,</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"/home/xxxyyy/data/hydromt/build_wflow.ini"</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            <span class="ot">]</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>            <span class="er">//</span> <span class="st">"cwd"</span><span class="er">:</span> <span class="st">"/home/xxxyyy/data/hydromt"</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This launches the process, but I cannot put breakpoints in most of the files though, not sure why. So, installing hydromt packages in dev mode to dig a bit further:</p>
-<p><code>conda remove --force hydromt hydromt_wflow</code> (note that this has to be <code>conda</code>, <code>mamba</code> still tries to uninstall dependencies even with <code>--force</code>)</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/src/hydromt</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../hydromt_wflow/</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Can we reproduce the error if installed from the lates source?</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/data/hydromt </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> build wflow ./wflow_test <span class="at">-r</span> <span class="st">"{'subbasin': [12.2051, 45.8331], 'strord': 4}"</span> <span class="at">-vv</span> <span class="at">-i</span> build_wflow.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Well, no… this time:</p>
-<pre class="text"><code>FileNotFoundError: No such file or catalog key: merit_hydro</code></pre>
-<p>See page <a href="https://deltares.github.io/hydromt/latest/user_guide/data_existing_cat.html#existing-catalog">Pre-defined data catalogs</a>: “The <code>deltares_data</code> catalog is only available within the Deltares network. However a selection of this data for a the Piave basin (Northern Italy) is available online in the <code>artifact_data</code>”. <code>merit_hydro</code> is under the “artifact_data - topography” tab.</p>
-<p><code>ds_org = self.data_catalog.get_rasterdataset(hydrography_fn)</code> where <code>hydrography_fn</code> is equal to “merit_hydro”</p>
-<p>The <a href="https://deltares.github.io/hydromt/latest/user_guide/data_overview.html">Data Overview</a> page states that:</p>
-<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Tip
+Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If no yaml file is provided to the CLI build or update methods or to <code>DataCatalog</code>, HydroMT will use the data stored in the <code>artifact_data</code> which contains an extract of global data for a small region around the Piave river in Northern Italy.</p>
+<p><code>air2stream</code> is being ported to Python or perhaps Julia. The work described here may be obsolete by the time you read.</p>
 </div>
 </div>
+<p>This is a follow up on <a href="https://jmp75.github.io/work-blog/posts/20231115-air2stream-f90wrap/">Wrapping air2stream to access it from Python - part 2</a>. In part 2 we found that <code>f90wrap</code> is doing a good job of wrapping the code of <code>air2stream</code> as it is.</p>
+<p>In this post we will focus on providing an API to set inputs, parameters and retrieve outputs in memory rather than through files.</p>
+</section>
+<section id="method" class="level1">
+<h1>Method</h1>
+<p>I had initially thought for this post I would follow the guidelines in the post <a href="https://www.matecdev.com/posts/fortran-legacy-code.html">How to Work with Legacy Fortran Code: A Short Guideline</a>. I would reengineer a bit of the Fortran code itself to make it more like a “grey box” where model inputs, parameters and outputs can be set or gotten “in memory” rather than using input/output files.</p>
+<ul>
+<li>Make system-level tests</li>
+<li>Modularize the code and remove COMMON blocks</li>
+<li>Remove global variables and specify argument’s intent</li>
+<li>Gradually add more tests while improving code quality.</li>
+</ul>
+</section>
+<section id="new-api-for-air2stream" class="level1">
+<h1>New API for <code>air2stream</code></h1>
+<p><code>cp AIR2STREAM_READ.f90 AIR2STREAM_INPUTS.f90</code></p>
+<p><code>SUBROUTINE read_calibration</code></p>
+<p>https://github.com/jameskermode/f90wrap/blob/master/examples/cylinder/Makefile</p>
+<p>https://pypackaging-native.github.io/</p>
+<p>https://packaging.python.org/en/latest/tutorials/packaging-projects/</p>
+<p>https://peps.python.org/pep-0725/</p>
+<p>https://github.com/numpy/numpy/blob/main/pyproject.toml</p>
+<p>https://numpy.org/doc/stable/f2py/buildtools/index.html</p>
+<p>https://davidmontague.xyz/posts/packaging-native-extensions-with-poetry/</p>
+<p>https://github.com/hynek/argon2-cffi/blob/46e54907ddce286a6030ca3b039b792403b8f026/setup.py</p>
+<p><a href="https://medium.com/@iftimiealexandru/bridging-the-gap-between-python-and-c-c-libraries-an-exploration-of-integrating-with-cython-cc3bbfcfe539">interop of interest</a></p>
+<pre><code>Modern Fortran is not compatible with Fortran Breakpoint Support. Breakpoint support is handled natively in Modern Fortran. Please Disable/Uninstall: Fortran Breakpoint Support.</code></pre>
+<pre class="text"><code>.
+├── air2stream
+│   └── native
+│       ├── _A2S.cpython-39-x86_64-linux-gnu.so
+│       ├── A2S.py
+│       └── __pycache__
+│           └── A2S.cpython-39.pyc
+├── MANIFEST.in
+├── README.md
+├── requirements.txt
+├── setup.cfg
+└── setup.py</code></pre>
+<p>Asked ChatGPT how to include a native library as an extension. It pretended that something like the following would work:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    ext_modules<span class="op">=</span>[Extension(<span class="st">'_A2S'</span>, [<span class="st">'air2stream/native/_A2S.cpython-39-x86_64-linux-gnu.so'</span>])],</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Nope.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> air2stream</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">dir</span>(air2stream)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>[<span class="st">'__builtins__'</span>, <span class="st">'__cached__'</span>, <span class="st">'__doc__'</span>, <span class="st">'__file__'</span>, <span class="st">'__loader__'</span>, <span class="st">'__name__'</span>, <span class="st">'__package__'</span>, <span class="st">'__path__'</span>, <span class="st">'__spec__'</span>, <span class="st">'__version__'</span>, <span class="st">'_version'</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> air2stream.native <span class="im">import</span> A2S</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="packaging" class="level2">
+<h2 class="anchored" data-anchor-id="packaging">Packaging</h2>
+</section>
+<section id="array-allocation" class="level2">
+<h2 class="anchored" data-anchor-id="array-allocation">array allocation</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode fortran code-with-copy"><code class="sourceCode fortranfixed"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">! allocation of parameter matrices</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">ALLOCATE</span>(parmin(n_par),stat<span class="kw">=</span>status)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ALLOCATE</span>(parmax(n_par),stat<span class="kw">=</span>status)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ALLOCATE</span>(flag_par(n_par),stat<span class="kw">=</span>status)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">ALLOCATE</span>(par(n_par),stat<span class="kw">=</span>status)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">ALLOCATE</span>(par_best(n_par),stat<span class="kw">=</span>status)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="recap-on-compiling" class="level2">
+<h2 class="anchored" data-anchor-id="recap-on-compiling">recap on compiling</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="va">F90_FILES</span><span class="op">=</span><span class="st">"AIR2STREAM_MAIN.f90  AIR2STREAM_MODULES.f90  AIR2STREAM_READ.f90  AIR2STREAM_RUNMODE.f90  AIR2STREAM_SUBROUTINES.f90"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="va">OBJ_FILES</span><span class="op">=</span><span class="st">"AIR2STREAM_MAIN.o  AIR2STREAM_MODULES.o  AIR2STREAM_READ.o  AIR2STREAM_RUNMODE.o  AIR2STREAM_SUBROUTINES.o"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="va">MODULE_NAME</span><span class="op">=</span>a2s</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${HOME}</span>/src/air2stream/src</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> f90wrap_<span class="pp">*</span>.f90 <span class="pp">*</span>.o</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> _<span class="va">${MODULE_NAME}</span><span class="pp">*</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="va">${MODULE_NAME}</span>.py</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> __pycache__</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">f90wrap</span> <span class="at">-m</span> <span class="va">${MODULE_NAME}</span> <span class="va">$F90_FILES</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">gfortran</span> <span class="at">-c</span> <span class="va">$F90_FILES</span> <span class="at">-fPIC</span> <span class="at">-ffree-form</span> <span class="at">-ffree-line-length-0</span> <span class="at">-cpp</span> <span class="at">-Wall</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ex">f2py-f90wrap</span> <span class="at">-c</span> <span class="at">-m</span> _<span class="va">${MODULE_NAME}</span> f90wrap_<span class="pp">*</span>.f90 <span class="va">$OBJ_FILES</span> <span class="op">&gt;</span> wrapping.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span> </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">${HOME}</span>/src/air2stream/python/air2stream/native </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="va">${HOME}</span>/src/air2stream/src/<span class="va">${MODULE_NAME}</span>.py <span class="va">${HOME}</span>/src/air2stream/python/air2stream/native/A2S.py </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="va">${HOME}</span>/src/air2stream/src/_<span class="va">${MODULE_NAME}</span>.cpython-39-x86_64-linux-gnu.so <span class="va">${HOME}</span>/src/air2stream/python </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${HOME}</span>/src/air2stream/python </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> setup.py bdist_wheel</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> uninstall air2stream</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Need to add a few subroutines to allocate arrays.</p>
+<p>PSO_mode crashes however. Unclear why, probably files. While debugging may be an option, start by static code analysis.</p>
+<pre class="text"><code>Twat_obs
+ + 1916.92
+ + 1337.34
+ + 250
+ ...
+ + 30375.94</code></pre>
+<p>Setting up debug mode.</p>
+<p>https://github.com/jameskermode/f90wrap/issues/107</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">f90wrap</span> <span class="at">-m</span> <span class="va">${MODULE_NAME}</span> <span class="at">-k</span> kind_map <span class="va">$F90_FILES</span>  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre class="text"><code>/tmp/tmpit0j2ype/src.linux-x86_64-3.9/_a2smodule.c:81:35: error: conflicting types for ‘complex_long_double’; have ‘struct &lt;anonymous&gt;’
+   81 | typedef struct {long double r,i;} complex_long_double;
+      |                                   ^~~~~~~~~~~~~~~~~~~</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span><span class="dt">long</span> <span class="dt">double</span> r<span class="op">,</span>i<span class="op">;}</span> complex_long_double<span class="op">;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span><span class="dt">long</span> <span class="dt">double</span> r<span class="op">,</span>i<span class="op">;}</span> complex_long_double<span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span><span class="dt">long</span> <span class="dt">double</span> r<span class="op">,</span>i<span class="op">;}</span> complex_long_double<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Remove complex types from the type map.</p>
+<p>Surprise! it works. Twat_obs now has expected degree celsius values.</p>
+<pre class="text"><code>[1]:
+5.3140000000000001
+[2]:
+4.9359999999999999
+[3]:
+4.7380000000000004
+[4]:
+4.6529999999999996
+[5]:
+4.0780000000000003
+[6]:
+3.7400000000000002
+[7]:
+3.77</code></pre>
+<p>Debugging, first model run in the calibration:</p>
+<p><code>Twat_mod</code></p>
+<pre><code>[1]:
+5.3140000000000001
+[2]:
+7.8372962667677948
+[3]:
+12.496311687936775
+[4]:
+20.800591362795824
+[5]:
+34.181598845649368
+...
+
+[48]:
+13113752.054443024
+[49]:
+17750270.667204361
+[50]:
+21977485.739610501
+[51]:
+27707028.048080336</code></pre>
+<p>Letting it run, it takes a fair bit of time, but this is more as expected.</p>
+<p>Stopping later in the calibration process shows a more reassuring temperature profile:</p>
+<pre class="text"><code>
+[217]:
+10.582679192665225
+[218]:
+10.195852840734062
+[219]:
+10.249647743036391
+[220]:
+10.347174462761377
+[221]:
+9.8947843099918487
+[222]:
+9.9146999767289063
+[223]:
+9.8543234671215938
+[224]:
+9.8815530242933356
+[225]:
+10.768068834959106
+[226]:
+10.630182740661676</code></pre>
 </section>
 </section>
-<section id="taking-stock" class="level1">
-<h1>Taking stock</h1>
-<p>I’ve not managed to run an example from the “Getting Started” page, but this is OK. I know first hand how difficult it is to provide and maintain even a simple example that runs out of the box, especially for a new user. I gather that this is a matter to download sample data from somewhere and put it in a local directory.</p>
-<p>I have attempted similar management of data provisions through <a href="https://github.com/csiro-hydroinformatics/uchronia-time-series/blob/main/datatypes/include/datatypes/time_series_store.hpp">time series stores</a> and time series libraries. The data catalogue of HydroMT appears to be a broadly similar abstraction, at a higher level of granularity and for several types of spatial or temporal data.</p>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>We’ve successfully wrapped a Fortran 90 program as is with <code>f90wrap</code>, and it looks like it is doing a great job to generate meaningful wrapper functions even without reengineering the Fortran code.</p>
 <p>To be continued.</p>
 
 

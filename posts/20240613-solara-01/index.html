@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2023-07-20">
-<meta name="description" content="Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.">
+<meta name="dcterms.date" content="2024-06-13">
+<meta name="description" content="Python wrapper for the the Fortran program air2stream using f90wrap">
 
-<title>J-M’s ‘lab notebook’ - Exploring HydroMT - part 1</title>
+<title>J-M’s ‘lab notebook’ - Web application using Solara - part 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -153,16 +153,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Exploring HydroMT - part 1</h1>
+      <h1 class="title">Web application using Solara - part 1</h1>
                   <div>
         <div class="description">
-          Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.
+          Python wrapper for the the Fortran program air2stream using f90wrap
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">HydroMT</div>
                 <div class="quarto-category">python</div>
-                <div class="quarto-category">hydrology</div>
+                <div class="quarto-category">solara</div>
+                <div class="quarto-category">dashboard</div>
+                <div class="quarto-category">web app</div>
               </div>
                   </div>
   </div>
@@ -180,7 +181,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 20, 2023</p>
+        <p class="date">June 13, 2024</p>
       </div>
     </div>
     
@@ -197,12 +198,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
-  <li><a href="#walkthrough" id="toc-walkthrough" class="nav-link" data-scroll-target="#walkthrough">Walkthrough</a>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">Getting started</a>
   <ul class="collapse">
-  <li><a href="#installing" id="toc-installing" class="nav-link" data-scroll-target="#installing">Installing</a></li>
-  <li><a href="#debugging" id="toc-debugging" class="nav-link" data-scroll-target="#debugging">Debugging</a></li>
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#using-ipyleaflet" id="toc-using-ipyleaflet" class="nav-link" data-scroll-target="#using-ipyleaflet">Using ipyleaflet</a></li>
+  <li><a href="#sample-multipage-application" id="toc-sample-multipage-application" class="nav-link" data-scroll-target="#sample-multipage-application">sample multipage application</a></li>
   </ul></li>
-  <li><a href="#taking-stock" id="toc-taking-stock" class="nav-link" data-scroll-target="#taking-stock">Taking stock</a></li>
   </ul>
 </nav>
     </div>
@@ -213,109 +214,95 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://deltares.github.io/hydromt/latest/_static/hydromt-icon.svg" title="HydroMT logo" class="img-fluid figure-img" width="200"></p>
-<figcaption>“HydroMT logo”</figcaption>
-</figure>
-</div>
 <section id="background" class="level1">
 <h1>Background</h1>
-<p>I recently attended the MODSIM 2023 conference and inadvertently missed the presentation <a href="https://modsim2023.exordo.com/programme/presentation/323">Towards scalable and reproducible hydrological modelling with HydroMT: A proof of concept for Australia</a>. <code>HydroMT</code> is a toolset I’d really like to understand better, notably to assess whether I can manage workflows built upon our <a href="https://csiro-hydroinformatics.github.io/streamflow-forecasting-tools-onboard/">Streamflow Forecasting</a> tools.</p>
-<p>The value proposition of HydroMT resonates with me. I keep being surprised by the dearth of facilities in easily exploiting temporal and geospatial data for building hydrologic models.</p>
-<p>So, heading to the page <a href="https://deltares.github.io/hydromt/latest/index.html">HydroMT: Automated and reproducible model building and analysis</a> to explore it.</p>
-</section>
-<section id="walkthrough" class="level1">
-<h1>Walkthrough</h1>
-<p>This post will be about the first hands on familiarisation with the toolset and its existing plug-ins. No point jumping the gun and investigating plugins before I “grok” the existing tools. I expect this will be not be without friction anyway, as getting throught the introductory material of a third party software toolset is rarely smooth sailing, as I am aware the reverse is true of the software tools I aothor or contribute to.s</p>
-<section id="installing" class="level2">
-<h2 class="anchored" data-anchor-id="installing">Installing</h2>
-<p>Not installing in dev mode by default. Will start as a normal user.</p>
-<p>HydroMT is readily available from <code>conda-forge</code> and installs flawlessly on my Linux box:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="at">-n</span> hydromt <span class="at">-c</span> conda-forge python=3.9 hydromt hydromt_wflow</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> activate hydromt</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> <span class="at">--models</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>model plugins:
- - wflow (hydromt_wflow 0.2.1)
- - wflow_sediment (hydromt_wflow 0.2.1)
-generic models (hydromt 0.8.0):
- - grid_model
- - lumped_model
- - network_model</code></pre>
-<p>There is a bit of variation in the doc compared to this output of <code>hydromt --models</code>. Which is fine.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/data/hydromt</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/data/hydromt</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: save as `build_wflow.ini` not `wflow_build.ini` to be consistent with the upcoming command invocation `hydromt build`.</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Otherwise you'll get error OSError: Config not found at /home/xxxyyy/data/hydromt/build_wflow.ini</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-o</span> build_wflow.ini https://raw.githubusercontent.com/Deltares/hydromt_wflow/main/examples/wflow_build.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> build wflow ./wflow_test <span class="at">-r</span> <span class="st">"{'subbasin': [12.2051, 45.8331], 'strord': 4}"</span> <span class="at">-vv</span> <span class="at">-i</span> build_wflow.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="test"><code>ValueError: Model wflow has no method "setup_outlets"</code></pre>
-<p>The class <code>WflowModel</code> has a method <code>setup_outlets</code> though, in the file <a href="https://github.com/Deltares/hydromt_wflow/blob/main/hydromt_wflow/wflow.py#L933">wflow.py</a>.</p>
-<p>Not sure where to go from this. May be something to feed back to authors if I do not overlook something.</p>
-</section>
-<section id="debugging" class="level2">
-<h2 class="anchored" data-anchor-id="debugging">Debugging</h2>
-<p>Setting up launch.json file for VSCode:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"version"</span><span class="fu">:</span> <span class="st">"0.2.0"</span><span class="fu">,</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"configurations"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"name"</span><span class="fu">:</span> <span class="st">"Python: Current File"</span><span class="fu">,</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"python"</span><span class="fu">,</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"request"</span><span class="fu">:</span> <span class="st">"launch"</span><span class="fu">,</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"program"</span><span class="fu">:</span> <span class="st">"/home/xxxyyy/mambaforge/envs/hydromt/bin/hydromt"</span><span class="fu">,</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"console"</span><span class="fu">:</span> <span class="st">"integratedTerminal"</span><span class="fu">,</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"justMyCode"</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>            <span class="dt">"args"</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">"build"</span><span class="ot">,</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">"wflow"</span><span class="ot">,</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">"/home/xxxyyy/data/hydromt/wflow_test"</span><span class="ot">,</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-r"</span><span class="ot">,</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">"</span><span class="ch">\"</span><span class="st">{'subbasin': [12.2051, 45.8331], 'strord': 4}</span><span class="ch">\"</span><span class="st">"</span><span class="ot">,</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-vv"</span><span class="ot">,</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">"-i"</span><span class="ot">,</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">"/home/xxxyyy/data/hydromt/build_wflow.ini"</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>            <span class="ot">]</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>            <span class="er">//</span> <span class="st">"cwd"</span><span class="er">:</span> <span class="st">"/home/xxxyyy/data/hydromt"</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This launches the process, but I cannot put breakpoints in most of the files though, not sure why. So, installing hydromt packages in dev mode to dig a bit further:</p>
-<p><code>conda remove --force hydromt hydromt_wflow</code> (note that this has to be <code>conda</code>, <code>mamba</code> still tries to uninstall dependencies even with <code>--force</code>)</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/src/hydromt</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../hydromt_wflow/</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Can we reproduce the error if installed from the lates source?</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/data/hydromt </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">hydromt</span> build wflow ./wflow_test <span class="at">-r</span> <span class="st">"{'subbasin': [12.2051, 45.8331], 'strord': 4}"</span> <span class="at">-vv</span> <span class="at">-i</span> build_wflow.ini</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Well, no… this time:</p>
-<pre class="text"><code>FileNotFoundError: No such file or catalog key: merit_hydro</code></pre>
-<p>See page <a href="https://deltares.github.io/hydromt/latest/user_guide/data_existing_cat.html#existing-catalog">Pre-defined data catalogs</a>: “The <code>deltares_data</code> catalog is only available within the Deltares network. However a selection of this data for a the Piave basin (Northern Italy) is available online in the <code>artifact_data</code>”. <code>merit_hydro</code> is under the “artifact_data - topography” tab.</p>
-<p><code>ds_org = self.data_catalog.get_rasterdataset(hydrography_fn)</code> where <code>hydrography_fn</code> is equal to “merit_hydro”</p>
-<p>The <a href="https://deltares.github.io/hydromt/latest/user_guide/data_overview.html">Data Overview</a> page states that:</p>
-<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Tip
+Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If no yaml file is provided to the CLI build or update methods or to <code>DataCatalog</code>, HydroMT will use the data stored in the <code>artifact_data</code> which contains an extract of global data for a small region around the Piave river in Northern Italy.</p>
+<p><code>air2stream</code> is being ported to Python or perhaps Julia. The work described here may be obsolete by the time you read.</p>
 </div>
 </div>
+<p>This is a follow up on <a href="https://jmp75.github.io/work-blog/posts/20231115-air2stream-f90wrap/">Wrapping air2stream to access it from Python - part 2</a>. In part 2 we found that <code>f90wrap</code> is doing a good job of wrapping the code of <code>air2stream</code> as it is.</p>
+<p>In this post we will focus on providing an API to set inputs, parameters and retrieve outputs in memory rather than through files.</p>
 </section>
+<section id="getting-started" class="level1">
+<h1>Getting started</h1>
+<p><a href="https://solara.dev/">Solara, A pure Python, React-style web framework</a></p>
+<section id="installation" class="level2">
+<h2 class="anchored" data-anchor-id="installation">Installation</h2>
+<p>The Solara <a href="https://solara.dev/documentation/getting_started/installing">install instructions</a> at the time of writing has instructions using <code>a</code> not <code>conda</code>. I usually prefer working from conda environments, but the first thing I learned was that setting up <code>solara</code> on top of conda did not pan out. Basically, because of some documentary dependencies like <code>vaex</code> ended up being needed, and a whole can of worm of incompatible package versions was opened.</p>
+<p>So, I advise you stick with creating a virtual environment with <code>venv</code> as per the solara documentation.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">--version</span> <span class="co"># 3.9.13; debian linux</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$HOME</span>/.venvs/</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> venv solara-env</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ./solara-env/bin/activate</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install solara <span class="co"># installs 1.32.0</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">~/.venvs/solara-env/bin/python</span> <span class="at">-m</span> pip install <span class="at">--upgrade</span> pip</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install matplotlib pandas vaex plotly</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><a href="https://solara.dev/documentation/getting_started/tutorials/ipywidgets">tutorials/ipywidgets</a></p>
 </section>
-<section id="taking-stock" class="level1">
-<h1>Taking stock</h1>
-<p>I’ve not managed to run an example from the “Getting Started” page, but this is OK. I know first hand how difficult it is to provide and maintain even a simple example that runs out of the box, especially for a new user. I gather that this is a matter to download sample data from somewhere and put it in a local directory.</p>
-<p>I have attempted similar management of data provisions through <a href="https://github.com/csiro-hydroinformatics/uchronia-time-series/blob/main/datatypes/include/datatypes/time_series_store.hpp">time series stores</a> and time series libraries. The data catalogue of HydroMT appears to be a broadly similar abstraction, at a higher level of granularity and for several types of spatial or temporal data.</p>
-<p>To be continued.</p>
+<section id="using-ipyleaflet" class="level2">
+<h2 class="anchored" data-anchor-id="using-ipyleaflet">Using ipyleaflet</h2>
+<p><a href="https://solara.dev/documentation/examples/libraries/ipyleaflet_advanced">ipyleaflet_advanced</a> <code>element</code> method to construct the leaflet map.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  <span class="cf">with</span> solara.Column(style<span class="op">=</span>{<span class="st">"isolation"</span>: <span class="st">"isolate"</span>}):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>      ipyleaflet.Map.element(  <span class="co"># type: ignore</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>          zoom<span class="op">=</span>zoom.value,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>          on_zoom<span class="op">=</span>zoom.<span class="bu">set</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>          center<span class="op">=</span>center.value,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          on_center<span class="op">=</span>center.<span class="bu">set</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>          scroll_wheel_zoom<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>          layers<span class="op">=</span>[</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>              ipyleaflet.TileLayer.element(url<span class="op">=</span>url),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>              ipyleaflet.Marker.element(location<span class="op">=</span>marker_location.value, draggable<span class="op">=</span><span class="va">True</span>, on_location<span class="op">=</span>location_changed),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>          ],</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><a href="https://github.com/jmp75/ipyleaflet-dashboard-tools">ipyleaflet-dashboard-tools</a></p>
+<p>At the time of writing <a href="https://github.com/jmp75/ipyleaflet-dashboard-tools/blob/fb731334aec5e9d4b09b078380044b5a822dc827/ipyleaflet_dashboard_tools/gv.py#L83"><code>build_mapmarkers</code></a></p>
+<p>FranciscoGS/solara-geospatialDashboard on HuggingFace <a href="https://huggingface.co/spaces/FranciscoGS/solara-geospatialDashboard/blob/main/pages/Servicios_apoyo.py#L106">using a <code>display</code> function to show the leaflet map</a>. A curious thing reading the code statically is that there is no <code>import</code> statement that could import this <code>display</code> function from a particular module.</p>
+<p>https://solara.dev/documentation/getting_started/introduction has a similar use of a <code>display</code> function that appears not imported.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode py code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_map():</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    x:xr.Dataset <span class="op">=</span> create_dataset()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    gv <span class="op">=</span> GeoViewer(x, lat<span class="op">=</span><span class="st">"lat"</span>, lon<span class="op">=</span><span class="st">"lon"</span>, identifier<span class="op">=</span><span class="st">"station"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">map</span> <span class="op">=</span> gv.build_map(zoom<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">map</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">@solara.component</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> MyMapComponent():</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Note the explicit import of `display` from `solara` seems to be superfluous, but works.</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># perhaps even without it, the file's `import solara` does magic</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> solara <span class="im">import</span> display</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">map</span> <span class="op">=</span> build_map()</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    display(<span class="bu">map</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">@solara.component</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> Page():</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> solara.VBox() <span class="im">as</span> main:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        solara.Title(<span class="st">"Demo leaflet-solara"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> solara.Column():</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>            MyMapComponent()</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            <span class="co"># placeholder for later</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><a href="https://ipywidgets.readthedocs.io/en/stable/reference/ipywidgets.html#ipywidgets.widgets.widget_date.DatePicker">DatePicker</a></p>
+</section>
+<section id="sample-multipage-application" class="level2">
+<h2 class="anchored" data-anchor-id="sample-multipage-application">sample multipage application</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$HOME</span>/<span class="va">$BLAH</span>/showcase/</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">$HOME</span>/<span class="va">$BLAH</span>/showcase/</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">solara</span> create <span class="at">--help</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">solara</span> create portal stream-temperature</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> stream-temperature/</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">--no-deps</span> <span class="at">-e</span> . <span class="co"># no deps otherwise it seems that solara installs newer versions from pypi</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ..</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">solara</span> run stream_temperature</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

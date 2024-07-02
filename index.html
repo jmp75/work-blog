@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.358">
+<meta name="generator" content="quarto-1.4.553">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -49,7 +49,7 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
   "keyboard-shortcut": [
     "f",
     "/",
@@ -64,6 +64,7 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -103,14 +104,41 @@ ul.task-list li input[type="checkbox"] {
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 <link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
@@ -178,23 +206,22 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
 <div class="quarto-post image-right" data-index="0" data-categories="python,f90wrap,code generation,Fortran" data-listing-date-sort="1699966800000" data-listing-file-modified-sort="1700111137074" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="19" data-listing-word-count-sort="3784">
 <div class="thumbnail">
-<p><a href="./posts/20231115-air2stream-f90wrap/index.html"></a></p><a href="./posts/20231115-air2stream-f90wrap/index.html">
+<p><a href="./posts/20231115-air2stream-f90wrap/index.html" class="no-external"></a></p><a href="./posts/20231115-air2stream-f90wrap/index.html" class="no-external">
 <p class="card-img-top"><img src="posts/20231115-air2stream-f90wrap/conversion_loss_vscode.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/20231115-air2stream-f90wrap/index.html"></a></p>
+</a><p><a href="./posts/20231115-air2stream-f90wrap/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20231115-air2stream-f90wrap/index.html"></a></p><a href="./posts/20231115-air2stream-f90wrap/index.html">
 <h3 class="no-anchor listing-title">
-Wrapping air2stream to access it from Python - part 2
+<a href="./posts/20231115-air2stream-f90wrap/index.html" class="no-external">Wrapping air2stream to access it from Python - part 2</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20231115-air2stream-f90wrap/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('python'); return false;">
 python
@@ -209,14 +236,12 @@ code generation
 Fortran
 </div>
 </div>
-<p><a href="./posts/20231115-air2stream-f90wrap/index.html"></a></p><a href="./posts/20231115-air2stream-f90wrap/index.html">
 <div class="listing-description">
-<p>Python wrapper for the the Fortran program air2stream using f90wrap</p>
+<a href="./posts/20231115-air2stream-f90wrap/index.html" class="no-external">Python wrapper for the the Fortran program air2stream using f90wrap</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20231115-air2stream-f90wrap/index.html">
+<a href="./posts/20231115-air2stream-f90wrap/index.html" class="no-external">
 <div class="listing-date">
 Nov 15, 2023
 </div>
@@ -228,19 +253,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="1" data-categories="reproducibility,versioning,git" data-listing-date-sort="1699621200000" data-listing-file-modified-sort="1699673679885" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1851">
 <div class="thumbnail">
-<p><a href="./posts/20231111-reproducibility/index.html"></a></p><a href="./posts/20231111-reproducibility/index.html">
+<p><a href="./posts/20231111-reproducibility/index.html" class="no-external"></a></p><a href="./posts/20231111-reproducibility/index.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20231111-reproducibility/index.html"></a></p>
+</a><p><a href="./posts/20231111-reproducibility/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20231111-reproducibility/index.html"></a></p><a href="./posts/20231111-reproducibility/index.html">
 <h3 class="no-anchor listing-title">
-Reproducing past results in scientific computing
+<a href="./posts/20231111-reproducibility/index.html" class="no-external">Reproducing past results in scientific computing</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20231111-reproducibility/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('reproducibility'); return false;">
 reproducibility
@@ -252,14 +275,12 @@ versioning
 git
 </div>
 </div>
-<p><a href="./posts/20231111-reproducibility/index.html"></a></p><a href="./posts/20231111-reproducibility/index.html">
 <div class="listing-description">
-<p>Computational reproducibility is hard work, even when you’ve done a good job to prepare for it</p>
+<a href="./posts/20231111-reproducibility/index.html" class="no-external">Computational reproducibility is hard work, even when you’ve done a good job to prepare for it</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20231111-reproducibility/index.html">
+<a href="./posts/20231111-reproducibility/index.html" class="no-external">
 <div class="listing-date">
 Nov 11, 2023
 </div>
@@ -271,19 +292,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="2" data-categories="python,f90wrap,code generation,Fortran" data-listing-date-sort="1696251600000" data-listing-file-modified-sort="1700015774155" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="721">
 <div class="thumbnail">
-<p><a href="./posts/20231003-air2stream-f90wrap/index.html"></a></p><a href="./posts/20231003-air2stream-f90wrap/index.html">
+<p><a href="./posts/20231003-air2stream-f90wrap/index.html" class="no-external"></a></p><a href="./posts/20231003-air2stream-f90wrap/index.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20231003-air2stream-f90wrap/index.html"></a></p>
+</a><p><a href="./posts/20231003-air2stream-f90wrap/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20231003-air2stream-f90wrap/index.html"></a></p><a href="./posts/20231003-air2stream-f90wrap/index.html">
 <h3 class="no-anchor listing-title">
-Wrapping air2stream to access it from Python - part 1
+<a href="./posts/20231003-air2stream-f90wrap/index.html" class="no-external">Wrapping air2stream to access it from Python - part 1</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20231003-air2stream-f90wrap/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('python'); return false;">
 python
@@ -298,14 +317,12 @@ code generation
 Fortran
 </div>
 </div>
-<p><a href="./posts/20231003-air2stream-f90wrap/index.html"></a></p><a href="./posts/20231003-air2stream-f90wrap/index.html">
 <div class="listing-description">
-<p>Python wrapper for the the Fortran program air2stream using f90wrap</p>
+<a href="./posts/20231003-air2stream-f90wrap/index.html" class="no-external">Python wrapper for the the Fortran program air2stream using f90wrap</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20231003-air2stream-f90wrap/index.html">
+<a href="./posts/20231003-air2stream-f90wrap/index.html" class="no-external">
 <div class="listing-date">
 Oct 3, 2023
 </div>
@@ -317,19 +334,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="3" data-categories="debugging,R,Rcpp,C++" data-listing-date-sort="1695477600000" data-listing-file-modified-sort="1695713809418" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1236">
 <div class="thumbnail">
-<p><a href="./posts/20230926-rcpp-debug-vscode/index.html"></a></p><a href="./posts/20230926-rcpp-debug-vscode/index.html">
+<p><a href="./posts/20230926-rcpp-debug-vscode/index.html" class="no-external"></a></p><a href="./posts/20230926-rcpp-debug-vscode/index.html" class="no-external">
 <p class="card-img-top"><img src="posts/20230926-rcpp-debug-vscode/attach-r-process.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/20230926-rcpp-debug-vscode/index.html"></a></p>
+</a><p><a href="./posts/20230926-rcpp-debug-vscode/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20230926-rcpp-debug-vscode/index.html"></a></p><a href="./posts/20230926-rcpp-debug-vscode/index.html">
 <h3 class="no-anchor listing-title">
-Debugging Rcpp and C++ code from visual studio code
+<a href="./posts/20230926-rcpp-debug-vscode/index.html" class="no-external">Debugging Rcpp and C++ code from visual studio code</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20230926-rcpp-debug-vscode/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('debugging'); return false;">
 debugging
@@ -344,14 +359,12 @@ Rcpp
 C++
 </div>
 </div>
-<p><a href="./posts/20230926-rcpp-debug-vscode/index.html"></a></p><a href="./posts/20230926-rcpp-debug-vscode/index.html">
 <div class="listing-description">
-<p>Debugging Rcpp and C++ code from visual studio code</p>
+<a href="./posts/20230926-rcpp-debug-vscode/index.html" class="no-external">Debugging Rcpp and C++ code from visual studio code</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20230926-rcpp-debug-vscode/index.html">
+<a href="./posts/20230926-rcpp-debug-vscode/index.html" class="no-external">
 <div class="listing-date">
 Sep 24, 2023
 </div>
@@ -363,19 +376,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="4" data-categories="python,d3.js,sankey" data-listing-date-sort="1689948000000" data-listing-file-modified-sort="1690015846716" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="510">
 <div class="thumbnail">
-<p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html"></a></p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html">
+<p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html" class="no-external"></a></p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html" class="no-external">
 <p class="card-img-top"><img src="posts/2023-07-22-sankey-diagrams-python/sankey_d3blocks.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html"></a></p>
+</a><p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html"></a></p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html">
 <h3 class="no-anchor listing-title">
-Producing Sankey diagrams from Python
+<a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html" class="no-external">Producing Sankey diagrams from Python</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('python'); return false;">
 python
@@ -387,14 +398,12 @@ d3.js
 sankey
 </div>
 </div>
-<p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html"></a></p><a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html">
 <div class="listing-description">
-<p>Producing Sankey diagrams from Python</p>
+<a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html" class="no-external">Producing Sankey diagrams from Python</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html">
+<a href="./posts/2023-07-22-sankey-diagrams-python/notebook.html" class="no-external">
 <div class="listing-date">
 Jul 22, 2023
 </div>
@@ -406,19 +415,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="5" data-categories="HydroMT,python,hydrology" data-listing-date-sort="1689775200000" data-listing-file-modified-sort="1689833689636" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="912">
 <div class="thumbnail">
-<p><a href="./posts/20230720-hydromt/index.html"></a></p><a href="./posts/20230720-hydromt/index.html">
+<p><a href="./posts/20230720-hydromt/index.html" class="no-external"></a></p><a href="./posts/20230720-hydromt/index.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20230720-hydromt/index.html"></a></p>
+</a><p><a href="./posts/20230720-hydromt/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20230720-hydromt/index.html"></a></p><a href="./posts/20230720-hydromt/index.html">
 <h3 class="no-anchor listing-title">
-Exploring HydroMT - part 1
+<a href="./posts/20230720-hydromt/index.html" class="no-external">Exploring HydroMT - part 1</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20230720-hydromt/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('HydroMT'); return false;">
 HydroMT
@@ -430,14 +437,12 @@ python
 hydrology
 </div>
 </div>
-<p><a href="./posts/20230720-hydromt/index.html"></a></p><a href="./posts/20230720-hydromt/index.html">
 <div class="listing-description">
-<p>Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.</p>
+<a href="./posts/20230720-hydromt/index.html" class="no-external">Exploring HydroMT - part 1. Going through a ‘getting started’ example, and exploring from here on.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20230720-hydromt/index.html">
+<a href="./posts/20230720-hydromt/index.html" class="no-external">
 <div class="listing-date">
 Jul 20, 2023
 </div>
@@ -447,21 +452,19 @@ J-M
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="6" data-categories="WiX,installers" data-listing-date-sort="1680094800000" data-listing-file-modified-sort="1680157656248" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="615">
+<div class="quarto-post image-right" data-index="6" data-categories="WiX,installers" data-listing-date-sort="1680094800000" data-listing-file-modified-sort="1719905508928" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="615">
 <div class="thumbnail">
-<p><a href="./posts/20230330-windows-installer-wix/index.html"></a></p><a href="./posts/20230330-windows-installer-wix/index.html">
+<p><a href="./posts/20230330-windows-installer-wix/index.html" class="no-external"></a></p><a href="./posts/20230330-windows-installer-wix/index.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20230330-windows-installer-wix/index.html"></a></p>
+</a><p><a href="./posts/20230330-windows-installer-wix/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20230330-windows-installer-wix/index.html"></a></p><a href="./posts/20230330-windows-installer-wix/index.html">
 <h3 class="no-anchor listing-title">
-Windows installer with WiX 4 - part 4
+<a href="./posts/20230330-windows-installer-wix/index.html" class="no-external">Windows installer with WiX 4 - part 4</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20230330-windows-installer-wix/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('WiX'); return false;">
 WiX
@@ -470,14 +473,12 @@ WiX
 installers
 </div>
 </div>
-<p><a href="./posts/20230330-windows-installer-wix/index.html"></a></p><a href="./posts/20230330-windows-installer-wix/index.html">
 <div class="listing-description">
-<p>Building a Windows installer with WiX 4 - part 4</p>
+<a href="./posts/20230330-windows-installer-wix/index.html" class="no-external">Building a Windows installer with WiX 4 - part 4</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20230330-windows-installer-wix/index.html">
+<a href="./posts/20230330-windows-installer-wix/index.html" class="no-external">
 <div class="listing-date">
 Mar 30, 2023
 </div>
@@ -487,21 +488,19 @@ J-M
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="7" data-categories="WiX,installers" data-listing-date-sort="1679144400000" data-listing-file-modified-sort="1679214722787" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1108">
+<div class="quarto-post image-right" data-index="7" data-categories="WiX,installers" data-listing-date-sort="1679144400000" data-listing-file-modified-sort="1719905508928" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1108">
 <div class="thumbnail">
-<p><a href="./posts/20230319-windows-installer-wix/index.html"></a></p><a href="./posts/20230319-windows-installer-wix/index.html">
+<p><a href="./posts/20230319-windows-installer-wix/index.html" class="no-external"></a></p><a href="./posts/20230319-windows-installer-wix/index.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20230319-windows-installer-wix/index.html"></a></p>
+</a><p><a href="./posts/20230319-windows-installer-wix/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20230319-windows-installer-wix/index.html"></a></p><a href="./posts/20230319-windows-installer-wix/index.html">
 <h3 class="no-anchor listing-title">
-Windows installer with WiX 4 - part 3
+<a href="./posts/20230319-windows-installer-wix/index.html" class="no-external">Windows installer with WiX 4 - part 3</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20230319-windows-installer-wix/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('WiX'); return false;">
 WiX
@@ -510,14 +509,12 @@ WiX
 installers
 </div>
 </div>
-<p><a href="./posts/20230319-windows-installer-wix/index.html"></a></p><a href="./posts/20230319-windows-installer-wix/index.html">
 <div class="listing-description">
-<p>Building a Windows installer with WiX 4 - part 3</p>
+<a href="./posts/20230319-windows-installer-wix/index.html" class="no-external">Building a Windows installer with WiX 4 - part 3</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20230319-windows-installer-wix/index.html">
+<a href="./posts/20230319-windows-installer-wix/index.html" class="no-external">
 <div class="listing-date">
 Mar 19, 2023
 </div>
@@ -529,19 +526,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="8" data-categories="WiX,installers" data-listing-date-sort="1678971600000" data-listing-file-modified-sort="1679030826816" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="790">
 <div class="thumbnail">
-<p><a href="./posts/20230317-windows-installer-wix/index.html"></a></p><a href="./posts/20230317-windows-installer-wix/index.html">
+<p><a href="./posts/20230317-windows-installer-wix/index.html" class="no-external"></a></p><a href="./posts/20230317-windows-installer-wix/index.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20230317-windows-installer-wix/index.html"></a></p>
+</a><p><a href="./posts/20230317-windows-installer-wix/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20230317-windows-installer-wix/index.html"></a></p><a href="./posts/20230317-windows-installer-wix/index.html">
 <h3 class="no-anchor listing-title">
-Windows installer with WiX 4 - part 2
+<a href="./posts/20230317-windows-installer-wix/index.html" class="no-external">Windows installer with WiX 4 - part 2</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20230317-windows-installer-wix/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('WiX'); return false;">
 WiX
@@ -550,14 +545,12 @@ WiX
 installers
 </div>
 </div>
-<p><a href="./posts/20230317-windows-installer-wix/index.html"></a></p><a href="./posts/20230317-windows-installer-wix/index.html">
 <div class="listing-description">
-<p>Building a Windows installer with WiX 4 - part 2</p>
+<a href="./posts/20230317-windows-installer-wix/index.html" class="no-external">Building a Windows installer with WiX 4 - part 2</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20230317-windows-installer-wix/index.html">
+<a href="./posts/20230317-windows-installer-wix/index.html" class="no-external">
 <div class="listing-date">
 Mar 17, 2023
 </div>
@@ -569,19 +562,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="9" data-categories="WiX,installers," data-listing-date-sort="1678885200000" data-listing-file-modified-sort="1679030261302" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1067">
 <div class="thumbnail">
-<p><a href="./posts/20230315-windows-installer-wix/index.html"></a></p><a href="./posts/20230315-windows-installer-wix/index.html">
+<p><a href="./posts/20230315-windows-installer-wix/index.html" class="no-external"></a></p><a href="./posts/20230315-windows-installer-wix/index.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/20230315-windows-installer-wix/index.html"></a></p>
+</a><p><a href="./posts/20230315-windows-installer-wix/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20230315-windows-installer-wix/index.html"></a></p><a href="./posts/20230315-windows-installer-wix/index.html">
 <h3 class="no-anchor listing-title">
-Windows installer with WiX 4 - part 1
+<a href="./posts/20230315-windows-installer-wix/index.html" class="no-external">Windows installer with WiX 4 - part 1</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20230315-windows-installer-wix/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('WiX'); return false;">
 WiX
@@ -593,14 +584,12 @@ installers
 
 </div>
 </div>
-<p><a href="./posts/20230315-windows-installer-wix/index.html"></a></p><a href="./posts/20230315-windows-installer-wix/index.html">
 <div class="listing-description">
-<p>Building a Windows installer with WiX 4 - part 1</p>
+<a href="./posts/20230315-windows-installer-wix/index.html" class="no-external">Building a Windows installer with WiX 4 - part 1</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20230315-windows-installer-wix/index.html">
+<a href="./posts/20230315-windows-installer-wix/index.html" class="no-external">
 <div class="listing-date">
 Mar 16, 2023
 </div>
@@ -612,19 +601,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="10" data-categories="C++,memory,safety" data-listing-date-sort="1677070800000" data-listing-file-modified-sort="1677214399756" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="837">
 <div class="thumbnail">
-<p><a href="./posts/20230223-cpp-static-analysis/index.html"></a></p><a href="./posts/20230223-cpp-static-analysis/index.html">
+<p><a href="./posts/20230223-cpp-static-analysis/index.html" class="no-external"></a></p><a href="./posts/20230223-cpp-static-analysis/index.html" class="no-external">
 <p><img src="./posts/20230223-cpp-static-analysis/Cpp.png" class="thumbnail-image"></p>
-</a><p><a href="./posts/20230223-cpp-static-analysis/index.html"></a></p>
+</a><p><a href="./posts/20230223-cpp-static-analysis/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20230223-cpp-static-analysis/index.html"></a></p><a href="./posts/20230223-cpp-static-analysis/index.html">
 <h3 class="no-anchor listing-title">
-C++ static code analysis
+<a href="./posts/20230223-cpp-static-analysis/index.html" class="no-external">C++ static code analysis</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20230223-cpp-static-analysis/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('C++'); return false;">
 C++
@@ -636,14 +623,12 @@ memory
 safety
 </div>
 </div>
-<p><a href="./posts/20230223-cpp-static-analysis/index.html"></a></p><a href="./posts/20230223-cpp-static-analysis/index.html">
 <div class="listing-description">
-<p>C++ static code analysis</p>
+<a href="./posts/20230223-cpp-static-analysis/index.html" class="no-external">C++ static code analysis</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20230223-cpp-static-analysis/index.html">
+<a href="./posts/20230223-cpp-static-analysis/index.html" class="no-external">
 <div class="listing-date">
 Feb 23, 2023
 </div>
@@ -655,19 +640,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="11" data-categories="kvm,vagrant,qemu" data-listing-date-sort="1669035600000" data-listing-file-modified-sort="1669164431648" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1273">
 <div class="thumbnail">
-<p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html"></a></p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html">
+<p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html" class="no-external"></a></p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html" class="no-external">
 <p class="card-img-top"><img src="posts/20221122-win-vagrant-qemu-kvm--virtualbox/logos.png" title="logos" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html"></a></p>
+</a><p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html"></a></p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html">
 <h3 class="no-anchor listing-title">
-Running a Windows VM with Vagrant on Linux
+<a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html" class="no-external">Running a Windows VM with Vagrant on Linux</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('kvm'); return false;">
 kvm
@@ -679,14 +662,12 @@ vagrant
 qemu
 </div>
 </div>
-<p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html"></a></p><a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html">
 <div class="listing-description">
-<p>Running a Windows VM with Vagrant on Linux, trying via Qemu and VirtualBox</p>
+<a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html" class="no-external">Running a Windows VM with Vagrant on Linux, trying via Qemu and VirtualBox</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html">
+<a href="./posts/20221122-win-vagrant-qemu-kvm--virtualbox/index.html" class="no-external">
 <div class="listing-date">
 Nov 22, 2022
 </div>
@@ -698,19 +679,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="12" data-categories="Azure,Electron,packaging" data-listing-date-sort="1668517200000" data-listing-file-modified-sort="1668667397932" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12" data-listing-word-count-sort="2281">
 <div class="thumbnail">
-<p><a href="./posts/20221116-waa-installers/index.html"></a></p><a href="./posts/20221116-waa-installers/index.html">
+<p><a href="./posts/20221116-waa-installers/index.html" class="no-external"></a></p><a href="./posts/20221116-waa-installers/index.html" class="no-external">
 <p class="card-img-top"><img src="posts/20221116-waa-installers/pipeline.png" title="pipeline" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/20221116-waa-installers/index.html"></a></p>
+</a><p><a href="./posts/20221116-waa-installers/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20221116-waa-installers/index.html"></a></p><a href="./posts/20221116-waa-installers/index.html">
 <h3 class="no-anchor listing-title">
-Electron+python multi-os installers
+<a href="./posts/20221116-waa-installers/index.html" class="no-external">Electron+python multi-os installers</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20221116-waa-installers/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('Azure'); return false;">
 Azure
@@ -722,14 +701,12 @@ Electron
 packaging
 </div>
 </div>
-<p><a href="./posts/20221116-waa-installers/index.html"></a></p><a href="./posts/20221116-waa-installers/index.html">
 <div class="listing-description">
-<p>Building multiplatform installers for an electron application with an embedded python server</p>
+<a href="./posts/20221116-waa-installers/index.html" class="no-external">Building multiplatform installers for an electron application with an embedded python server</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20221116-waa-installers/index.html">
+<a href="./posts/20221116-waa-installers/index.html" class="no-external">
 <div class="listing-date">
 Nov 16, 2022
 </div>
@@ -741,19 +718,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="13" data-categories="Security,git" data-listing-date-sort="1668085200000" data-listing-file-modified-sort="1668156793689" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="733">
 <div class="thumbnail">
-<p><a href="./posts/20221111-gitleaks-config/index.html"></a></p><a href="./posts/20221111-gitleaks-config/index.html">
+<p><a href="./posts/20221111-gitleaks-config/index.html" class="no-external"></a></p><a href="./posts/20221111-gitleaks-config/index.html" class="no-external">
 <p><img src="./posts/20221111-gitleaks-config/security_security.png" class="thumbnail-image"></p>
-</a><p><a href="./posts/20221111-gitleaks-config/index.html"></a></p>
+</a><p><a href="./posts/20221111-gitleaks-config/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20221111-gitleaks-config/index.html"></a></p><a href="./posts/20221111-gitleaks-config/index.html">
 <h3 class="no-anchor listing-title">
-Custom rules for gitleaks
+<a href="./posts/20221111-gitleaks-config/index.html" class="no-external">Custom rules for gitleaks</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20221111-gitleaks-config/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('Security'); return false;">
 Security
@@ -762,14 +737,12 @@ Security
 git
 </div>
 </div>
-<p><a href="./posts/20221111-gitleaks-config/index.html"></a></p><a href="./posts/20221111-gitleaks-config/index.html">
 <div class="listing-description">
-<p>Adding rules to a gitleaks configuration to scan git repo for low-medium sensitivity information</p>
+<a href="./posts/20221111-gitleaks-config/index.html" class="no-external">Adding rules to a gitleaks configuration to scan git repo for low-medium sensitivity information</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20221111-gitleaks-config/index.html">
+<a href="./posts/20221111-gitleaks-config/index.html" class="no-external">
 <div class="listing-date">
 Nov 11, 2022
 </div>
@@ -781,19 +754,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="14" data-categories="Python,Notebook,IDE,nbdev" data-listing-date-sort="1665147600000" data-listing-file-modified-sort="1665219702285" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1367">
 <div class="thumbnail">
-<p><a href="./posts/20221008-nbdev-windows-2/index.html"></a></p><a href="./posts/20221008-nbdev-windows-2/index.html">
+<p><a href="./posts/20221008-nbdev-windows-2/index.html" class="no-external"></a></p><a href="./posts/20221008-nbdev-windows-2/index.html" class="no-external">
 <p><img src="./posts/20221008-nbdev-windows-2/initial-nbdev_preview.png" class="thumbnail-image"></p>
-</a><p><a href="./posts/20221008-nbdev-windows-2/index.html"></a></p>
+</a><p><a href="./posts/20221008-nbdev-windows-2/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20221008-nbdev-windows-2/index.html"></a></p><a href="./posts/20221008-nbdev-windows-2/index.html">
 <h3 class="no-anchor listing-title">
-Using nbdev on Windows - part 2
+<a href="./posts/20221008-nbdev-windows-2/index.html" class="no-external">Using nbdev on Windows - part 2</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20221008-nbdev-windows-2/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('Python'); return false;">
 Python
@@ -808,14 +779,12 @@ IDE
 nbdev
 </div>
 </div>
-<p><a href="./posts/20221008-nbdev-windows-2/index.html"></a></p><a href="./posts/20221008-nbdev-windows-2/index.html">
 <div class="listing-description">
-<p>Getting through a tutorial to test the operation of nbdev on Windows native</p>
+<a href="./posts/20221008-nbdev-windows-2/index.html" class="no-external">Getting through a tutorial to test the operation of nbdev on Windows native</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20221008-nbdev-windows-2/index.html">
+<a href="./posts/20221008-nbdev-windows-2/index.html" class="no-external">
 <div class="listing-date">
 Oct 8, 2022
 </div>
@@ -827,19 +796,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="15" data-categories="Python,Notebook,IDE" data-listing-date-sort="1665061200000" data-listing-file-modified-sort="1665219581668" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1405">
 <div class="thumbnail">
-<p><a href="./posts/20221007-nbdev-windows/index.html"></a></p><a href="./posts/20221007-nbdev-windows/index.html">
+<p><a href="./posts/20221007-nbdev-windows/index.html" class="no-external"></a></p><a href="./posts/20221007-nbdev-windows/index.html" class="no-external">
 <p><img src="./posts/20221007-nbdev-windows/nbdev_visual.png" class="thumbnail-image"></p>
-</a><p><a href="./posts/20221007-nbdev-windows/index.html"></a></p>
+</a><p><a href="./posts/20221007-nbdev-windows/index.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/20221007-nbdev-windows/index.html"></a></p><a href="./posts/20221007-nbdev-windows/index.html">
 <h3 class="no-anchor listing-title">
-Using nbdev on Windows
+<a href="./posts/20221007-nbdev-windows/index.html" class="no-external">Using nbdev on Windows</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/20221007-nbdev-windows/index.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('Python'); return false;">
 Python
@@ -851,14 +818,12 @@ Notebook
 IDE
 </div>
 </div>
-<p><a href="./posts/20221007-nbdev-windows/index.html"></a></p><a href="./posts/20221007-nbdev-windows/index.html">
 <div class="listing-description">
-<p>Testing setting up and using nbdev on Windows</p>
+<a href="./posts/20221007-nbdev-windows/index.html" class="no-external">Testing setting up and using nbdev on Windows</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/20221007-nbdev-windows/index.html">
+<a href="./posts/20221007-nbdev-windows/index.html" class="no-external">
 <div class="listing-date">
 Oct 7, 2022
 </div>
@@ -870,19 +835,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="16" data-categories="C++,WASM,WebAssembly,emscripten,WASI" data-listing-date-sort="1662818400000" data-listing-file-modified-sort="1665120432512" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="863">
 <div class="thumbnail">
-<p><a href="./posts/2022-09-11-cpp-code-wasm.html"></a></p><a href="./posts/2022-09-11-cpp-code-wasm.html">
+<p><a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external"></a></p><a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/2022-09-11-cpp-code-wasm.html"></a></p>
+</a><p><a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-09-11-cpp-code-wasm.html"></a></p><a href="./posts/2022-09-11-cpp-code-wasm.html">
 <h3 class="no-anchor listing-title">
-Compiling C++ libraries to WebAssembly - Part 1
+<a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external">Compiling C++ libraries to WebAssembly - Part 1</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('C++'); return false;">
 C++
@@ -900,18 +863,16 @@ emscripten
 WASI
 </div>
 </div>
-<p><a href="./posts/2022-09-11-cpp-code-wasm.html"></a></p><a href="./posts/2022-09-11-cpp-code-wasm.html">
 <div class="listing-description">
-<p>First attempt at compiling a streamflow forecasting software stack to WebAssembly</p>
+<a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external">First attempt at compiling a streamflow forecasting software stack to WebAssembly</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-09-11-cpp-code-wasm.html">
+<a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external">
 <div class="listing-date">
 Sep 11, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-09-11-cpp-code-wasm.html">
+</a><div class="listing-author"><a href="./posts/2022-09-11-cpp-code-wasm.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -919,19 +880,17 @@ Sep 11, 2022
 </div>
 <div class="quarto-post image-right" data-index="17" data-categories="code generation,interop,C++,Python" data-listing-date-sort="1662127200000" data-listing-file-modified-sort="1668151888451" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1684">
 <div class="thumbnail">
-<p><a href="./posts/2022-09-03-c-api-wrapper-generation.html"></a></p><a href="./posts/2022-09-03-c-api-wrapper-generation.html">
+<p><a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external"></a></p><a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external">
 <p class="card-img-top"><img src="posts/images/c-api-gen/codegen-wrappers.svg" title="Glue code generation" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-09-03-c-api-wrapper-generation.html"></a></p>
+</a><p><a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-09-03-c-api-wrapper-generation.html"></a></p><a href="./posts/2022-09-03-c-api-wrapper-generation.html">
 <h3 class="no-anchor listing-title">
-Generate programming language bindings to a C API
+<a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external">Generate programming language bindings to a C API</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('code generation'); return false;">
 code generation
@@ -946,18 +905,16 @@ C++
 Python
 </div>
 </div>
-<p><a href="./posts/2022-09-03-c-api-wrapper-generation.html"></a></p><a href="./posts/2022-09-03-c-api-wrapper-generation.html">
 <div class="listing-description">
-<p>Generate language binging for Python, R and other wrappers on top of a C API</p>
+<a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external">Generate language binging for Python, R and other wrappers on top of a C API</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-09-03-c-api-wrapper-generation.html">
+<a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external">
 <div class="listing-date">
 Sep 3, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-09-03-c-api-wrapper-generation.html">
+</a><div class="listing-author"><a href="./posts/2022-09-03-c-api-wrapper-generation.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -965,19 +922,17 @@ Sep 3, 2022
 </div>
 <div class="quarto-post image-right" data-index="18" data-categories="documentation,C++,Python,MkDocs" data-listing-date-sort="1661090400000" data-listing-file-modified-sort="1665120432580" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="951">
 <div class="thumbnail">
-<p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html"></a></p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html">
-<p class="card-img-top"><img src="posts/images/doxybook2/uchronia-c-api-doxybook2.png" title="uchronia-c-api-doxybook2.png" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html"></a></p>
+<p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external"></a></p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external">
+<p class="card-img-top"><img src="posts/images/doxybook2/uchronia-c-api-doxybook2.png" alt="“uchronia-c-api-doxybook2.png”" title="uchronia-c-api-doxybook2.png" class="thumbnail-image card-img"/></p>
+</a><p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html"></a></p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html">
 <h3 class="no-anchor listing-title">
-Presenting doxygen C++ API documentation via MkDocs with doxybook2
+<a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external">Presenting doxygen C++ API documentation via MkDocs with doxybook2</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('documentation'); return false;">
 documentation
@@ -992,18 +947,16 @@ Python
 MkDocs
 </div>
 </div>
-<p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html"></a></p><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html">
 <div class="listing-description">
-<p>Convert doxygen C++ API documentation to Markdown with doxybook2, to generate a gorgeous site with MkDocs</p>
+<a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external">Convert doxygen C++ API documentation to Markdown with doxybook2, to generate a gorgeous site with MkDocs</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html">
+<a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external">
 <div class="listing-date">
 Aug 22, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html">
+</a><div class="listing-author"><a href="./posts/2022-08-22-doxygen-doxybook-mkdocs.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -1011,19 +964,17 @@ Aug 22, 2022
 </div>
 <div class="quarto-post image-right" data-index="19" data-categories="C++,Python,performance,runtime" data-listing-date-sort="1659967200000" data-listing-file-modified-sort="1680310755407" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1043">
 <div class="thumbnail">
-<p><a href="./posts/2022-08-09-python-profiling-interop.html"></a></p><a href="./posts/2022-08-09-python-profiling-interop.html">
+<p><a href="./posts/2022-08-09-python-profiling-interop.html" class="no-external"></a></p><a href="./posts/2022-08-09-python-profiling-interop.html" class="no-external">
 <p class="card-img-top"><img src="posts/images/cProfile_20220809.png" title="Profiling python code with cProfile" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-08-09-python-profiling-interop.html"></a></p>
+</a><p><a href="./posts/2022-08-09-python-profiling-interop.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-08-09-python-profiling-interop.html"></a></p><a href="./posts/2022-08-09-python-profiling-interop.html">
 <h3 class="no-anchor listing-title">
-Runtime profiling of python bindings for a C/C++ library
+<a href="./posts/2022-08-09-python-profiling-interop.html" class="no-external">Runtime profiling of python bindings for a C/C++ library</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-08-09-python-profiling-interop.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('C++'); return false;">
 C++
@@ -1038,14 +989,12 @@ performance
 runtime
 </div>
 </div>
-<p><a href="./posts/2022-08-09-python-profiling-interop.html"></a></p><a href="./posts/2022-08-09-python-profiling-interop.html">
 <div class="listing-description">
-<p>Finding a runtime hotspot in a software stack with Python and, potentially, c++</p>
+<a href="./posts/2022-08-09-python-profiling-interop.html" class="no-external">Finding a runtime hotspot in a software stack with Python and, potentially, c++</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-08-09-python-profiling-interop.html">
+<a href="./posts/2022-08-09-python-profiling-interop.html" class="no-external">
 <div class="listing-date">
 Aug 9, 2022
 </div>
@@ -1057,19 +1006,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="20" data-categories="recipes,VCPP,C++,Debian,Windows,Python packaging,R packaging" data-listing-date-sort="1659189600000" data-listing-file-modified-sort="1680310755395" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1934">
 <div class="thumbnail">
-<p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html"></a></p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html">
+<p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external"></a></p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external">
 <p class="card-img-top"><img src="posts/images/azure/pipeline_hydrofc.png" title="Azure pipeline run" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html"></a></p>
+</a><p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html"></a></p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html">
 <h3 class="no-anchor listing-title">
-Azure devops CI pipeline for hydrologic forecasting software
+<a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external">Azure devops CI pipeline for hydrologic forecasting software</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('recipes'); return false;">
 recipes
@@ -1093,18 +1040,16 @@ Python packaging
 R packaging
 </div>
 </div>
-<p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html"></a></p><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html">
 <div class="listing-description">
-<p>Azure devops pipeline for a software stack with c++, Python and R packages across multiple repositories.</p>
+<a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external">Azure devops pipeline for a software stack with c++, Python and R packages across multiple repositories.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html">
+<a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external">
 <div class="listing-date">
 Jul 31, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html">
+</a><div class="listing-author"><a href="./posts/2022-07-31-azure-pipeline-vcpp-stack.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -1112,19 +1057,17 @@ Jul 31, 2022
 </div>
 <div class="quarto-post image-right" data-index="21" data-categories="Azure,devops,Microsoft" data-listing-date-sort="1658844000000" data-listing-file-modified-sort="1665120432580" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1006">
 <div class="thumbnail">
-<p><a href="./posts/2022-07-27-azure-devops-negative-experience.html"></a></p><a href="./posts/2022-07-27-azure-devops-negative-experience.html">
+<p><a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external"></a></p><a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external">
 <p class="card-img-top"><img src="posts/images/az-publish-artifacts/artifacts-section.png" title="artifacts-section" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-07-27-azure-devops-negative-experience.html"></a></p>
+</a><p><a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-07-27-azure-devops-negative-experience.html"></a></p><a href="./posts/2022-07-27-azure-devops-negative-experience.html">
 <h3 class="no-anchor listing-title">
-A whinge about Azure Devops
+<a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external">A whinge about Azure Devops</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('Azure'); return false;">
 Azure
@@ -1136,18 +1079,16 @@ devops
 Microsoft
 </div>
 </div>
-<p><a href="./posts/2022-07-27-azure-devops-negative-experience.html"></a></p><a href="./posts/2022-07-27-azure-devops-negative-experience.html">
 <div class="listing-description">
-<p>A bumpy ride trying to do a relatively simple thing, publish packages from a build pipeline.</p>
+<a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external">A bumpy ride trying to do a relatively simple thing, publish packages from a build pipeline.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-07-27-azure-devops-negative-experience.html">
+<a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external">
 <div class="listing-date">
 Jul 27, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-07-27-azure-devops-negative-experience.html">
+</a><div class="listing-author"><a href="./posts/2022-07-27-azure-devops-negative-experience.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -1155,19 +1096,17 @@ Jul 27, 2022
 </div>
 <div class="quarto-post image-right" data-index="22" data-categories="hugging-face,NLP,lithology" data-listing-date-sort="1656770400000" data-listing-file-modified-sort="1668151888459" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="715">
 <div class="thumbnail">
-<p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html"></a></p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html">
+<p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html" class="no-external"></a></p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html" class="no-external">
 <p class="card-img-top"><img src="posts/2022-07-03-lithology-classification-hugging-face-3_files/figure-html/cell-35-output-2.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html"></a></p>
+</a><p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html"></a></p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html">
 <h3 class="no-anchor listing-title">
-Lithology classification using Hugging Face, part 3
+<a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html" class="no-external">Lithology classification using Hugging Face, part 3</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('hugging-face'); return false;">
 hugging-face
@@ -1179,14 +1118,12 @@ NLP
 lithology
 </div>
 </div>
-<p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html"></a></p><a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html">
 <div class="listing-description">
-<p>First working lithology classification training on the Namoi data</p>
+<a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html" class="no-external">First working lithology classification training on the Namoi data</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html">
+<a href="./posts/2022-07-03-lithology-classification-hugging-face-3.html" class="no-external">
 <div class="listing-date">
 Jul 3, 2022
 </div>
@@ -1198,19 +1135,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="23" data-categories="recipes,VCPP,C++" data-listing-date-sort="1656165600000" data-listing-file-modified-sort="1665120468448" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1497">
 <div class="thumbnail">
-<p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html"></a></p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html">
+<p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external"></a></p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external">
 <p class="card-img-top"><img src="posts/images/swift-library-dependencies-win.png" title="swift-library-dependencies-windows" class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html"></a></p>
+</a><p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html"></a></p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html">
 <h3 class="no-anchor listing-title">
-Upgrading a C++ streamflow compilation toolchain
+<a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external">Upgrading a C++ streamflow compilation toolchain</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('recipes'); return false;">
 recipes
@@ -1222,18 +1157,16 @@ VCPP
 C++
 </div>
 </div>
-<p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html"></a></p><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html">
 <div class="listing-description">
-<p>Moving a legacy Visual C++ 13 toolchain to Build Tools 2017</p>
+<a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external">Moving a legacy Visual C++ 13 toolchain to Build Tools 2017</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-06-26-vcpp-compilation-upgrade.html">
+<a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external">
 <div class="listing-date">
 Jun 26, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html">
+</a><div class="listing-author"><a href="./posts/2022-06-26-vcpp-compilation-upgrade.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -1241,19 +1174,17 @@ Jun 26, 2022
 </div>
 <div class="quarto-post image-right" data-index="24" data-categories="conda,conda-channel" data-listing-date-sort="1655474400000" data-listing-file-modified-sort="1665120432580" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="441">
 <div class="thumbnail">
-<p><a href="./posts/2022-06-18-conda-channels-prep-work.html"></a></p><a href="./posts/2022-06-18-conda-channels-prep-work.html">
+<p><a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external"></a></p><a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external">
 <p><img src="https://docs.conda.io/en/latest/_images/conda_logo.svg" class="thumbnail-image"></p>
-</a><p><a href="./posts/2022-06-18-conda-channels-prep-work.html"></a></p>
+</a><p><a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-06-18-conda-channels-prep-work.html"></a></p><a href="./posts/2022-06-18-conda-channels-prep-work.html">
 <h3 class="no-anchor listing-title">
-Setting up a private conda channel - part 1
+<a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external">Setting up a private conda channel - part 1</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('conda'); return false;">
 conda
@@ -1262,18 +1193,16 @@ conda
 conda-channel
 </div>
 </div>
-<p><a href="./posts/2022-06-18-conda-channels-prep-work.html"></a></p><a href="./posts/2022-06-18-conda-channels-prep-work.html">
 <div class="listing-description">
-<p>Research paths to set up an enterprise-wide private conda channel</p>
+<a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external">Research paths to set up an enterprise-wide private conda channel</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-06-18-conda-channels-prep-work.html">
+<a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external">
 <div class="listing-date">
 Jun 18, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-06-18-conda-channels-prep-work.html">
+</a><div class="listing-author"><a href="./posts/2022-06-18-conda-channels-prep-work.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -1281,19 +1210,17 @@ Jun 18, 2022
 </div>
 <div class="quarto-post image-right" data-index="25" data-categories="hugging-face,NLP,lithology" data-listing-date-sort="1655042400000" data-listing-file-modified-sort="1668151888459" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1362">
 <div class="thumbnail">
-<p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html"></a></p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html">
-<p class="card-img-top"><img data-src="posts/2022-06-13-lithology-classification-hugging-face-2_files/figure-html/cell-3-output-2.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html"></a></p>
+<p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html" class="no-external"></a></p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html" class="no-external">
+<p class="card-img-top"><img data-src="posts/2022-06-13-lithology-classification-hugging-face-2_files/figure-html/cell-3-output-1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html"></a></p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html">
 <h3 class="no-anchor listing-title">
-Lithology classification using Hugging Face, part 2
+<a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html" class="no-external">Lithology classification using Hugging Face, part 2</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('hugging-face'); return false;">
 hugging-face
@@ -1305,14 +1232,12 @@ NLP
 lithology
 </div>
 </div>
-<p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html"></a></p><a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html">
 <div class="listing-description">
-<p>Exploring the use of NLP to exploit geologic information. Trying to classify lithologies.</p>
+<a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html" class="no-external">Exploring the use of NLP to exploit geologic information. Trying to classify lithologies.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html">
+<a href="./posts/2022-06-13-lithology-classification-hugging-face-2.html" class="no-external">
 <div class="listing-date">
 Jun 13, 2022
 </div>
@@ -1324,19 +1249,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="26" data-categories="recipes,conda,conda-forge,C++" data-listing-date-sort="1654783200000" data-listing-file-modified-sort="1665120432584" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1813">
 <div class="thumbnail">
-<p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html"></a></p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html">
+<p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external"></a></p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external">
 <p><img data-src="https://docs.conda.io/en/latest/_images/conda_logo.svg" class="thumbnail-image"></p>
-</a><p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html"></a></p>
+</a><p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html"></a></p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html">
 <h3 class="no-anchor listing-title">
-Conda package for compiled native libraries
+<a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external">Conda package for compiled native libraries</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('recipes'); return false;">
 recipes
@@ -1351,18 +1274,16 @@ conda-forge
 C++
 </div>
 </div>
-<p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html"></a></p><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html">
 <div class="listing-description">
-<p>Journey in building a conda package for C++ libraries</p>
+<a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external">Journey in building a conda package for C++ libraries</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-06-10-conda-packages-conda-forge-2.html">
+<a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external">
 <div class="listing-date">
 Jun 10, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html">
+</a><div class="listing-author"><a href="./posts/2022-06-10-conda-packages-conda-forge-2.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -1370,19 +1291,17 @@ Jun 10, 2022
 </div>
 <div class="quarto-post image-right" data-index="27" data-categories="recipes,conda,conda-forge" data-listing-date-sort="1654264800000" data-listing-file-modified-sort="1668151888451" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1838">
 <div class="thumbnail">
-<p><a href="./posts/2022-06-04-conda-packages-conda-forge.html"></a></p><a href="./posts/2022-06-04-conda-packages-conda-forge.html">
+<p><a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external"></a></p><a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external">
 <p><img data-src="https://docs.conda.io/en/latest/_images/conda_logo.svg" class="thumbnail-image"></p>
-</a><p><a href="./posts/2022-06-04-conda-packages-conda-forge.html"></a></p>
+</a><p><a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-06-04-conda-packages-conda-forge.html"></a></p><a href="./posts/2022-06-04-conda-packages-conda-forge.html">
 <h3 class="no-anchor listing-title">
-Submitting your first conda package to conda-forge
+<a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external">Submitting your first conda package to conda-forge</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('recipes'); return false;">
 recipes
@@ -1394,18 +1313,16 @@ conda
 conda-forge
 </div>
 </div>
-<p><a href="./posts/2022-06-04-conda-packages-conda-forge.html"></a></p><a href="./posts/2022-06-04-conda-packages-conda-forge.html">
 <div class="listing-description">
-<p>Journey in building my first conda package and ending up submitting to conda-forge</p>
+<a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external">Journey in building my first conda package and ending up submitting to conda-forge</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-06-04-conda-packages-conda-forge.html">
+<a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external">
 <div class="listing-date">
 Jun 4, 2022
 </div>
-</a><div class="listing-author"><a href="./posts/2022-06-04-conda-packages-conda-forge.html">
+</a><div class="listing-author"><a href="./posts/2022-06-04-conda-packages-conda-forge.html" class="no-external">
 </a><a href="https://github.com/jmp75">J-M</a>
 </div>
 
@@ -1413,19 +1330,17 @@ Jun 4, 2022
 </div>
 <div class="quarto-post image-right" data-index="28" data-categories="hugging-face,NLP,lithology" data-listing-date-sort="1654005600000" data-listing-file-modified-sort="1665120432584" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1024">
 <div class="thumbnail">
-<p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html"></a></p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html">
+<p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html" class="no-external"></a></p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html" class="no-external">
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html"></a></p>
+</a><p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html"></a></p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html">
 <h3 class="no-anchor listing-title">
-Lithology classification using Hugging Face, part 1
+<a href="./posts/2022-06-01-lithology-classification-hugging-face.html" class="no-external">Lithology classification using Hugging Face, part 1</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-06-01-lithology-classification-hugging-face.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('hugging-face'); return false;">
 hugging-face
@@ -1437,14 +1352,12 @@ NLP
 lithology
 </div>
 </div>
-<p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html"></a></p><a href="./posts/2022-06-01-lithology-classification-hugging-face.html">
 <div class="listing-description">
-<p>Exploring the use of NLP to exploit geologic information. Get to know your data.</p>
+<a href="./posts/2022-06-01-lithology-classification-hugging-face.html" class="no-external">Exploring the use of NLP to exploit geologic information. Get to know your data.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-06-01-lithology-classification-hugging-face.html">
+<a href="./posts/2022-06-01-lithology-classification-hugging-face.html" class="no-external">
 <div class="listing-date">
 Jun 1, 2022
 </div>
@@ -1456,19 +1369,17 @@ J-M
 </div>
 <div class="quarto-post image-right" data-index="29" data-categories="jupyter,hydstra" data-listing-date-sort="1653660000000" data-listing-file-modified-sort="1665120432584" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="375">
 <div class="thumbnail">
-<p><a href="./posts/2022-05-28-hydstra-rest-data.html"></a></p><a href="./posts/2022-05-28-hydstra-rest-data.html">
-<p class="card-img-top"><img data-src="posts/2022-05-28-hydstra-rest-data_files/figure-html/cell-15-output-2.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/2022-05-28-hydstra-rest-data.html"></a></p>
+<p><a href="./posts/2022-05-28-hydstra-rest-data.html" class="no-external"></a></p><a href="./posts/2022-05-28-hydstra-rest-data.html" class="no-external">
+<p class="card-img-top"><img data-src="posts/2022-05-28-hydstra-rest-data_files/figure-html/cell-15-output-1.png"  class="thumbnail-image card-img"/></p>
+</a><p><a href="./posts/2022-05-28-hydstra-rest-data.html" class="no-external"></a></p>
 </div>
 <div class="body">
-<p><a href="./posts/2022-05-28-hydstra-rest-data.html"></a></p><a href="./posts/2022-05-28-hydstra-rest-data.html">
 <h3 class="no-anchor listing-title">
-Victorian Water Measurement Information System
+<a href="./posts/2022-05-28-hydstra-rest-data.html" class="no-external">Victorian Water Measurement Information System</a>
 </h3>
 <div class="listing-subtitle">
-
+<a href="./posts/2022-05-28-hydstra-rest-data.html" class="no-external"></a>
 </div>
-</a>
 <div class="listing-categories">
 <div class="listing-category" onclick="window.quartoListingCategory('jupyter'); return false;">
 jupyter
@@ -1477,14 +1388,12 @@ jupyter
 hydstra
 </div>
 </div>
-<p><a href="./posts/2022-05-28-hydstra-rest-data.html"></a></p><a href="./posts/2022-05-28-hydstra-rest-data.html">
 <div class="listing-description">
-<p>Trying to simply get access via REST to data in https://data.water.vic.gov.au.</p>
+<a href="./posts/2022-05-28-hydstra-rest-data.html" class="no-external">Trying to simply get access via REST to data in https://data.water.vic.gov.au.</a>
 </div>
-</a>
 </div>
 <div class="metadata">
-<a href="./posts/2022-05-28-hydstra-rest-data.html">
+<a href="./posts/2022-05-28-hydstra-rest-data.html" class="no-external">
 <div class="listing-date">
 May 28, 2022
 </div>
@@ -1725,6 +1634,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/jmp75\.github\.io\/work-blog\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -1759,7 +1686,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -1774,15 +1705,28 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    if (id.startsWith('sec-')) {
+    if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
       if (note.children && note.children.length > 2) {
-        for (let i = 0; i < 2; i++) {
-          container.appendChild(note.children[i].cloneNode(true));
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
         }
         return container.innerHTML
       } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -1791,7 +1735,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      return note.innerHTML;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
@@ -1833,6 +1785,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
       }
     }, function(instance) {
     });
@@ -1908,7 +1883,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     window.addEventListener(
       "resize",
       throttle(() => {
-        console.log("RESIZE");
         elRect = undefined;
         if (selectedAnnoteEl) {
           selectCodeLines(selectedAnnoteEl);
