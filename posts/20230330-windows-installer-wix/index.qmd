@@ -31,7 +31,7 @@ So, if you have a `<Directory Id="InstallFolder" Name="SF">` in your packaging f
 
 ## Code signing
 
-At this point, see repo [at commit 2de226658cca40db801b4e2c115721df0d2aa3ff](https://github.com/csiro-hydroinformatics/sf-installer/tree/2de226658cca40db801b4e2c115721df0d2aa3ff)
+At this point, see repo [at commit 2de226658cca40db801b4e2c115721df0d2aa3ff](https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/2de226658cca40db801b4e2c115721df0d2aa3ff)
 
 I thought I had documented code signing, but apparently not. It was straightforward to adapt [from the documentation](https://wixtoolset.org/docs/tools/signing/). Adding to the `.wixproj` file: 
 
@@ -133,6 +133,6 @@ I am not sure what this does or can do yet though.
 
 # Conclusion
 
-At this point, see repo [at commit 338ea7f15502ba12223b438e19eee43ba74d9f14](https://github.com/csiro-hydroinformatics/sf-installer/tree/338ea7f15502ba12223b438e19eee43ba74d9f14)
+At this point, see repo [at commit 338ea7f15502ba12223b438e19eee43ba74d9f14](https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/338ea7f15502ba12223b438e19eee43ba74d9f14)
 
 Got to go to Kizomba class now. To be continued...

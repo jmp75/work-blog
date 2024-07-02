@@ -72,9 +72,9 @@ Fair enough. But what is the 64 bits equivalent?
 
 OK, it builds. 
 
-It is probably time to set up a dedicated git repository. [sf-installer](https://github.com/csiro-hydroinformatics/sf-installer)
+It is probably time to set up a dedicated git repository. [sf-installer-draft](https://github.com/csiro-hydroinformatics/sf-installer-draft)
 
-At this point, repo [at commit fda17e609e784791935b45f96e0c79a6dd2cc307](https://github.com/csiro-hydroinformatics/sf-installer/tree/fda17e609e784791935b45f96e0c79a6dd2cc307)
+At this point, repo [at commit fda17e609e784791935b45f96e0c79a6dd2cc307](https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/fda17e609e784791935b45f96e0c79a6dd2cc307)
 
 ## Setting an environment variable
 
@@ -110,7 +110,7 @@ So, trying
 
 And after installation in the sandbox, the new environment variable appears fine in a new CMD prompt: `echo %LIBRARY_PATH%` returns `C:\Program Files\SF\libs\`.
 
-At this point, repo [at commit 4d8d1d7c8b50221c7f63af3aa96115c438cb5055](https://github.com/csiro-hydroinformatics/sf-installer/tree/4d8d1d7c8b50221c7f63af3aa96115c438cb5055)
+At this point, repo [at commit 4d8d1d7c8b50221c7f63af3aa96115c438cb5055](https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/4d8d1d7c8b50221c7f63af3aa96115c438cb5055)
 
 
 ## Adding another Component: python wheels
@@ -149,7 +149,7 @@ And for our set of features, "All"
     </Feature>
 ```
 
-At this point, repo [at commit 012521407cc63e1233ff40a784d17b5f43dc6caf](https://github.com/csiro-hydroinformatics/sf-installer/tree/012521407cc63e1233ff40a784d17b5f43dc6caf)
+At this point, repo [at commit 012521407cc63e1233ff40a784d17b5f43dc6caf](https://github.com/csiro-hydroinformatics/sf-installer-draft/tree/012521407cc63e1233ff40a784d17b5f43dc6caf)
 
 ## Managing source files 
 
