@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.553">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2024-07-13">
+<meta name="description" content="Deriving semi-distributed catchment delineation from elevation data">
+
+<title>J-M’s ‘lab notebook’ - Toolkit for semi-distributed catchment delineation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Toolkit for semi-distributed catchment delineation</h1>
+                  <div>
+        <div class="description">
+          Deriving semi-distributed catchment delineation from elevation data
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">spatial</div>
+                <div class="quarto-category">semi-distributed</div>
+                <div class="quarto-category">web app</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="true">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">July 13, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#use-cases" id="toc-use-cases" class="nav-link" data-scroll-target="#use-cases">Use cases</a>
+  <ul class="collapse">
+  <li><a href="#anticipated-tools" id="toc-anticipated-tools" class="nav-link" data-scroll-target="#anticipated-tools">Anticipated tools</a></li>
+  </ul></li>
+  <li><a href="#related-work" id="toc-related-work" class="nav-link" data-scroll-target="#related-work">Related work</a>
+  <ul class="collapse">
+  <li><a href="#ewater-source" id="toc-ewater-source" class="nav-link" data-scroll-target="#ewater-source">eWater Source</a></li>
+  <li><a href="#basin-futures" id="toc-basin-futures" class="nav-link" data-scroll-target="#basin-futures">Basin futures</a></li>
+  <li><a href="#awra-community-modelling-system" id="toc-awra-community-modelling-system" class="nav-link" data-scroll-target="#awra-community-modelling-system">AWRA Community Modelling System</a></li>
+  <li><a href="#milos-makes-maps" id="toc-milos-makes-maps" class="nav-link" data-scroll-target="#milos-makes-maps">Milos Makes Maps</a></li>
+  <li><a href="#global-watersheds" id="toc-global-watersheds" class="nav-link" data-scroll-target="#global-watersheds">Global Watersheds</a></li>
+  <li><a href="#pysheds" id="toc-pysheds" class="nav-link" data-scroll-target="#pysheds">pysheds</a></li>
+  <li><a href="#pcraster" id="toc-pcraster" class="nav-link" data-scroll-target="#pcraster">PCRaster</a></li>
+  <li><a href="#wflow" id="toc-wflow" class="nav-link" data-scroll-target="#wflow">wflow</a></li>
+  <li><a href="#hatariuti" id="toc-hatariuti" class="nav-link" data-scroll-target="#hatariuti">hatariUti</a></li>
+  </ul></li>
+  <li><a href="#time-series-observations" id="toc-time-series-observations" class="nav-link" data-scroll-target="#time-series-observations">Time series observations</a>
+  <ul class="collapse">
+  <li><a href="#climate-inputs" id="toc-climate-inputs" class="nav-link" data-scroll-target="#climate-inputs">Climate inputs</a></li>
+  <li><a href="#instream-observations" id="toc-instream-observations" class="nav-link" data-scroll-target="#instream-observations">Instream observations</a>
+  <ul class="collapse">
+  <li><a href="#water-data-online" id="toc-water-data-online" class="nav-link" data-scroll-target="#water-data-online">Water Data Online</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>I (we) will probably be working on a new streamflow forcasting system in Australia. In a conversation the project leader mentioned the upcoming song and dance to define a set of semi-distributed model structures (subareas, nodes, links) for several catchments.</p>
+<p>Aside from the perhaps unavoidable arguments about which DEM and river network to use, it was noted that there was no known <em>readily</em> available service within our organisation to quickly produce such catchment definitions, even if only for perliminary work. It sure is a feasible feature, and has been done many times in relative isolation by teams or individuals in more or less idiosyncratic manners. But so far as we know adapting these for our need would require, at best, a fair bit of adaptation.</p>
+<p>Rather than yet implementing something within, and solely for, the project, can we implement something aiming to be more versatile, within and beyond the upcoming project?</p>
+</section>
+<section id="use-cases" class="level1">
+<h1>Use cases</h1>
+<ul>
+<li>Set up a sensible daily semi-distributed streamflow model for the Goodradigbee river (NSW) upstream of Burrinjuck Dam, in ten minutes flat and from scratch</li>
+<li>Batch delineatin for at least 222 unregulated catchments of interest over Australia</li>
+<li>Delineate one catchment, and create a concrete model definition (<a href="https://csiro-hydroinformatics.github.io/streamflow-forecasting-tools-onboard/">SWIFT</a>) that is ready to run populated with e.g.&nbsp;some <a href="https://www.longpaddock.qld.gov.au/silo/">SILO</a> derived climate input data.</li>
+</ul>
+<section id="anticipated-tools" class="level2">
+<h2 class="anchored" data-anchor-id="anticipated-tools">Anticipated tools</h2>
+<p>Without unduly assuming solution implementation details, it is fair to expect:</p>
+<ul>
+<li>A web dashboard to visually define a catchment of interest.
+<ul>
+<li>load and/or click to define outlets and points of particular interest to split subcatchments.</li>
+<li>Probably hosted at <a href="https://shiny.csiro.au/">shiny.csiro.au</a> or its intranet twin.</li>
+</ul></li>
+<li>A python (<em>a priori</em>) package for programmatic access to features.</li>
+</ul>
+</section>
+</section>
+<section id="related-work" class="level1">
+<h1>Related work</h1>
+<p>Scouting for known or found work that may relate to the use cases. This is not exhaustive.</p>
+<section id="ewater-source" class="level2">
+<h2 class="anchored" data-anchor-id="ewater-source">eWater Source</h2>
+<p>This product, functionally, may be the best suited to the needs elicited above, functionally: DEM derived river network, additional points to snap to the river for subcatchment definition, etc. It is implemented in .NET. This is not open source though. Although not a disqualifying aspect, it is not conducive to reusing with assurance our freedom to operate.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://ewater.org.au/wp-content/uploads/2021/07/image-2.png" class="img-fluid figure-img"></p>
+<figcaption>Stung Staung River Source Model; picture from <a href="https://ewater.org.au">https://ewater.org.au</a></figcaption>
+</figure>
+</div>
+</section>
+<section id="basin-futures" class="level2">
+<h2 class="anchored" data-anchor-id="basin-futures">Basin futures</h2>
+<p><a href="https://basinpedia.basinfutures.com/">Basin Futures</a> includes a facility to define semi-distributed rainfall runoff models using <a href="https://www.hydrosheds.org/">HydroSHEDS</a> data.</p>
+<p>The catchment delineation is done under the hood using <a href="https://github.com/dtarb/TauDEM">TauDEM</a>, which has python bindings but may require handling some temporary files (command line, C++ engine).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./basinpedia-goodra.png" class="img-fluid figure-img"></p>
+<figcaption>Basinpedia Goodradigbee catchment</figcaption>
+</figure>
+</div>
+<p>Aside from the immediate “subcatchment delineation” interest of ours, take the time to have a look at <a href="https://basinpedia.basinfutures.com/#/basinpedia">“Basinpedia”</a> which is a great example using publicly availalable global data sets.</p>
+</section>
+<section id="awra-community-modelling-system" class="level2">
+<h2 class="anchored" data-anchor-id="awra-community-modelling-system">AWRA Community Modelling System</h2>
+<p>I understand, second hand, that the <a href="https://github.com/awracms/awra_cms">Australian Water Resources Assessment (AWRA) Community Modelling System</a> includes facilities to define catchments, or to perform weighted input time series averaging. I’ve previously tried to explore, but <a href="https://github.com/awracms/awra_cms/issues/2">could not recreate the conda environment</a>.</p>
+</section>
+<section id="milos-makes-maps" class="level2">
+<h2 class="anchored" data-anchor-id="milos-makes-maps">Milos Makes Maps</h2>
+<p><a href="https://milospopovic.net">Milos Popovic</a> makes and shares gorgeous maps, using R. While I am not yet aware of sub-catchment delineation facilities off the shelf, check out the didactic youtube video <a href="https://t.co/mrywjX0CFI">Visualize Like a Pro: 3D Elevation and River Maps Made Simple</a>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./milos-maps-rivers-france.jpeg" class="img-fluid figure-img" style="width:50.0%"></p>
+<figcaption>Topography and rivers - France</figcaption>
+</figure>
+</div>
+</section>
+<section id="global-watersheds" class="level2">
+<h2 class="anchored" data-anchor-id="global-watersheds">Global Watersheds</h2>
+<p><a href="https://mghydro.com/watersheds/">Global watersheds</a>, Cool online tool, but does catchments not subcatchments. Powered by a <a href="https://github.com/mheberger/delineator">python codebase <code>delineator</code></a></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./global-watersheds.png" class="img-fluid figure-img"></p>
+<figcaption>Global watersheds</figcaption>
+</figure>
+</div>
+</section>
+<section id="pysheds" class="level2">
+<h2 class="anchored" data-anchor-id="pysheds">pysheds</h2>
+<p><a href="https://mattbartos.com/pysheds/">pysheds</a> python package. It is unclear whether it can do subcatchments.</p>
+</section>
+<section id="pcraster" class="level2">
+<h2 class="anchored" data-anchor-id="pcraster">PCRaster</h2>
+<p><a href="https://www.youtube.com/watch?v=vrS7x4jPeiw">Automatic delineation of subcatchments from a DEM using PCRaster Python</a> and <a href="https://www.youtube.com/watch?v=5uGaLIlaFh8">Derive all subcatchments from a DEM using PCRaster in QGIS</a></p>
+</section>
+<section id="wflow" class="level2">
+<h2 class="anchored" data-anchor-id="wflow">wflow</h2>
+<p><a href="https://github.com/openstreams/wflow/tree/master">wflow</a>, which is now deprecated and now ported to Julia.</p>
+</section>
+<section id="hatariuti" class="level2">
+<h2 class="anchored" data-anchor-id="hatariuti">hatariUti</h2>
+<p>Out of interest, a tool where you have to bring your own data. Demo mode available, but subscription to scale up.</p>
+<p><a href="https://www.youtube.com/watch?v=s8hhiJnyCqg&amp;feature=emb_imp_woyt">Video</a></p>
+</section>
+</section>
+<section id="time-series-observations" class="level1">
+<h1>Time series observations</h1>
+<p>The catchment/subcatchment delineation is purely a spatial exercise. It has some outputs that should stand on their own (vector and raster data).</p>
+<p>A complementary service is to derive from these spatial data a model structure (e.g.&nbsp;rainfall-runoff models, and river reaches with streamflow routing), and the final step is to attribute input time series to these runoff/streamflow models. Some of the third party work listed above (Basin Futures and eWater Source) have this capability.</p>
+<p>It is a pet peeve of mine (and colleagues) that foundational time series data in hydrology remains deceptively difficult to ingest and exploit (in Australia at least). There is a <strong>lot</strong> of residual impedance (technological and organisational) between point of truth data and a hydrologist’s notebook. I am <em>sure</em> I have gaps of know how, part of the problem, but FWIW I am not the only one feeling this way.</p>
+<p>Below is a short list of observations/input data resources that may be relevant to our catchment model builder services.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><em>CSIRO may have some internal time series data resources under licences; I will not mention nor list these in this post.</em></p>
+</div>
+</div>
+<section id="climate-inputs" class="level2">
+<h2 class="anchored" data-anchor-id="climate-inputs">Climate inputs</h2>
+<p>Notwithstanding the additional resources “we” may have access to under license, the following resources (prob. not exhaustive) are publicly available.</p>
+<ul>
+<li><a href="https://www.longpaddock.qld.gov.au/silo/">SILO</a>, gridded product or points stations.</li>
+<li><a href="http://www.bom.gov.au/metadata/catalogue/19115/ANZCW0503900567">AGDC</a>
+<ul>
+<li>Note the disappointing “DownloadableData : Openly accessible thredds INDEX webpage for data (opendap, etc) (not yet available)”</li>
+</ul></li>
+<li><a href="http://www.bom.gov.au/climate/data/">the Bureau of Meteorology Climate Data Online</a>. Note that behind the scene there may be a temporal resolution down to 30 or even 10 minutes observations (rain gauges), but these are not readily available publicly.</li>
+</ul>
+</section>
+<section id="instream-observations" class="level2">
+<h2 class="anchored" data-anchor-id="instream-observations">Instream observations</h2>
+<p>While not a typical time series input to many models, they are key to being able to calibrate models.</p>
+<ul>
+<li>Streamflow observations
+<ul>
+<li>daily
+<ul>
+<li><a href="http://www.bom.gov.au/waterdata/">Water Data Online</a>. A python package <a href="https://github.com/csiro-hydroinformatics/pybomwater">pybomwater</a> is designed for programmatic access. Note that the Bureau service it taps into is throttled, as I write, so beware not to fetch large quantities of observation sites.</li>
+<li>global datasets
+<ul>
+<li><a href="https://grdc.bafg.de/GRDC/EN/Home/homepage_node.html">GRDC</a>.</li>
+<li>CAMELS-x datasets. Also include preorocessed climate time series usable as inputs.</li>
+</ul></li>
+</ul></li>
+<li>sub-daily
+<ul>
+<li><a href="http://www.bom.gov.au/waterdata/">Water Data Online</a> also has down to 10 minutes observations, at least for some gauges. See figures below.</li>
+<li>State agencies. For instance I previously made a <a href="https://jmp75.github.io/work-blog/posts/2022-05-28-hydstra-rest-data.html">post about the Victorian Water Measurement Information System</a>. Water Data Online is in principle supposed to be a superset, but some data points may not be ingested.</li>
+</ul></li>
+</ul></li>
+</ul>
+<section id="water-data-online" class="level3">
+<h3 class="anchored" data-anchor-id="water-data-online">Water Data Online</h3>
+<p>Besides the python package <a href="https://github.com/csiro-hydroinformatics/pybomwater">pybomwater</a>, the manual visualisation/download facilities of Water Data Online:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="streamflow-gauge-410024.png" class="img-fluid figure-img"></p>
+<figcaption>Streamflow Goodradigbee at Wee Jasper</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="streamflow-data-gauge-410024.png" class="img-fluid figure-img"></p>
+<figcaption>1 year data Goodradigbee at Wee Jasper (10 min resolution, at least for this gauge)</figcaption>
+</figure>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/jmp75\.github\.io\/work-blog\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
