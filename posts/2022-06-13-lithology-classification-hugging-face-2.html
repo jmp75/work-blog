@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.5.55">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2022-06-13">
 <meta name="description" content="Exploring the use of NLP to exploit geologic information. Trying to classify lithologies.">
 
-<title>J-M’s ‘lab notebook’ - Lithology classification using Hugging Face, part 2</title>
+<title>Lithology classification using Hugging Face, part 2 – J-M’s ‘lab notebook’</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -36,7 +36,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -125,7 +125,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -146,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
@@ -424,10 +424,9 @@ Name: Description, dtype: object</code></pre>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>litho_logs_kept.sample(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -635,7 +634,6 @@ Name: Description, dtype: object</code></pre>
 </div>
 </div>
 </div>
-</div>
 <div id="770b0665-1158-478f-ab2c-3bbb753f363d" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> ClassLabel(names<span class="op">=</span>labels_kept)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>int_labels <span class="op">=</span> np.array([</span>
@@ -665,10 +663,9 @@ Name: Description, dtype: object</code></pre>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sample_major_lithocode(litho_logs_kept, <span class="st">"CLAY"</span>, n<span class="op">=</span><span class="dv">10</span>, seed<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -887,7 +884,6 @@ Name: Description, dtype: object</code></pre>
 </div>
 </div>
 </div>
-</div>
 <div id="277c7c1c-d26d-4ac8-acb7-466fd68fae0c" class="cell" data-tags="[]" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>balanced_litho_logs <span class="op">=</span> [</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    sample_major_lithocode(litho_logs_kept, code, n<span class="op">=</span><span class="dv">10000</span>, seed<span class="op">=</span><span class="dv">0</span>)</span>
@@ -897,10 +893,9 @@ Name: Description, dtype: object</code></pre>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>balanced_litho_logs.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1021,7 +1016,6 @@ Name: Description, dtype: object</code></pre>
 </tbody>
 </table>
 
-</div>
 </div>
 </div>
 </div>
@@ -1176,10 +1170,9 @@ Wall time: 14min 13s</code></pre>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>litho_logs_kept_mini.sample(n<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1241,7 +1234,6 @@ Wall time: 14min 13s</code></pre>
 </tbody>
 </table>
 
-</div>
 </div>
 </div>
 </div>
@@ -1475,7 +1467,126 @@ Wall time: 14min 13s</code></pre>
   Total optimization steps = 7250</code></pre>
 </div>
 <div class="cell-output cell-output-error">
-<pre><code>RuntimeError: The size of tensor a (768) must match the size of tensor b (128) at non-singleton dimension 3</code></pre>
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [51]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> <span class="ansi-yellow-bg">trainer</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">train</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/transformers/trainer.py:1317</span>, in <span class="ansi-cyan-fg">Trainer.train</span><span class="ansi-blue-fg">(self, resume_from_checkpoint, trial, ignore_keys_for_eval, **kwargs)</span>
+<span class="ansi-green-fg ansi-bold">   1312</span>     <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>model_wrapped <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>model
+<span class="ansi-green-fg ansi-bold">   1314</span> inner_training_loop <span style="color:rgb(98,98,98)">=</span> find_executable_batch_size(
+<span class="ansi-green-fg ansi-bold">   1315</span>     <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_inner_training_loop, <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_train_batch_size, args<span style="color:rgb(98,98,98)">.</span>auto_find_batch_size
+<span class="ansi-green-fg ansi-bold">   1316</span> )
+<span class="ansi-green-fg">-&gt; 1317</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">inner_training_loop</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg ansi-bold">   1318</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">args</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1319</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">resume_from_checkpoint</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">resume_from_checkpoint</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1320</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">trial</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">trial</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1321</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">ignore_keys_for_eval</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">ignore_keys_for_eval</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1322</span> <span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/transformers/trainer.py:1554</span>, in <span class="ansi-cyan-fg">Trainer._inner_training_loop</span><span class="ansi-blue-fg">(self, batch_size, args, resume_from_checkpoint, trial, ignore_keys_for_eval)</span>
+<span class="ansi-green-fg ansi-bold">   1552</span>         tr_loss_step <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>training_step(model, inputs)
+<span class="ansi-green-fg ansi-bold">   1553</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">-&gt; 1554</span>     tr_loss_step <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)" class="ansi-yellow-bg">self</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">training_step</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">inputs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   1556</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> (
+<span class="ansi-green-fg ansi-bold">   1557</span>     args<span style="color:rgb(98,98,98)">.</span>logging_nan_inf_filter
+<span class="ansi-green-fg ansi-bold">   1558</span>     <span style="font-weight:bold;color:rgb(175,0,255)">and</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> is_torch_tpu_available()
+<span class="ansi-green-fg ansi-bold">   1559</span>     <span style="font-weight:bold;color:rgb(175,0,255)">and</span> (torch<span style="color:rgb(98,98,98)">.</span>isnan(tr_loss_step) <span style="font-weight:bold;color:rgb(175,0,255)">or</span> torch<span style="color:rgb(98,98,98)">.</span>isinf(tr_loss_step))
+<span class="ansi-green-fg ansi-bold">   1560</span> ):
+<span class="ansi-green-fg ansi-bold">   1561</span>     <span style="font-style:italic;color:rgb(95,135,135)"># if loss is nan or inf simply add the average of previous logged losses</span>
+<span class="ansi-green-fg ansi-bold">   1562</span>     tr_loss <span style="color:rgb(98,98,98)">+</span><span style="color:rgb(98,98,98)">=</span> tr_loss <span style="color:rgb(98,98,98)">/</span> (<span style="color:rgb(98,98,98)">1</span> <span style="color:rgb(98,98,98)">+</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>state<span style="color:rgb(98,98,98)">.</span>global_step <span style="color:rgb(98,98,98)">-</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_globalstep_last_logged)
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/transformers/trainer.py:2183</span>, in <span class="ansi-cyan-fg">Trainer.training_step</span><span class="ansi-blue-fg">(self, model, inputs)</span>
+<span class="ansi-green-fg ansi-bold">   2180</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> loss_mb<span style="color:rgb(98,98,98)">.</span>reduce_mean()<span style="color:rgb(98,98,98)">.</span>detach()<span style="color:rgb(98,98,98)">.</span>to(<span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>args<span style="color:rgb(98,98,98)">.</span>device)
+<span class="ansi-green-fg ansi-bold">   2182</span> <span style="font-weight:bold;color:rgb(0,135,0)">with</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>autocast_smart_context_manager():
+<span class="ansi-green-fg">-&gt; 2183</span>     loss <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)" class="ansi-yellow-bg">self</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">compute_loss</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">inputs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   2185</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>args<span style="color:rgb(98,98,98)">.</span>n_gpu <span style="color:rgb(98,98,98)">&gt;</span> <span style="color:rgb(98,98,98)">1</span>:
+<span class="ansi-green-fg ansi-bold">   2186</span>     loss <span style="color:rgb(98,98,98)">=</span> loss<span style="color:rgb(98,98,98)">.</span>mean()  <span style="font-style:italic;color:rgb(95,135,135)"># mean() to average on multi-gpu parallel training</span>
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/transformers/trainer.py:2215</span>, in <span class="ansi-cyan-fg">Trainer.compute_loss</span><span class="ansi-blue-fg">(self, model, inputs, return_outputs)</span>
+<span class="ansi-green-fg ansi-bold">   2213</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg ansi-bold">   2214</span>     labels <span style="color:rgb(98,98,98)">=</span> <span style="font-weight:bold;color:rgb(0,135,0)">None</span>
+<span class="ansi-green-fg">-&gt; 2215</span> outputs <span style="color:rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">inputs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   2216</span> <span style="font-style:italic;color:rgb(95,135,135)"># Save past state if it exists</span>
+<span class="ansi-green-fg ansi-bold">   2217</span> <span style="font-style:italic;color:rgb(95,135,135)"># TODO: this needs to be fixed and made cleaner later.</span>
+<span class="ansi-green-fg ansi-bold">   2218</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>args<span style="color:rgb(98,98,98)">.</span>past_index <span style="color:rgb(98,98,98)">&gt;</span><span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(98,98,98)">0</span>:
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/torch/nn/modules/module.py:1110</span>, in <span class="ansi-cyan-fg">Module._call_impl</span><span class="ansi-blue-fg">(self, *input, **kwargs)</span>
+<span class="ansi-green-fg ansi-bold">   1106</span> <span style="font-style:italic;color:rgb(95,135,135)"># If we don't have any hooks, we want to skip the rest of the logic in</span>
+<span class="ansi-green-fg ansi-bold">   1107</span> <span style="font-style:italic;color:rgb(95,135,135)"># this function, and just call forward.</span>
+<span class="ansi-green-fg ansi-bold">   1108</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> (<span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_backward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_forward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_forward_pre_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_backward_hooks
+<span class="ansi-green-fg ansi-bold">   1109</span>         <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_forward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_forward_pre_hooks):
+<span class="ansi-green-fg">-&gt; 1110</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">forward_call</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(0,135,0)" class="ansi-yellow-bg">input</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   1111</span> <span style="font-style:italic;color:rgb(95,135,135)"># Do not call functions when jit is used</span>
+<span class="ansi-green-fg ansi-bold">   1112</span> full_backward_hooks, non_full_backward_hooks <span style="color:rgb(98,98,98)">=</span> [], []
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/transformers/models/deberta_v2/modeling_deberta_v2.py:1279</span>, in <span class="ansi-cyan-fg">DebertaV2ForSequenceClassification.forward</span><span class="ansi-blue-fg">(self, input_ids, attention_mask, token_type_ids, position_ids, inputs_embeds, labels, output_attentions, output_hidden_states, return_dict)</span>
+<span class="ansi-green-fg ansi-bold">   1271</span> <span style="color:rgb(175,0,0)">r</span><span style="font-style:italic;color:rgb(175,0,0)">"""</span>
+<span class="ansi-green-fg ansi-bold">   1272</span> <span style="font-style:italic;color:rgb(175,0,0)">labels (`torch.LongTensor` of shape `(batch_size,)`, *optional*):</span>
+<span class="ansi-green-fg ansi-bold">   1273</span> <span style="font-style:italic;color:rgb(175,0,0)">    Labels for computing the sequence classification/regression loss. Indices should be in `[0, ...,</span>
+<span class="ansi-green-fg ansi-bold">   1274</span> <span style="font-style:italic;color:rgb(175,0,0)">    config.num_labels - 1]`. If `config.num_labels == 1` a regression loss is computed (Mean-Square loss), If</span>
+<span class="ansi-green-fg ansi-bold">   1275</span> <span style="font-style:italic;color:rgb(175,0,0)">    `config.num_labels &gt; 1` a classification loss is computed (Cross-Entropy).</span>
+<span class="ansi-green-fg ansi-bold">   1276</span> <span style="font-style:italic;color:rgb(175,0,0)">"""</span>
+<span class="ansi-green-fg ansi-bold">   1277</span> return_dict <span style="color:rgb(98,98,98)">=</span> return_dict <span style="font-weight:bold;color:rgb(0,135,0)">if</span> return_dict <span style="font-weight:bold;color:rgb(175,0,255)">is</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> <span style="font-weight:bold;color:rgb(0,135,0)">None</span> <span style="font-weight:bold;color:rgb(0,135,0)">else</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>config<span style="color:rgb(98,98,98)">.</span>use_return_dict
+<span class="ansi-green-fg">-&gt; 1279</span> outputs <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)" class="ansi-yellow-bg">self</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">deberta</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg ansi-bold">   1280</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">input_ids</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1281</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">token_type_ids</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">token_type_ids</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1282</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">attention_mask</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">attention_mask</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1283</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">position_ids</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">position_ids</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1284</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">inputs_embeds</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">inputs_embeds</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1285</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">output_attentions</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">output_attentions</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1286</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">output_hidden_states</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">output_hidden_states</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1287</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">return_dict</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">return_dict</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1288</span> <span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   1290</span> encoder_layer <span style="color:rgb(98,98,98)">=</span> outputs[<span style="color:rgb(98,98,98)">0</span>]
+<span class="ansi-green-fg ansi-bold">   1291</span> pooled_output <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>pooler(encoder_layer)
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/torch/nn/modules/module.py:1110</span>, in <span class="ansi-cyan-fg">Module._call_impl</span><span class="ansi-blue-fg">(self, *input, **kwargs)</span>
+<span class="ansi-green-fg ansi-bold">   1106</span> <span style="font-style:italic;color:rgb(95,135,135)"># If we don't have any hooks, we want to skip the rest of the logic in</span>
+<span class="ansi-green-fg ansi-bold">   1107</span> <span style="font-style:italic;color:rgb(95,135,135)"># this function, and just call forward.</span>
+<span class="ansi-green-fg ansi-bold">   1108</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> (<span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_backward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_forward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_forward_pre_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_backward_hooks
+<span class="ansi-green-fg ansi-bold">   1109</span>         <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_forward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_forward_pre_hooks):
+<span class="ansi-green-fg">-&gt; 1110</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">forward_call</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(0,135,0)" class="ansi-yellow-bg">input</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   1111</span> <span style="font-style:italic;color:rgb(95,135,135)"># Do not call functions when jit is used</span>
+<span class="ansi-green-fg ansi-bold">   1112</span> full_backward_hooks, non_full_backward_hooks <span style="color:rgb(98,98,98)">=</span> [], []
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/transformers/models/deberta_v2/modeling_deberta_v2.py:1042</span>, in <span class="ansi-cyan-fg">DebertaV2Model.forward</span><span class="ansi-blue-fg">(self, input_ids, attention_mask, token_type_ids, position_ids, inputs_embeds, output_attentions, output_hidden_states, return_dict)</span>
+<span class="ansi-green-fg ansi-bold">   1039</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> token_type_ids <span style="font-weight:bold;color:rgb(175,0,255)">is</span> <span style="font-weight:bold;color:rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg ansi-bold">   1040</span>     token_type_ids <span style="color:rgb(98,98,98)">=</span> torch<span style="color:rgb(98,98,98)">.</span>zeros(input_shape, dtype<span style="color:rgb(98,98,98)">=</span>torch<span style="color:rgb(98,98,98)">.</span>long, device<span style="color:rgb(98,98,98)">=</span>device)
+<span class="ansi-green-fg">-&gt; 1042</span> embedding_output <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)" class="ansi-yellow-bg">self</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">embeddings</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg ansi-bold">   1043</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">input_ids</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">input_ids</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1044</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">token_type_ids</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">token_type_ids</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1045</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">position_ids</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">position_ids</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1046</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">mask</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">attention_mask</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1047</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">inputs_embeds</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">inputs_embeds</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg ansi-bold">   1048</span> <span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   1050</span> encoder_outputs <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>encoder(
+<span class="ansi-green-fg ansi-bold">   1051</span>     embedding_output,
+<span class="ansi-green-fg ansi-bold">   1052</span>     attention_mask,
+<span class="ansi-green-fg">   (...)</span>
+<span class="ansi-green-fg ansi-bold">   1055</span>     return_dict<span style="color:rgb(98,98,98)">=</span>return_dict,
+<span class="ansi-green-fg ansi-bold">   1056</span> )
+<span class="ansi-green-fg ansi-bold">   1057</span> encoded_layers <span style="color:rgb(98,98,98)">=</span> encoder_outputs[<span style="color:rgb(98,98,98)">1</span>]
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/torch/nn/modules/module.py:1110</span>, in <span class="ansi-cyan-fg">Module._call_impl</span><span class="ansi-blue-fg">(self, *input, **kwargs)</span>
+<span class="ansi-green-fg ansi-bold">   1106</span> <span style="font-style:italic;color:rgb(95,135,135)"># If we don't have any hooks, we want to skip the rest of the logic in</span>
+<span class="ansi-green-fg ansi-bold">   1107</span> <span style="font-style:italic;color:rgb(95,135,135)"># this function, and just call forward.</span>
+<span class="ansi-green-fg ansi-bold">   1108</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> (<span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_backward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_forward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>_forward_pre_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_backward_hooks
+<span class="ansi-green-fg ansi-bold">   1109</span>         <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_forward_hooks <span style="font-weight:bold;color:rgb(175,0,255)">or</span> _global_forward_pre_hooks):
+<span class="ansi-green-fg">-&gt; 1110</span>     <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">forward_call</span><span class="ansi-yellow-bg">(</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(0,135,0)" class="ansi-yellow-bg">input</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg ansi-bold">   1111</span> <span style="font-style:italic;color:rgb(95,135,135)"># Do not call functions when jit is used</span>
+<span class="ansi-green-fg ansi-bold">   1112</span> full_backward_hooks, non_full_backward_hooks <span style="color:rgb(98,98,98)">=</span> [], []
+
+File <span class="ansi-green-fg">~/miniconda/envs/hf/lib/python3.9/site-packages/transformers/models/deberta_v2/modeling_deberta_v2.py:875</span>, in <span class="ansi-cyan-fg">DebertaV2Embeddings.forward</span><span class="ansi-blue-fg">(self, input_ids, token_type_ids, position_ids, mask, inputs_embeds)</span>
+<span class="ansi-green-fg ansi-bold">    872</span>         mask <span style="color:rgb(98,98,98)">=</span> mask<span style="color:rgb(98,98,98)">.</span>unsqueeze(<span style="color:rgb(98,98,98)">2</span>)
+<span class="ansi-green-fg ansi-bold">    873</span>     mask <span style="color:rgb(98,98,98)">=</span> mask<span style="color:rgb(98,98,98)">.</span>to(embeddings<span style="color:rgb(98,98,98)">.</span>dtype)
+<span class="ansi-green-fg">--&gt; 875</span>     embeddings <span style="color:rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">embeddings</span><span class="ansi-yellow-bg"> </span><span style="color:rgb(98,98,98)" class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">mask</span>
+<span class="ansi-green-fg ansi-bold">    877</span> embeddings <span style="color:rgb(98,98,98)">=</span> <span style="color:rgb(0,135,0)">self</span><span style="color:rgb(98,98,98)">.</span>dropout(embeddings)
+<span class="ansi-green-fg ansi-bold">    878</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> embeddings
+
+<span class="ansi-red-fg">RuntimeError</span>: The size of tensor a (768) must match the size of tensor b (128) at non-singleton dimension 3</pre>
+</div>
 </div>
 </div>
 </section>
@@ -1671,18 +1782,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1714,7 +1814,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp("https:\/\/jmp75\.github\.io\/work-blog\/");
@@ -1722,7 +1844,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

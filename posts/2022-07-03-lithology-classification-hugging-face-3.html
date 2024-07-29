@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.5.55">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2022-07-03">
 <meta name="description" content="First working lithology classification training on the Namoi data">
 
-<title>J-M’s ‘lab notebook’ - Lithology classification using Hugging Face, part 3</title>
+<title>Lithology classification using Hugging Face, part 3 – J-M’s ‘lab notebook’</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -36,7 +36,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -126,7 +126,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -147,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools">
+            <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
@@ -330,10 +330,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>litho_logs_kept_mini.sample(n<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -395,7 +394,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 
-</div>
 </div>
 </div>
 </div>
@@ -545,37 +543,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   Instantaneous batch size per device = 64
   Total train batch size (w. parallel, distributed &amp; accumulation) = 64
   Gradient Accumulation steps = 1
-  Total optimization steps = 1089
-The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
-***** Running Evaluation *****
-  Num examples = 7729
-  Batch size = 128
-Saving model checkpoint to ./hf_training/checkpoint-500
-Configuration saved in ./hf_training/checkpoint-500/config.json
-Model weights saved in ./hf_training/checkpoint-500/pytorch_model.bin
-tokenizer config file saved in ./hf_training/checkpoint-500/tokenizer_config.json
-Special tokens file saved in ./hf_training/checkpoint-500/special_tokens_map.json
-The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
-***** Running Evaluation *****
-  Num examples = 7729
-  Batch size = 128
-Saving model checkpoint to ./hf_training/checkpoint-1000
-Configuration saved in ./hf_training/checkpoint-1000/config.json
-Model weights saved in ./hf_training/checkpoint-1000/pytorch_model.bin
-tokenizer config file saved in ./hf_training/checkpoint-1000/tokenizer_config.json
-Special tokens file saved in ./hf_training/checkpoint-1000/special_tokens_map.json
-The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
-***** Running Evaluation *****
-  Num examples = 7729
-  Batch size = 128
-
-
-Training completed. Do not forget to share your model on huggingface.co/models =)
-
-</code></pre>
+  Total optimization steps = 1089</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<div>
 
     <div>
       
@@ -583,7 +553,7 @@ Training completed. Do not forget to share your model on huggingface.co/models =
       [1089/1089 04:57, Epoch 3/3]
     </div>
     
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th">Epoch</th>
@@ -615,6 +585,34 @@ Training completed. Do not forget to share your model on huggingface.co/models =
 </table>
 <p>
 </p></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 7729
+  Batch size = 128
+Saving model checkpoint to ./hf_training/checkpoint-500
+Configuration saved in ./hf_training/checkpoint-500/config.json
+Model weights saved in ./hf_training/checkpoint-500/pytorch_model.bin
+tokenizer config file saved in ./hf_training/checkpoint-500/tokenizer_config.json
+Special tokens file saved in ./hf_training/checkpoint-500/special_tokens_map.json
+The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 7729
+  Batch size = 128
+Saving model checkpoint to ./hf_training/checkpoint-1000
+Configuration saved in ./hf_training/checkpoint-1000/config.json
+Model weights saved in ./hf_training/checkpoint-1000/pytorch_model.bin
+tokenizer config file saved in ./hf_training/checkpoint-1000/tokenizer_config.json
+Special tokens file saved in ./hf_training/checkpoint-1000/special_tokens_map.json
+The following columns in the evaluation set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
+***** Running Evaluation *****
+  Num examples = 7729
+  Batch size = 128
+
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>TrainOutput(global_step=1089, training_loss=0.16952454397938907, metrics={'train_runtime': 297.9073, 'train_samples_per_second': 233.479, 'train_steps_per_second': 3.655, 'total_flos': 2304099629568000.0, 'train_loss': 0.16952454397938907, 'epoch': 3.0})</code></pre>
@@ -626,7 +624,7 @@ Training completed. Do not forget to share your model on huggingface.co/models =
 <p>This part is newer compared to the previous post, so I will elaborate a bit.</p>
 <p>I am not across the high level facilities to assess model predictions (visualisation, etc.) so what follows may be sub-optimal and idiosyncratic.</p>
 <div id="ef7d09da-0b38-49de-849b-15426f6cb208" class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>test_pred <span class="op">=</span> trainer.predict(trainer.eval_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>test_pred <span class="op">=</span> trainer.predict(trainer.eval_dataset)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>The following columns in the test set don't have a corresponding argument in `DebertaV2ForSequenceClassification.forward` and have been ignored: Description. If Description are not expected by `DebertaV2ForSequenceClassification.forward`,  you can safely ignore this message.
 ***** Running Prediction *****
@@ -644,7 +642,7 @@ Training completed. Do not forget to share your model on huggingface.co/models =
 </div>
 </div>
 <div id="9748cfc9-88bc-49c5-8122-1abf4c1af0b0" class="cell" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>test_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>test_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
 <pre><code>PredictionOutput(predictions=array([[-0.519 , -2.127 ,  0.61  , ..., -1.751 , -1.145 , -2.832 ],
        [ 0.8223,  2.123 ,  9.27  , ..., -3.254 , -0.8325, -1.929 ],
@@ -658,56 +656,55 @@ Training completed. Do not forget to share your model on huggingface.co/models =
 </div>
 <p>This is lower level than I anticipated. The predictions array appear to be the <code>logits</code>. Note that I was not sure <code>label_ids</code> was, and it is <strong>not</strong> the predicted label, but the “true” label.</p>
 <div id="d8917ce2-8992-4316-a05e-e68380fe997d" class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> trainer.eval_dataset.to_pandas()</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>y_true <span class="op">=</span> test_df.labels.values.astype(<span class="bu">int</span>)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>y_true</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> trainer.eval_dataset.to_pandas()</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>y_true <span class="op">=</span> test_df.labels.values.astype(<span class="bu">int</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>y_true</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="25">
 <pre><code>array([4, 2, 8, ..., 5, 5, 6])</code></pre>
 </div>
 </div>
 <p>To get the predicted labels, I seem to need to do the following song and dance:</p>
 <div id="de391d72-34ee-4645-97e8-41ec37863da8" class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>preds_tf <span class="op">=</span> torch.asarray(test_pred.predictions, dtype<span class="op">=</span><span class="bu">float</span>)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> torch.nn.functional.softmax(preds_tf, dim<span class="op">=-</span><span class="dv">1</span>)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>highest <span class="op">=</span> np.argmax(predictions, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> np.array(highest)</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>y_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>preds_tf <span class="op">=</span> torch.asarray(test_pred.predictions, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> torch.nn.functional.softmax(preds_tf, dim<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>highest <span class="op">=</span> np.argmax(predictions, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> np.array(highest)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>y_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="26">
 <pre><code>array([4, 2, 8, ..., 5, 5, 6])</code></pre>
 </div>
 </div>
 <div id="36046d1f-34a9-4a5a-9caf-58831080c808" class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>differ <span class="op">=</span> np.logical_not(y_true <span class="op">==</span> y_pred)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"There are </span><span class="sc">{0}</span><span class="st"> records in the validation data set that differ from true labels"</span>.<span class="bu">format</span>(np.<span class="bu">sum</span>(differ)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>differ <span class="op">=</span> np.logical_not(y_true <span class="op">==</span> y_pred)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"There are </span><span class="sc">{0}</span><span class="st"> records in the validation data set that differ from true labels"</span>.<span class="bu">format</span>(np.<span class="bu">sum</span>(differ)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>There are 104 records in the validation data set that differ from true labels</code></pre>
 </div>
 </div>
 <p>Let’s look at where we fail to match the labels:</p>
 <div id="2121a1d1-ca35-4bd0-bec2-1e04d72356fa" class="cell" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>differing <span class="op">=</span> test_df[differ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>differing <span class="op">=</span> test_df[differ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="42f9c55b-5897-4e3b-a566-15e359bbf589" class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>lbl_true <span class="op">=</span> labels.int2str(differing.labels.values)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>descriptions <span class="op">=</span> differing.Description.values </span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>lbl_pred <span class="op">=</span> labels.int2str(y_pred[differ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>lbl_true <span class="op">=</span> labels.int2str(differing.labels.values)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>descriptions <span class="op">=</span> differing.Description.values </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>lbl_pred <span class="op">=</span> labels.int2str(y_pred[differ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="a2a49728-f799-406b-bf1c-6a3fb47b6e47" class="cell" data-execution_count="35">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_colwidth <span class="op">=</span> <span class="dv">150</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">110</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_colwidth <span class="op">=</span> <span class="dv">150</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">110</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="873edae9-7745-4cd9-a638-436247056257" class="cell" data-execution_count="36">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame.from_dict({</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label_true"</span>: lbl_true,</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label_pred"</span>: lbl_pred,</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"desc"</span>: descriptions,</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame.from_dict({</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label_true"</span>: lbl_true,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label_pred"</span>: lbl_pred,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"desc"</span>: descriptions,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="36">
 <div>
-<div>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
@@ -1347,7 +1344,6 @@ Training completed. Do not forget to share your model on huggingface.co/models =
 </div>
 </div>
 </div>
-</div>
 </section>
 <section id="observations" class="level2">
 <h2 class="anchored" data-anchor-id="observations">Observations</h2>
@@ -1361,63 +1357,63 @@ Training completed. Do not forget to share your model on huggingface.co/models =
 </ul>
 <p>Still, the confusion matrix is overall really encouraging. Let’s have a look:</p>
 <div id="fe46c6f9-652a-4f19-ad5e-b2afb35e7aba" class="cell" data-execution_count="32">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.ticker <span class="im">import</span> FixedFormatter</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_cm(y_true, y_pred, title, figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">10</span>), labels<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">''''</span></span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="co">    input y_true-Ground Truth Labels</span></span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="co">          y_pred-Predicted Value of Model</span></span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="co">          title-What Title to give to the confusion matrix</span></span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Draws a Confusion Matrix for better understanding of how the model is working</span></span>
-<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a><span class="co">    return None</span></span>
-<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
-<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>    cm <span class="op">=</span> confusion_matrix(y_true, y_pred, labels<span class="op">=</span>np.unique(y_true))</span>
-<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>    cm_sum <span class="op">=</span> np.<span class="bu">sum</span>(cm, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>    cm_perc <span class="op">=</span> cm <span class="op">/</span> cm_sum.astype(<span class="bu">float</span>) <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>    annot <span class="op">=</span> np.empty_like(cm).astype(<span class="bu">str</span>)</span>
-<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>    nrows, ncols <span class="op">=</span> cm.shape</span>
-<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nrows):</span>
-<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(ncols):</span>
-<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>            c <span class="op">=</span> cm[i, j]</span>
-<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>            p <span class="op">=</span> cm_perc[i, j]</span>
-<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> i <span class="op">==</span> j:</span>
-<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>                s <span class="op">=</span> cm_sum[i]</span>
-<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">'</span><span class="sc">%.1f%%</span><span class="ch">\n</span><span class="sc">%d</span><span class="st">/</span><span class="sc">%d</span><span class="st">'</span> <span class="op">%</span> (p, c, s)</span>
-<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> c <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">''</span></span>
-<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
-<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">'</span><span class="sc">%.1f%%</span><span class="ch">\n</span><span class="sc">%d</span><span class="st">'</span> <span class="op">%</span> (p, c)</span>
-<span id="cb45-32"><a href="#cb45-32" aria-hidden="true" tabindex="-1"></a>    cm <span class="op">=</span> pd.DataFrame(cm, index<span class="op">=</span>np.unique(y_true), columns<span class="op">=</span>np.unique(y_true))</span>
-<span id="cb45-33"><a href="#cb45-33" aria-hidden="true" tabindex="-1"></a>    cm.index.name <span class="op">=</span> <span class="st">'Actual'</span></span>
-<span id="cb45-34"><a href="#cb45-34" aria-hidden="true" tabindex="-1"></a>    cm.columns.name <span class="op">=</span> <span class="st">'Predicted'</span></span>
-<span id="cb45-35"><a href="#cb45-35" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
-<span id="cb45-36"><a href="#cb45-36" aria-hidden="true" tabindex="-1"></a>    ff <span class="op">=</span> FixedFormatter(labels)</span>
-<span id="cb45-37"><a href="#cb45-37" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_major_formatter(ff)</span>
-<span id="cb45-38"><a href="#cb45-38" aria-hidden="true" tabindex="-1"></a>    ax.xaxis.set_major_formatter(ff)</span>
-<span id="cb45-39"><a href="#cb45-39" aria-hidden="true" tabindex="-1"></a>    plt.title(title)</span>
-<span id="cb45-40"><a href="#cb45-40" aria-hidden="true" tabindex="-1"></a>    sns.heatmap(cm, cmap<span class="op">=</span> <span class="st">"YlGnBu"</span>, annot<span class="op">=</span>annot, fmt<span class="op">=</span><span class="st">''</span>, ax<span class="op">=</span>ax)</span>
-<span id="cb45-41"><a href="#cb45-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-42"><a href="#cb45-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> roc_curve_plot(fpr,tpr,roc_auc):</span>
-<span id="cb45-43"><a href="#cb45-43" aria-hidden="true" tabindex="-1"></a>    plt.figure()</span>
-<span id="cb45-44"><a href="#cb45-44" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="dv">2</span></span>
-<span id="cb45-45"><a href="#cb45-45" aria-hidden="true" tabindex="-1"></a>    plt.plot(fpr, tpr, color<span class="op">=</span><span class="st">'darkorange'</span>,</span>
-<span id="cb45-46"><a href="#cb45-46" aria-hidden="true" tabindex="-1"></a>             lw<span class="op">=</span>lw, label<span class="op">=</span><span class="st">'ROC curve (area = </span><span class="sc">%0.2f</span><span class="st">)'</span> <span class="op">%</span>roc_auc)</span>
-<span id="cb45-47"><a href="#cb45-47" aria-hidden="true" tabindex="-1"></a>    plt.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">'navy'</span>, lw<span class="op">=</span>lw, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
-<span id="cb45-48"><a href="#cb45-48" aria-hidden="true" tabindex="-1"></a>    plt.xlim([<span class="fl">0.0</span>, <span class="fl">1.0</span>])</span>
-<span id="cb45-49"><a href="#cb45-49" aria-hidden="true" tabindex="-1"></a>    plt.ylim([<span class="fl">0.0</span>, <span class="fl">1.05</span>])</span>
-<span id="cb45-50"><a href="#cb45-50" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'False Positive Rate'</span>)</span>
-<span id="cb45-51"><a href="#cb45-51" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'True Positive Rate'</span>)</span>
-<span id="cb45-52"><a href="#cb45-52" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Receiver operating characteristic example'</span>)</span>
-<span id="cb45-53"><a href="#cb45-53" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
-<span id="cb45-54"><a href="#cb45-54" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.ticker <span class="im">import</span> FixedFormatter</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_cm(y_true, y_pred, title, figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">10</span>), labels<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">''''</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="co">    input y_true-Ground Truth Labels</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="co">          y_pred-Predicted Value of Model</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="co">          title-What Title to give to the confusion matrix</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="co">    Draws a Confusion Matrix for better understanding of how the model is working</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="co">    return None</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>    cm <span class="op">=</span> confusion_matrix(y_true, y_pred, labels<span class="op">=</span>np.unique(y_true))</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>    cm_sum <span class="op">=</span> np.<span class="bu">sum</span>(cm, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>    cm_perc <span class="op">=</span> cm <span class="op">/</span> cm_sum.astype(<span class="bu">float</span>) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>    annot <span class="op">=</span> np.empty_like(cm).astype(<span class="bu">str</span>)</span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>    nrows, ncols <span class="op">=</span> cm.shape</span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(nrows):</span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(ncols):</span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>            c <span class="op">=</span> cm[i, j]</span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a>            p <span class="op">=</span> cm_perc[i, j]</span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> i <span class="op">==</span> j:</span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a>                s <span class="op">=</span> cm_sum[i]</span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">'</span><span class="sc">%.1f%%</span><span class="ch">\n</span><span class="sc">%d</span><span class="st">/</span><span class="sc">%d</span><span class="st">'</span> <span class="op">%</span> (p, c, s)</span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> c <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">''</span></span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>                annot[i, j] <span class="op">=</span> <span class="st">'</span><span class="sc">%.1f%%</span><span class="ch">\n</span><span class="sc">%d</span><span class="st">'</span> <span class="op">%</span> (p, c)</span>
+<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a>    cm <span class="op">=</span> pd.DataFrame(cm, index<span class="op">=</span>np.unique(y_true), columns<span class="op">=</span>np.unique(y_true))</span>
+<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a>    cm.index.name <span class="op">=</span> <span class="st">'Actual'</span></span>
+<span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a>    cm.columns.name <span class="op">=</span> <span class="st">'Predicted'</span></span>
+<span id="cb46-35"><a href="#cb46-35" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>figsize)</span>
+<span id="cb46-36"><a href="#cb46-36" aria-hidden="true" tabindex="-1"></a>    ff <span class="op">=</span> FixedFormatter(labels)</span>
+<span id="cb46-37"><a href="#cb46-37" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_major_formatter(ff)</span>
+<span id="cb46-38"><a href="#cb46-38" aria-hidden="true" tabindex="-1"></a>    ax.xaxis.set_major_formatter(ff)</span>
+<span id="cb46-39"><a href="#cb46-39" aria-hidden="true" tabindex="-1"></a>    plt.title(title)</span>
+<span id="cb46-40"><a href="#cb46-40" aria-hidden="true" tabindex="-1"></a>    sns.heatmap(cm, cmap<span class="op">=</span> <span class="st">"YlGnBu"</span>, annot<span class="op">=</span>annot, fmt<span class="op">=</span><span class="st">''</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb46-41"><a href="#cb46-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-42"><a href="#cb46-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> roc_curve_plot(fpr,tpr,roc_auc):</span>
+<span id="cb46-43"><a href="#cb46-43" aria-hidden="true" tabindex="-1"></a>    plt.figure()</span>
+<span id="cb46-44"><a href="#cb46-44" aria-hidden="true" tabindex="-1"></a>    lw <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb46-45"><a href="#cb46-45" aria-hidden="true" tabindex="-1"></a>    plt.plot(fpr, tpr, color<span class="op">=</span><span class="st">'darkorange'</span>,</span>
+<span id="cb46-46"><a href="#cb46-46" aria-hidden="true" tabindex="-1"></a>             lw<span class="op">=</span>lw, label<span class="op">=</span><span class="st">'ROC curve (area = </span><span class="sc">%0.2f</span><span class="st">)'</span> <span class="op">%</span>roc_auc)</span>
+<span id="cb46-47"><a href="#cb46-47" aria-hidden="true" tabindex="-1"></a>    plt.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">'navy'</span>, lw<span class="op">=</span>lw, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb46-48"><a href="#cb46-48" aria-hidden="true" tabindex="-1"></a>    plt.xlim([<span class="fl">0.0</span>, <span class="fl">1.0</span>])</span>
+<span id="cb46-49"><a href="#cb46-49" aria-hidden="true" tabindex="-1"></a>    plt.ylim([<span class="fl">0.0</span>, <span class="fl">1.05</span>])</span>
+<span id="cb46-50"><a href="#cb46-50" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'False Positive Rate'</span>)</span>
+<span id="cb46-51"><a href="#cb46-51" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'True Positive Rate'</span>)</span>
+<span id="cb46-52"><a href="#cb46-52" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Receiver operating characteristic example'</span>)</span>
+<span id="cb46-53"><a href="#cb46-53" aria-hidden="true" tabindex="-1"></a>    plt.legend(loc<span class="op">=</span><span class="st">"lower right"</span>)</span>
+<span id="cb46-54"><a href="#cb46-54" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="967fe935-1b7b-4ad2-a4ad-693bde1809ac" class="cell" data-tags="[]" data-execution_count="33">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>plot_cm(y_true, y_pred, title<span class="op">=</span><span class="st">"Test set confusion matrix"</span>, figsize<span class="op">=</span>(<span class="dv">16</span>,<span class="dv">16</span>), labels<span class="op">=</span>labels.names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>plot_cm(y_true, y_pred, title<span class="op">=</span><span class="st">"Test set confusion matrix"</span>, figsize<span class="op">=</span>(<span class="dv">16</span>,<span class="dv">16</span>), labels<span class="op">=</span>labels.names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>/tmp/ipykernel_29992/2038836972.py:37: UserWarning: FixedFormatter should only be used together with FixedLocator
   ax.yaxis.set_major_formatter(ff)
@@ -1442,25 +1438,25 @@ Training completed. Do not forget to share your model on huggingface.co/models =
 <section id="appendix" class="level1">
 <h1>Appendix</h1>
 <div id="f42cc35d-d387-434c-9efc-bdd978166506" class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Later on, in another post, for predictions on the CPU:</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co"># model_cpu = model.to("cpu")</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># from transformers import TextClassificationPipeline</span></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="co"># tokenizer = tokz</span></span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe = TextClassificationPipeline(model=model_cpu, tokenizer=tokenizer, return_all_scores=True)</span></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="co"># # outputs a list of dicts like [[{'label': 'NEGATIVE', 'score': 0.0001223755971295759},  {'label': 'POSITIVE', 'score': 0.9998776316642761}]]</span></span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe("clayey sand")</span></span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="co"># raw_inputs = [</span></span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="co">#     "I've been waiting for a HuggingFace course my whole life.",</span></span>
-<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a><span class="co">#     "I hate this so much!",</span></span>
-<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
-<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a><span class="co"># inputs = tokz(raw_inputs, padding=True, truncation=True, return_tensors="pt")</span></span>
-<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a><span class="co"># print(inputs)</span></span>
-<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe("I've been waiting for a HuggingFace course my whole life.")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Later on, in another post, for predictions on the CPU:</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="co"># model_cpu = model.to("cpu")</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># from transformers import TextClassificationPipeline</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="co"># tokenizer = tokz</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe = TextClassificationPipeline(model=model_cpu, tokenizer=tokenizer, return_all_scores=True)</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="co"># # outputs a list of dicts like [[{'label': 'NEGATIVE', 'score': 0.0001223755971295759},  {'label': 'POSITIVE', 'score': 0.9998776316642761}]]</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe("clayey sand")</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="co"># raw_inputs = [</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a><span class="co">#     "I've been waiting for a HuggingFace course my whole life.",</span></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a><span class="co">#     "I hate this so much!",</span></span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a><span class="co"># ]</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a><span class="co"># inputs = tokz(raw_inputs, padding=True, truncation=True, return_tensors="pt")</span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="co"># print(inputs)</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a><span class="co"># pipe("I've been waiting for a HuggingFace course my whole life.")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
@@ -1646,18 +1642,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1689,7 +1674,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp("https:\/\/jmp75\.github\.io\/work-blog\/");
@@ -1697,7 +1704,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
