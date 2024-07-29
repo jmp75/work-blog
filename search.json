@@ -105,6 +105,13 @@
     "text": "Upgrade Quarto\nLet’s install the latest version of Quarto, which nicely can be installed without Admin privileges.\nYou may need to update your PATH environment variable to make sure you are using the correct version of Quarto, if you have several:\nwhere quarto\nset PATH=C:\\Users\\abcdef\\AppData\\Local\\Programs\\Quarto\\bin;%path%\nwhere quarto\nquarto --version\n# returns 1.1.251\ncd C:\\Users\\abcdef\\src\\bmfb\nnbdev_preview\nAnd the package documentation seems to render fine…"
   },
   {
+    "objectID": "posts/20240719-catchment-delineation/sassy.html",
+    "href": "posts/20240719-catchment-delineation/sassy.html",
+    "title": "J-M's 'lab notebook'",
+    "section": "",
+    "text": "Semi-distributed Australian catchments for simulations of surface hYdrology\nsassy\nsaucy"
+  },
+  {
     "objectID": "posts/2022-09-03-c-api-wrapper-generation.html",
     "href": "posts/2022-09-03-c-api-wrapper-generation.html",
     "title": "Generate programming language bindings to a C API",
