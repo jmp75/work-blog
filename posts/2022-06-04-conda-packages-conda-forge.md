@@ -10,7 +10,7 @@ date: '2022-06-04'
 description: Journey in building my first conda package and ending up submitting to
   conda-forge
 draft: false
-image: https://docs.conda.io/en/latest/_images/conda_logo.svg
+image: https://docs.conda.io/en/latest/_static/conda_logo_full.svg
 layout: post
 title: Submitting your first conda package to conda-forge
 toc: true

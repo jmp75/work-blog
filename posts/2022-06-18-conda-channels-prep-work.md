@@ -8,7 +8,7 @@ categories:
 date: '2022-06-18'
 description: Research paths to set up an enterprise-wide private conda channel
 draft: false
-image: https://docs.conda.io/en/latest/_images/conda_logo.svg
+image: https://docs.conda.io/en/latest/_static/conda_logo_full.svg
 layout: post
 title: Setting up a private conda channel - part 1
 toc: true

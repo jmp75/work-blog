@@ -10,7 +10,7 @@ categories:
 date: '2022-06-10'
 description: Journey in building a conda package for C++ libraries
 draft: false
-image: https://docs.conda.io/en/latest/_images/conda_logo.svg
+image: https://docs.conda.io/en/latest/_static/conda_logo_full.svg
 layout: post
 title: Conda package for compiled native libraries
 toc: true
