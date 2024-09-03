@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2024-08-09">
+<meta name="description" content="Take stock of the python packaging landscape to refresh practices">
 
-<title>notes – J-M's 'lab notebook'</title>
+<title>Python packaging – J-M’s ‘lab notebook’</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,61 +23,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -104,17 +73,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">J-M’s ‘lab notebook’</span>
     </a>
   </div>
@@ -125,7 +94,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -147,37 +116,249 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Python packaging</h1>
+                  <div>
+        <div class="description">
+          Take stock of the python packaging landscape to refresh practices
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">python</div>
+                <div class="quarto-category">packaging</div>
+                <div class="quarto-category">template</div>
+                <div class="quarto-category">practices</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p><a href="true">J-M</a> </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 9, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#foreword" id="toc-foreword" class="nav-link active" data-scroll-target="#foreword">Foreword</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#related-resources" id="toc-related-resources" class="nav-link" data-scroll-target="#related-resources">Related resources</a></li>
+  <li><a href="#packaging-templates" id="toc-packaging-templates" class="nav-link" data-scroll-target="#packaging-templates">Packaging templates</a></li>
+  <li><a href="#options-for-various-aspects-of-python-packaging" id="toc-options-for-various-aspects-of-python-packaging" class="nav-link" data-scroll-target="#options-for-various-aspects-of-python-packaging">Options for various aspects of python packaging</a>
+  <ul class="collapse">
+  <li><a href="#environment-managers-and-dependency-management" id="toc-environment-managers-and-dependency-management" class="nav-link" data-scroll-target="#environment-managers-and-dependency-management">Environment Managers and dependency management</a></li>
+  <li><a href="#unit-testing" id="toc-unit-testing" class="nav-link" data-scroll-target="#unit-testing">Unit Testing</a></li>
+  <li><a href="#template-installation" id="toc-template-installation" class="nav-link" data-scroll-target="#template-installation">Template Installation</a></li>
+  <li><a href="#continuous-integration" id="toc-continuous-integration" class="nav-link" data-scroll-target="#continuous-integration">Continuous Integration</a></li>
+  <li><a href="#doc-generation" id="toc-doc-generation" class="nav-link" data-scroll-target="#doc-generation">Doc Generation</a></li>
+  <li><a href="#licensing" id="toc-licensing" class="nav-link" data-scroll-target="#licensing">Licensing</a></li>
+  <li><a href="#code-quality" id="toc-code-quality" class="nav-link" data-scroll-target="#code-quality">Code Quality</a></li>
+  <li><a href="#formatting" id="toc-formatting" class="nav-link" data-scroll-target="#formatting">formatting</a></li>
+  <li><a href="#type-safety" id="toc-type-safety" class="nav-link" data-scroll-target="#type-safety">Type safety</a></li>
+  <li><a href="#code-security" id="toc-code-security" class="nav-link" data-scroll-target="#code-security">Code Security</a></li>
+  <li><a href="#containerisation" id="toc-containerisation" class="nav-link" data-scroll-target="#containerisation">Containerisation</a></li>
+  <li><a href="#cloud-deployment" id="toc-cloud-deployment" class="nav-link" data-scroll-target="#cloud-deployment">Cloud Deployment</a></li>
+  <li><a href="#data-tracking" id="toc-data-tracking" class="nav-link" data-scroll-target="#data-tracking">Data Tracking</a></li>
+  <li><a href="#build-tasks" id="toc-build-tasks" class="nav-link" data-scroll-target="#build-tasks">Build Tasks</a></li>
+  <li><a href="#deployment" id="toc-deployment" class="nav-link" data-scroll-target="#deployment">Deployment</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
-<p>blogging about the waa tool port from fortran.</p>
-<p>quarto installed thanks to apt version 1.1.165</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> create-project <span class="at">--type</span> website:blog .</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> install extension quarto-ext/video</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="va">$HOME</span>/src/work-blog/_notebooks/<span class="pp">*</span> posts</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="va">$HOME</span>/src/work-blog/_posts/<span class="pp">*</span> posts</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="va">$HOME</span>/src/work-blog/images/<span class="pp">*</span> posts</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="va">$HOME</span>/src/work-blog/images/copied_from_nb/<span class="pp">*</span> posts/</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">nbdev_migrate</span> <span class="at">--path</span> posts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>usage: nbdev_migrate [-h] [--fname FNAME] [--disp] [--stdin] [--no_skip]
-nbdev_migrate: error: unrecognized arguments: -v</code></pre>
-<pre><code>(bm) abcdef@mymachine:~/src/blog2$ conda list | grep nbdev
-nbdev                     2.2.8                      py_0    fastai</code></pre>
-<p><code>mamba update -c fastai -c conda-forge nbdev</code></p>
-<pre><code>  - nbdev       2.2.8  py_0            fastai                       
-  + nbdev       2.3.6  py_0            fastai/noarch            63kB</code></pre>
+
+<section id="foreword" class="level1">
+<h1>Foreword</h1>
+<p>This may be a post that will be updated regularly after its initial publication.</p>
+</section>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>A <a href="https://github.com/csiro-hydroinformatics/efts-python/">repository</a> with a couple of python packages for the handling of ensemble forecast time series needs a refresh and refactor. It currently uses packaging recipes that were devised quite a few years ago, and need (perhaps) to be reassessed given the zoo of software tools contending for python packaging.</p>
+<p>As it stands <a href="https://github.com/csiro-hydroinformatics/efts-python/tree/9242932363594faaad26711f64e9fb6836de6fdf/efts-io">“now”</a> the packages rely on requirements.txt, <a href="https://github.com/csiro-hydroinformatics/efts-python/blob/9242932363594faaad26711f64e9fb6836de6fdf/efts-io/setup.py">setuptools</a>, pytest, and a few other patterns and practices that may still work but are (alledgedly) superseded.</p>
+<p>Some months ago I migrated the <a href="https://github.com/csiro-hydroinformatics/pyrefcount">refcount</a> package to use poetry. I landed on <a href="https://github.com/csiro-hydroinformatics/pyrefcount/blob/a76543687ca8f156ad8e0d8d41d39c303cad2e91/docs/tech_notes.md">some semi-manual recipes</a> by adopting and adapting <a href="https://py-pkgs.org">https://py-pkgs.org</a>. I recall I was rather underwhelmed by the added value of poetry in this context; perhaps because the package was not suffering from dependency issues, rife in the Python ecosystem.</p>
+<p>A quote from the <a href="https://en.wikipedia.org/wiki/Zen_of_Python">Zen of Python</a> is “In the face of ambiguity, refuse the temptation to guess. There should be one– and preferably only one –obvious way to do it. Although that way may not be obvious at first unless you’re Dutch. Now is better than never.”. Acknowledging I am using it way out of its initial and historical context, the state of python packaging is still at odds with this motto.</p>
+<p>Let’s first scan in this post what the landscape is these days, with a view to devise one or more (preferably one) packaging template I intend to use and require use of in upcoming projects.</p>
+</section>
+<section id="related-resources" class="level1">
+<h1>Related resources</h1>
+<ul>
+<li><p><a href="https://chriswarrick.com/blog/2023/01/15/how-to-improve-python-packaging/#how-is-net-better-than-python">How to improve Python packaging, or why fourteen tools are at least twelve too many</a> and its follow up <a href="https://chriswarrick.com/blog/2024/01/15/python-packaging-one-year-later">Python Packaging, One Year Later: A Look Back at 2023 in Python Packaging</a></p></li>
+<li><p>Dan’s <a href="https://danmackinlay.name/notebook/python_packaging.html">Python packaging, dependency management and isolation</a></p></li>
+<li><p><a href="https://learn.scientific-python.org/development">Scientific Python Library Development Guide</a></p>
+<ul>
+<li><a href="https://learn.scientific-python.org/development/guides/tasks/">Task managers</a></li>
+<li><a href="https://learn.scientific-python.org/development/guides/repo-review/">Repo-review</a></li>
+</ul></li>
+<li><p>Pypa <a href="https://packaging.python.org/en/latest/key_projects/">summaries and links for the most relevant projects in the space of Python installation and packaging.</a></p></li>
+</ul>
+</section>
+<section id="packaging-templates" class="level1">
+<h1>Packaging templates</h1>
+<p>Some candidates amongst <a href="https://www.google.com/search?q=python+project+template">many</a>:</p>
+<ul>
+<li><a href="https://github.com/microsoft/python-package-template">microsoft/python-package-template</a></li>
+<li><a href="https://github.com/Kwpolska/python-project-template">Kwpolska/python-project-template</a></li>
+<li><a href="https://github.com/rochacbruno/python-project-template">rochacbruno/python-project-template</a></li>
+<li><a href="https://www.reddit.com/r/Python/comments/1b4qwds/an_extremely_modern_and_configurable_python/">an_extremely_modern_and_configurable_python template</a></li>
+<li><a href="https://pawamoy.github.io/copier-uv/">copier-uv</a> by the author of <code>mkdocs</code>.</li>
+<li><a href="https://nbdev.fast.ai/">nbdev</a> may not be thought of as a python packaging template, but in a way it is. See also <a href="https://jmp75.github.io/work-blog/posts/20221007-nbdev-windows/">a previous post</a> on nbdev.</li>
+</ul>
+<p>Other templates internal to my organisation in e.g.&nbsp;the energy domain.</p>
+<p>While adopting wholesale a template would be ideal, scaning these options quickly show that they cannot be expected to be a perfect match to our needs. It is worth having a look at options available in various aspects of packaging, to assess whether templates offer a good balance of features versus simplicity of use.</p>
+</section>
+<section id="options-for-various-aspects-of-python-packaging" class="level1">
+<h1>Options for various aspects of python packaging</h1>
+<section id="environment-managers-and-dependency-management" class="level2">
+<h2 class="anchored" data-anchor-id="environment-managers-and-dependency-management">Environment Managers and dependency management</h2>
+<ul>
+<li><p><a href="https://docs.python.org/3/library/venv.html">venv</a></p></li>
+<li><p><a href="https://virtualenv.pypa.io/en/latest/">virtualenv</a></p></li>
+<li><p><a href="https://github.com/pyenv/pyenv">pyenv</a></p></li>
+<li><p>conda, <a href="https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html">mamba</a></p></li>
+<li><p><a href="https://pip.pypa.io/en/latest/">pip</a></p></li>
+<li><p><a href="https://pipx.pypa.io/stable/installation/">pipx</a></p></li>
+<li><p><a href="https://docs.astral.sh/uv/getting-started/installation/">uv</a></p></li>
+<li><p><a href="https://python-poetry.org/docs/">poetry</a></p></li>
+</ul>
+</section>
+<section id="unit-testing" class="level2">
+<h2 class="anchored" data-anchor-id="unit-testing">Unit Testing</h2>
+<ul>
+<li>pytest</li>
+<li>unittest</li>
+<li>coverage</li>
+</ul>
+</section>
+<section id="template-installation" class="level2">
+<h2 class="anchored" data-anchor-id="template-installation">Template Installation</h2>
+<ul>
+<li><a href="https://cookiecutter.readthedocs.io/en/stable/">cookiecutter</a></li>
+<li><a href="https://github.com/copier-org/copier">copier</a></li>
+</ul>
+</section>
+<section id="continuous-integration" class="level2">
+<h2 class="anchored" data-anchor-id="continuous-integration">Continuous Integration</h2>
+<ul>
+<li>GitHub Actions</li>
+<li>Azure</li>
+<li>etc?</li>
+</ul>
+</section>
+<section id="doc-generation" class="level2">
+<h2 class="anchored" data-anchor-id="doc-generation">Doc Generation</h2>
+<ul>
+<li><a href="https://www.sphinx-doc.org/en/master/">sphinx</a></li>
+<li><a href="https://www.mkdocs.org/">mkdocs</a></li>
+<li><a href="https://jupyterbook.org/en/stable/intro.html">jupyter-books</a></li>
+<li><a href="https://quarto.org/">quarto</a> via <a href="https://github.com/machow/quartodoc">quartodoc</a>, and also when using <code>nbdev</code>.</li>
+</ul>
+</section>
+<section id="licensing" class="level2">
+<h2 class="anchored" data-anchor-id="licensing">Licensing</h2>
+<ul>
+<li><a href="https://pypi.org/project/pip-licenses/">pip-licenses</a></li>
+<li>license checks (<a href="https://github.com/dhatim/python-license-check">python-license-check</a>) etc.</li>
+</ul>
+</section>
+<section id="code-quality" class="level2">
+<h2 class="anchored" data-anchor-id="code-quality">Code Quality</h2>
+<p>pre-commit hooks</p>
+</section>
+<section id="formatting" class="level2">
+<h2 class="anchored" data-anchor-id="formatting">formatting</h2>
+<ul>
+<li>(autopep8, isort)</li>
+<li>linting (flake8)</li>
+<li>ruff</li>
+<li>black</li>
+</ul>
+</section>
+<section id="type-safety" class="level2">
+<h2 class="anchored" data-anchor-id="type-safety">Type safety</h2>
+<p>static type checking (mypy)</p>
+</section>
+<section id="code-security" class="level2">
+<h2 class="anchored" data-anchor-id="code-security">Code Security</h2>
+<p>Check code for common security flaws.</p>
+<ul>
+<li>bandit</li>
+</ul>
+</section>
+<section id="containerisation" class="level2">
+<h2 class="anchored" data-anchor-id="containerisation">Containerisation</h2>
+<ul>
+<li>docker</li>
+</ul>
+</section>
+<section id="cloud-deployment" class="level2">
+<h2 class="anchored" data-anchor-id="cloud-deployment">Cloud Deployment</h2>
+<ul>
+<li>terraform</li>
+</ul>
+</section>
+<section id="data-tracking" class="level2">
+<h2 class="anchored" data-anchor-id="data-tracking">Data Tracking</h2>
+<ul>
+<li>git-lfs</li>
+</ul>
+</section>
+<section id="build-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="build-tasks">Build Tasks</h2>
+<ul>
+<li>tox</li>
+<li>nox</li>
+<li>make</li>
+<li>rake</li>
+<li>invoke</li>
+<li>hatch</li>
+<li>doit</li>
+<li>duty</li>
+<li>poethepoet</li>
+</ul>
+<p>See also <a href="https://wiki.python.org/moin/ConfigurationAndBuildTools">Configuration and build tools on python wiki</a></p>
+</section>
+<section id="deployment" class="level2">
+<h2 class="anchored" data-anchor-id="deployment">Deployment</h2>
+<ul>
+<li>pipx: allows your project to be installed with global launch scripts in a managed, sandboxed virtualenv</li>
+</ul>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>The downside of all these choices is the multitude of templates one can come up with. For better or worse. It is usually not possible to really grasp the pros and cons of tools without a sustain use, and possibly running into a particularly annoying situation such as a broken environment, breaking changes in dependencies, etc.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
