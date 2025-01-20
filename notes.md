@@ -25,7 +25,7 @@ nbdev_migrate: error: unrecognized arguments: -v
 ```
 
 ```
-(bm) abcdef@keywest-bm:~/src/blog2$ conda list | grep nbdev
+(bm) abcdef@mymachine:~/src/blog2$ conda list | grep nbdev
 nbdev                     2.2.8                      py_0    fastai
 ```
 

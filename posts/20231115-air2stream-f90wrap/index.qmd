@@ -486,7 +486,7 @@ You can start to poke the model state. Even uninitialised values have handled gr
 >>> A2S.commondata.tair
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
-  File "/home/per202/src/air2stream/src/A2S.py", line 413, in tair
+  File "/home/xxxyyy/src/air2stream/src/A2S.py", line 413, in tair
     tair = f90wrap.runtime.get_array(f90wrap.runtime.sizeof_fortran_t,
 ValueError: array is NULL
 >>> A2S.commondata.n_tot
@@ -511,7 +511,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> import A2S
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
-  File "/home/per202/src/air2stream/src/A2S.py", line 2, in <module>
+  File "/home/xxxyyy/src/air2stream/src/A2S.py", line 2, in <module>
     import _A2S
 ModuleNotFoundError: No module named '_A2S'
 ```

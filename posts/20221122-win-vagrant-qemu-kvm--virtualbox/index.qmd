@@ -85,7 +85,7 @@ vagrant box add Win7-32 file:///${HOME}/tmp/vm/Win7_32.box
 ```
 
 ```
-xxxyyy@keywest-bm:~/tmp/vm$ vagrant box list
+xxxyyy@mymachine:~/tmp/vm$ vagrant box list
 Win7-32 (virtualbox, 0)
 ```
 

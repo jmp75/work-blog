@@ -140,17 +140,14 @@ direnv: error /home/xxxyyy/src/efts-io/.envrc is blocked. Run `direnv allow` to 
 
 ## PYTHON_VERSIONS
 
-Tried several versions, but had issues down the track. Maybe works only if the specified versions have been indeed been installed via `pyenv`. Keep in log notes for now ans see if I need to sanitise for blog post.
+I initially tried several versions as per the doc suggesting this via the `PYTHON_VERSIONS` env var., but had issues down the track. Maybe works only if the specified versions have been indeed been installed via `pyenv`. Keep in log notes for now ans see if I need to sanitise for blog post.
 
 ```sh
-export PYTHON_VERSIONS="3.9 3.10 3.11 3.12"
-```
-
-```sh
+#export PYTHON_VERSIONS="3.9 3.10 3.11 3.12"
 export PYTHON_VERSIONS="3.12"
 ```
 
-Rather than `make setup` do the steps for didactic purposes:
+Typically one would use, one off when starting the daily work, `make setup`. I do the sub-steps for didactic purposes:
 
 `uv venv`:
 
@@ -179,7 +176,7 @@ I may as well specify the correct dependencies.
 
 pyproject.toml
 
-```
+```ini
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
@@ -444,6 +441,50 @@ but `uv pip tree` does not list netcdf4
 
 `uv pip install netcdf4`
 
+## CI
+
+First few commits, the github actions report multiple errors.
+
+![Github actions](./006.png)
+
+Starting with quality checks, the first tripping. Warnings are treated as errors, so this needs fixing or a workaround: 
+
+```text
+   WARNING -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
+    - code-reference.md
+    - tech_notes.md
+```
+
+More unexpected, `make setup` fails, and it is rather puzzling that a pandas version 0.1 is sought. I may want to pin versions in any case, but why this behavior was not apparent locally is odd. 
+
+```text
+Run make setup
+  make setup
+  shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+  env:
+    LANG: en_US.utf-8
+    LC_ALL: en_US.utf-8
+    PYTHONIOENCODING: UTF-8
+    PYTHON_VERSIONS: 
+    pythonLocation: /opt/hostedtoolcache/Python/3.12.5/x64
+    PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.5/x64/lib/pkgconfig
+    Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.5/x64
+    Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.5/x64
+    Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.5/x64
+    LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.5/x64/lib
+    UV_RESOLUTION: lowest-direct
+Using Python 3.12.5 interpreter at: /opt/hostedtoolcache/Python/3.12.5/x64/bin/python
+Creating virtualenv at: .venv
+warning: The direct dependency `pandas` is unpinned. Consider setting a lower bound when using `--resolution-strategy lowest` to avoid using outdated versions.
+warning: The direct dependency `numpy` is unpinned. Consider setting a lower bound when using `--resolution-strategy lowest` to avoid using outdated versions.
+warning: The direct dependency `xarray` is unpinned. Consider setting a lower bound when using `--resolution-strategy lowest` to avoid using outdated versions.
+warning: The direct dependency `cf-xarray` is unpinned. Consider setting a lower bound when using `--resolution-strategy lowest` to avoid using outdated versions.
+warning: The direct dependency `pint-xarray` is unpinned. Consider setting a lower bound when using `--resolution-strategy lowest` to avoid using outdated versions.
+warning: The direct dependency `cftime` is unpinned. Consider setting a lower bound when using `--resolution-strategy lowest` to avoid using outdated versions.
+error: Failed to download and build `pandas==0.1`
+  Caused by: Build backend failed to determine extra requires with `build_wheel()` with exit status: 1
+--- stdout:
+```
 
 ## Troubleshooting
 
