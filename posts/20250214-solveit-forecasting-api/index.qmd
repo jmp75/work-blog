@@ -1,0 +1,65 @@
+---
+title: "An AI-enabled hydrologic modelling buddy"
+description: "How far can we push the AI-enabled setup of hydrologic models"
+author:
+  - name: J-M
+    url: {}
+date: "2025-02-14"
+categories: ["swift2", "streamflow forecasting", "ai"]
+format: 
+  html:
+    toc: true
+# image: 000.png
+engine: knitr
+draft: false
+---
+
+# Background
+
+Over the past two months I've followed an online course: [Solve It](https://solveit.fast.ai/). More than a product, this is a considered approach and method for working with AI, coined [dialogue engineering](https://www.answer.ai/posts/2024-11-07-solveit.html).
+
+I cannot share the course material, at least and perhaps not yet. But I can convey that one of the lesson was showing how to use the rather complicated and extensive [Cloudflare python API](https://developers.cloudflare.com/api/python/) to perform cloud engineering, something that was attempted without success some time ago "pre-AI". The key aspect of the exercise was to create the **right context** for the AI to competently propose code and steps, where the AI alone would have spouted things of dubious quality.
+
+## Closer to home
+
+One line of work I have is short-term streamflow forecasting. For a few years we've had [python bindings for swift2](https://csiro-hydroinformatics.github.io/swift-py-doc/) openly published, so recently trained AIs (which happens to be Claude Sonnet 3.5) may well have seen this in training.
+
+So, can it competently propose to help, giving _a bit_ of context (not reproduced here), with a basic modelling setup?
+
+```text
+Thank you for providing the documentation link. I can now see this is CSIRO's SWIFT framework for hydrological modeling. Looking at the documentation, I can help you create a code snippet for a GR4J model.
+
+Would you like me to start with a basic setup that:
+
+    - Creates a GR4J model instance
+    - Sets up a single subcatchment
+    - Uses sample climate data
+
+Let's start with importing the necessary modules and creating a GR4J model instance. Based on the documentation, here's the first step:
+```
+
+```python
+from swift.swift import Swift
+from swift.swift_types import *
+
+# Initialize SWIFT
+swift = Swift()
+
+# Create a GR4J model instance
+gr4j = swift.create_model('gr4j')
+```
+
+Yeah nah, definitely an hallucination.
+
+# Planning a line of work
+
+## End goal
+
+* Can we enable a hydrologist, trained but not previously exposed to the `swift2` package, to set up a correct, executable semi-distributed hydrologic model?
+* How far can we push the definition of complicated calibration workflows with minimal coding by the hydrologist? 
+
+## Steps
+
+I should eat my own dog food and use upcoming modelling needs on this from to test whether this is of use to me as well. After all, I do forget stuff and am adverse to copy/paste and not a particularly fast typer.
+
+Once I have a context I find satisfying, identify a new user not familiar (or not overly familiar) with the python API, and set successive tasks. It is a dual research question, as one user's approach to using an AI buddy may well vary from another. This is testing both humans and a contextualised AI, really.
