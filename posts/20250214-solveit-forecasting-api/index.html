@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2022-11-22">
-<meta name="description" content="Running a Windows VM with Vagrant on Linux, trying via Qemu and VirtualBox">
+<meta name="dcterms.date" content="2025-02-14">
+<meta name="description" content="How far can we push the AI-enabled setup of hydrologic models">
 
-<title>Running a Windows VM with Vagrant on Linux – J-M’s ‘lab notebook’</title>
+<title>An AI-enabled hydrologic modelling buddy – J-M’s ‘lab notebook’</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -155,16 +155,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Running a Windows VM with Vagrant on Linux</h1>
+      <h1 class="title">An AI-enabled hydrologic modelling buddy</h1>
                   <div>
         <div class="description">
-          Running a Windows VM with Vagrant on Linux, trying via Qemu and VirtualBox
+          How far can we push the AI-enabled setup of hydrologic models
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">kvm</div>
-                <div class="quarto-category">vagrant</div>
-                <div class="quarto-category">qemu</div>
+                <div class="quarto-category">swift2</div>
+                <div class="quarto-category">streamflow forecasting</div>
+                <div class="quarto-category">ai</div>
               </div>
                   </div>
   </div>
@@ -182,7 +182,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">November 22, 2022</p>
+        <p class="date">February 14, 2025</p>
       </div>
     </div>
     
@@ -198,17 +198,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#context" id="toc-context" class="nav-link active" data-scroll-target="#context">Context</a></li>
-  <li><a href="#options" id="toc-options" class="nav-link" data-scroll-target="#options">Options</a>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a>
   <ul class="collapse">
-  <li><a href="#tutorials-and-related-work" id="toc-tutorials-and-related-work" class="nav-link" data-scroll-target="#tutorials-and-related-work">Tutorials and related work</a></li>
-  <li><a href="#installing-prerequisites" id="toc-installing-prerequisites" class="nav-link" data-scroll-target="#installing-prerequisites">Installing prerequisites</a></li>
-  <li><a href="#windows-test-image" id="toc-windows-test-image" class="nav-link" data-scroll-target="#windows-test-image">Windows test image</a></li>
-  <li><a href="#creating-the-vagrant-box" id="toc-creating-the-vagrant-box" class="nav-link" data-scroll-target="#creating-the-vagrant-box">Creating the Vagrant box</a></li>
-  <li><a href="#the-path-that-worked-vagrant-and-virtualbox" id="toc-the-path-that-worked-vagrant-and-virtualbox" class="nav-link" data-scroll-target="#the-path-that-worked-vagrant-and-virtualbox">The path that worked: Vagrant and VirtualBox</a></li>
-  <li><a href="#the-path-id-like-to-work-vagrant-kvm-and-qemu" id="toc-the-path-id-like-to-work-vagrant-kvm-and-qemu" class="nav-link" data-scroll-target="#the-path-id-like-to-work-vagrant-kvm-and-qemu">The path I’d like to work: Vagrant, KVM and Qemu</a></li>
+  <li><a href="#closer-to-home" id="toc-closer-to-home" class="nav-link" data-scroll-target="#closer-to-home">Closer to home</a></li>
   </ul></li>
-  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#planning-a-line-of-work" id="toc-planning-a-line-of-work" class="nav-link" data-scroll-target="#planning-a-line-of-work">Planning a line of work</a>
+  <ul class="collapse">
+  <li><a href="#end-goal" id="toc-end-goal" class="nav-link" data-scroll-target="#end-goal">End goal</a></li>
+  <li><a href="#steps" id="toc-steps" class="nav-link" data-scroll-target="#steps">Steps</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -349,169 +347,50 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p><img src="./logos.png" title="logos" class="img-fluid"></p>
-<p>(Logos are trademarks/copyright of respective owners)</p>
-<section id="context" class="level1">
-<h1>Context</h1>
-<p>This is following up on the work done for <a href="https://jmp75.github.io/work-blog/posts/20221116-waa-installers/">previous post</a>. I’ve tested a 32bits build of an application, running it on a Windows 7 64 bits, and it appears to work fine. But a tester encountered problems installing and running it on a Windows 32bits installation.</p>
-<p>There are no options that I can see to install 32bits windows images on Azure DevOps. So, can I find a test image that I can run, preferably on top of a Linux installation?</p>
-<p>“Of course it is entirely feasible”. How?</p>
+<section id="background" class="level1">
+<h1>Background</h1>
+<p>Over the past two months I’ve followed an online course: <a href="https://solveit.fast.ai/">Solve It</a>. More than a product, this is a considered approach and method for working with AI, coined <a href="https://www.answer.ai/posts/2024-11-07-solveit.html">dialogue engineering</a>.</p>
+<p>I cannot share the course material, at least and perhaps not yet. But I can convey that one of the lesson was showing how to use the rather complicated and extensive <a href="https://developers.cloudflare.com/api/python/">Cloudflare python API</a> to perform cloud engineering, something that was attempted without success some time ago “pre-AI”. The key aspect of the exercise was to create the <strong>right context</strong> for the AI to competently propose code and steps, where the AI alone would have spouted things of dubious quality.</p>
+<section id="closer-to-home" class="level2">
+<h2 class="anchored" data-anchor-id="closer-to-home">Closer to home</h2>
+<p>One line of work I have is short-term streamflow forecasting. For a few years we’ve had <a href="https://csiro-hydroinformatics.github.io/swift-py-doc/">python bindings for swift2</a> openly published, so recently trained AIs (which happens to be Claude Sonnet 3.5) may well have seen this in training.</p>
+<p>So, can it competently propose to help, giving <em>a bit</em> of context (not reproduced here), with a basic modelling setup?</p>
+<pre class="text"><code>Thank you for providing the documentation link. I can now see this is CSIRO's SWIFT framework for hydrological modeling. Looking at the documentation, I can help you create a code snippet for a GR4J model.
+
+Would you like me to start with a basic setup that:
+
+    - Creates a GR4J model instance
+    - Sets up a single subcatchment
+    - Uses sample climate data
+
+Let's start with importing the necessary modules and creating a GR4J model instance. Based on the documentation, here's the first step:</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> swift.swift <span class="im">import</span> Swift</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> swift.swift_types <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize SWIFT</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>swift <span class="op">=</span> Swift()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a GR4J model instance</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>gr4j <span class="op">=</span> swift.create_model(<span class="st">'gr4j'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Yeah nah, definitely an hallucination.</p>
 </section>
-<section id="options" class="level1">
-<h1>Options</h1>
-<p>Microsoft helpfully offers <a href="https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/">free legacy Windows virtual machines you download and manage locally</a> for testing purposes. This includes images for Windows 7 32 bit, ideal for my tests. There are options to select VM platforms to download, and two of the suitable ones for my case are Vagrant and VirtualBox.</p>
-<p>I started with the goal to use Vagrant such that the VM is accessible from <a href="https://www.qemu.org/">qemu</a> (and or <a href="https://www.linux-kvm.org/page/Main_Page">kvm</a>?). I never really learned or used Vagrant so far, so why not try. And I have a soft spot, and a fair bit of respect, for people behind qemu and kvm.</p>
-<p>But I hit a snag trying to provision the VM for <code>libvirt</code>. I’ll start in this post with the setup that actually worked, with Vagrant and VirtualBox, then capture elements with the libvirt+qemu with the hope this helps others, or myself to crack it at some point.</p>
-<section id="tutorials-and-related-work" class="level2">
-<h2 class="anchored" data-anchor-id="tutorials-and-related-work">Tutorials and related work</h2>
-<p>Some related publications gleaned through the process.</p>
-<p>You should at least scan <a href="https://www.vagrantup.com">Vagrant</a> and the <a href="https://developer.hashicorp.com/vagrant/tutorials/getting-started/getting-started-boxes">vagrant tutorials to get started</a> if you are, like me, a late newcomer to Vagrant.</p>
-<p>Debian Wiki has an <a href="https://wiki.debian.org/Vagrant">entry on Vagrant</a>. It does list the known issue I bumped into (“Waiting for domain to get an IP address…”).</p>
-<p>There is <a href="https://medium.com/@AnnaJS15/getting-started-with-virtualbox-and-vagrant-8d98aa271d2a">no</a> <a href="https://medium.com/@JohnFoderaro/how-to-set-up-a-local-linux-environment-with-vagrant-163f0ba4da77">shortage</a> <a href="https://medium.com/devops-dudes/how-to-setup-vagrant-and-virtual-box-for-ubuntu-20-04-7374bf9cc3fa">of</a> <a href="https://medium.com/@joelbelton/your-essential-guide-to-vagrant-vms-and-why-you-should-be-using-them-bc4f3f9c1c9e">blog</a> <a href="https://medium.com/@gauthierleonard/kvm-machines-for-vagrant-on-archlinux-1d8863344cb7">posts</a> for instance on medium.com on setting up Vagrant (some are subscriber only), but most deal with standing up Linux on top of Linux or MacOS via Vagrant, not Windows images. They were useful, but not spot on the need I have.</p>
-<p>A very nice, didactic resource I found was <a href="https://fishilico.github.io/generic-config/windows/vagrant.html">this note by Nicolas Iooss</a>, probably the most relevant to the subject of the present post. A couple of commands in that note appear outdated, but they are minor.</p>
-<p>Other resources that brought partial information, or may in the future:</p>
+</section>
+<section id="planning-a-line-of-work" class="level1">
+<h1>Planning a line of work</h1>
+<section id="end-goal" class="level2">
+<h2 class="anchored" data-anchor-id="end-goal">End goal</h2>
 <ul>
-<li><a href="https://ostechnix.com/how-to-use-vagrant-with-libvirt-kvm-provider">How To Use Vagrant With Libvirt KVM Provider</a></li>
-<li>github issue <a href="https://github.com/vagrant-libvirt/vagrant-libvirt/issues/1032">waiting for domain to get ip</a></li>
+<li>Can we enable a hydrologist, trained but not previously exposed to the <code>swift2</code> package, to set up a correct, executable semi-distributed hydrologic model?</li>
+<li>How far can we push the definition of complicated calibration workflows with minimal coding by the hydrologist?</li>
 </ul>
 </section>
-<section id="installing-prerequisites" class="level2">
-<h2 class="anchored" data-anchor-id="installing-prerequisites">Installing prerequisites</h2>
-<p>On Linux Debian I started with <code>sudo apt install vagrant vagrant-lxc vagrant-libvirt</code>. There are several <code>vagrant-*</code> plugins in Debian. I probably should have installed most of them. Vagrant can also install them from internet sources later, which I did for <code>vagrant-mutate</code> for instance with <code>vagrant plugin install</code>.</p>
-<p><code>which kvm</code> indicates kvm is already installed, not sure from which Debian package. <code>quemu-*</code> commands are present.</p>
-</section>
-<section id="windows-test-image" class="level2">
-<h2 class="anchored" data-anchor-id="windows-test-image">Windows test image</h2>
-<p>Getting from <a href="https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/">Microsoft download site</a> a Win7 32bits image for Vagrant:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/tmp/vm</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> ~/Downloads/IE11.Win7.Vagrant.zip ./</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> IE11.Win7.Vagrant.zip </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>-rw-r--r-- 1 xxxyyy xxxyyy 4989880652 Sep 23  2015 'IE11 - Win7.box'
--rw-r--r-- 1 xxxyyy xxxyyy 4989880932 Nov 22 11:08  IE11.Win7.Vagrant.zip</code></pre>
-<p>I dislike spaces in filenames so <code>mv IE11\ -\ Win7.box Win7_32.box</code></p>
-</section>
-<section id="creating-the-vagrant-box" class="level2">
-<h2 class="anchored" data-anchor-id="creating-the-vagrant-box">Creating the Vagrant box</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> box add Win7-32 file:///<span class="va">${HOME}</span>/tmp/vm/Win7_32.box</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>==&gt; box: Successfully added box 'Win7-32' (v0) for 'virtualbox'!</code></pre>
-<pre><code>xxxyyy@mymachine:~/tmp/vm$ vagrant box list
-Win7-32 (virtualbox, 0)</code></pre>
-<p>From a vagrant tutorial:</p>
-<blockquote class="blockquote">
-<p>Vagrant uses a base image to quickly clone a virtual machine. These base images are known as “boxes” in Vagrant, and specifying the box to use for your Vagrant environment is always the first step after creating a new Vagrantfile.</p>
-</blockquote>
-<p>While you can create a Vagrantfile from scratch, <code>vagrant init Win7-32</code> creates a stub with defaults.</p>
-</section>
-<section id="the-path-that-worked-vagrant-and-virtualbox" class="level2">
-<h2 class="anchored" data-anchor-id="the-path-that-worked-vagrant-and-virtualbox">The path that worked: Vagrant and VirtualBox</h2>
-<p>I installed VirtualBox following some of the <a href="https://www.virtualbox.org/wiki/Linux_Downloads">download instructions from virtualbox.org</a>. There are several ways for Debian. <code>virtualbox</code> is not in the main repo, but available via a fast-track one. In the end, adding the external repository from Oracle in the “Debian-based Linux distributions” section seemed easier:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/apt/sources.list</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># add additional repo</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-O-</span> https://www.virtualbox.org/download/oracle_vbox_2016.asc <span class="kw">|</span> <span class="fu">sudo</span> gpg <span class="at">--dearmor</span> <span class="at">--yes</span> <span class="at">--output</span> /usr/share/keyrings/oracle-virtualbox-2016.gpg</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">more</span> /usr/share/keyrings/oracle-virtualbox-2016.gpg</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get install virtualbox-6.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Restart xterm and co to get changes to PATH env var, perhaps.</p>
-<p>After clearing up previous tests with <code>vagrant box remove ...</code> re-add the box, which will default to virtualbox in format:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> box add Win7_32_vb file:///<span class="va">${HOME}</span>/tmp/vm/Win7_32.box</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Get a Vagrant file with <code>vagrant init Win7_32_vb</code></p>
-<p>Then <code>vagrant up --provider virtualbox</code> mostly seems to works, but:</p>
-<pre><code>    default: SSH address: 127.0.0.1:2222
-    default: SSH username: vagrant
-    default: SSH auth method: private key
-    default: Warning: Authentication failure. Retrying...
-    default: Warning: Authentication failure. Retrying...</code></pre>
-<p>I forgot to add the following to the <code>Vagrantfile</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode ini code-with-copy"><code class="sourceCode ini"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure remote access</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">config.ssh.username </span><span class="ot">=</span><span class="st"> "IEUser"</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="dt">config.ssh.password </span><span class="ot">=</span><span class="st"> "Passw0rd!"</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Use 2 CPU and 4GB of RAM</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="dt">config.vm.provider :virtualbox do |v|</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="dt">  v.cpus </span><span class="ot">=</span><span class="st"> </span><span class="dv">2</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="dt">  v.memory </span><span class="ot">=</span><span class="st"> </span><span class="dv">4096</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="dt">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Then <code>vagrant up  --provider virtualbox</code> works and starting the VirtualBox GUI shows the running machine:</p>
-<p><img src="./virtual-box-gui.png" title="virtual-box-gui.png" class="img-fluid"></p>
-</section>
-<section id="the-path-id-like-to-work-vagrant-kvm-and-qemu" class="level2">
-<h2 class="anchored" data-anchor-id="the-path-id-like-to-work-vagrant-kvm-and-qemu">The path I’d like to work: Vagrant, KVM and Qemu</h2>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This section contains a rough log of steps that did not eventuate as a working solution. Capture for my future self if I revisit this.</p>
-</div>
-</div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> up <span class="at">--provider</span><span class="op">=</span>kvm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>The provider 'kvm' could not be found, but was requested to
-back the machine 'default'. Please use a provider that exists.
-
-Vagrant knows about the following providers: docker, hyperv, virtualbox, libvirt, lxc</code></pre>
-<p>Muh, don’t know. Maybe:</p>
-<p><code>vagrant up --provider=lxc</code></p>
-<pre><code>Bringing machine 'default' up with 'lxc' provider...
-==&gt; default: Box 'Win7-32' could not be found. Attempting to find and install...
-    default: Box Provider: lxc
-    default: Box Version: &gt;= 0
-==&gt; default: Box file was not detected as metadata. Adding it directly...
-==&gt; default: Adding box 'Win7-32' (v0) for provider: lxc
-    default: Downloading: Win7-32
-An error occurred while downloading the remote file. The error
-message, if any, is reproduced below. Please fix this error and try
-again.
-
-Couldn't open file /home/xxxyyy/tmp/vm/Win7-32</code></pre>
-<p>OK, fair enough, the box is for provider <code>virtualbox</code> by default. I need to mutate to something else. <code>libvirt</code>, it seems, inferring frin (REF?).</p>
-<p>Clean up with <code>vagrant box remove Win7-32</code>, and restart the process.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> box add windows/Win7-32  Win7_32.box</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> plugin install vagrant-mutate</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> mutate windows/Win7-32 libvirt</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> box remove <span class="at">--provider</span> virtualbox windows/Win7-32</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb15"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> init windows/Win7-32 </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> up <span class="at">--provider</span> libvirt <span class="at">--no-destroy-on-error</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre class="text"><code>==&gt; default: Creating shared folders metadata...
-==&gt; default: Starting domain.
-==&gt; default: Waiting for domain to get an IP address...</code></pre>
-<p>Taking cues from a <a href="https://github.com/vagrant-libvirt/vagrant-libvirt/issues/1032">libvirt github issue on “waiting for domain to get ip”</a></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install vagrant-libvirt libvirt-daemon-system</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> usermod <span class="at">--append</span> <span class="at">--groups</span> libvirt <span class="va">$USER</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>log out and back in to have this update effective</p>
-<p><code>groups | grep -o libvirt</code> does not show the expected user name. WTH? Yet <code>more /etc/group | grep virt</code> does include <code>libvirt:x:132:xxxyyy</code></p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">virt-manager</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vagrant</span> version</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> net <span class="kw">in</span> <span class="va">$(</span><span class="ex">virsh</span> net-list <span class="at">--name</span><span class="va">)</span><span class="kw">;</span> <span class="cf">do</span> <span class="ex">virsh</span> net-dhcp-leases <span class="va">${net}</span><span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ex">virsh</span> <span class="at">--help</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ex">virsh</span> <span class="at">--connect</span><span class="op">=</span>qemu:///system list <span class="at">--all</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="ex">virsh</span> <span class="at">--connect</span><span class="op">=</span>qemu:///system domiflist vm_default</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="ex">virsh</span> <span class="at">--connect</span><span class="op">=</span>qemu:///system net-list <span class="at">--all</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><code>sudo iptables -L -n | less</code> looks like libvirt does update the iptables</p>
-<p>Coming across <a href="https://kerneltalks.com/howto/how-to-disable-iptables-firewall-temporarily/">how-to-disable-iptables-firewall-temporarily</a></p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> su</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">iptables</span> <span class="at">-F</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ex">iptables</span> <span class="at">-X</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="ex">iptables</span> <span class="at">-P</span> INPUT ACCEPT</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="ex">iptables</span> <span class="at">-P</span> OUTPUT ACCEPT</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="ex">iptables</span> <span class="at">-P</span> FORWARD ACCEPT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><code>vagrant up --provider libvirt</code></p>
-<pre class="text"><code>==&gt; default:  -- INPUT:             type=mouse, bus=ps2
-==&gt; default: Creating shared folders metadata...
-Error while activating network: Call to virNetworkCreate failed: internal error: Failed to apply firewall rules /usr/sbin/iptables -w --table filter --insert LIBVIRT_INP --in-interface virbr1 --protocol tcp --destination-port 67 --jump ACCEPT: iptables: No chain/target/match by that name.</code></pre>
-<p>OK, I give up, no time for this anymore.</p>
-</section>
-</section>
-<section id="conclusion" class="level1">
-<h1>Conclusion</h1>
-<p>Sure, libvirt/KVM is faster than VirtualBox, and with a “purer” stack. But I bumped into issues quite stereotypical for the GNU/Linux ecosystem: partial bits of documentation, obscure problems arising that deflate the “not so advanced” users pressed for time. This is an anecdotal observation not a complaint (I know the pain). I hope to revisit the VM over libvirt/KVM/QEmu in the future, or that a reader can contribute with their own post.</p>
+<section id="steps" class="level2">
+<h2 class="anchored" data-anchor-id="steps">Steps</h2>
+<p>I should eat my own dog food and use upcoming modelling needs on this from to test whether this is of use to me as well. After all, I do forget stuff and am adverse to copy/paste and not a particularly fast typer.</p>
+<p>Once I have a context I find satisfying, identify a new user not familiar (or not overly familiar) with the python API, and set successive tasks. It is a dual research question, as one user’s approach to using an AI buddy may well vary from another. This is testing both humans and a contextualised AI, really.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

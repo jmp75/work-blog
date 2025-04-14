@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.20">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="J-M">
+<meta name="dcterms.date" content="2025-03-27">
+<meta name="description" content="Massage griffe2md python API doc to an intuitive context hierarchy">
+
+<title>An AI-enabled hydrologic modelling buddy - part4 – J-M’s ‘lab notebook’</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-bb336a360afc1d7ae78ffae72a144868.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-516d19510a3495a2f5c04694115b7fde.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-dark-816ffc7d711b40eec17926d7a06ac7f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-574be25b5a7772c3a765cc8590e29d11.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">J-M’s ‘lab notebook’</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/jmp75"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/jmp_oz"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">An AI-enabled hydrologic modelling buddy - part4</h1>
+                  <div>
+        <div class="description">
+          Massage griffe2md python API doc to an intuitive context hierarchy
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">swift2</div>
+                <div class="quarto-category">streamflow forecasting</div>
+                <div class="quarto-category">ai</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>J-M </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 27, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#parsing-a-mardown-python-api-to-provide-a-context-to-an-ai" id="toc-parsing-a-mardown-python-api-to-provide-a-context-to-an-ai" class="nav-link active" data-scroll-target="#parsing-a-mardown-python-api-to-provide-a-context-to-an-ai">Parsing a Mardown python API to provide a context to an AI</a>
+  <ul class="collapse">
+  <li><a href="#plan" id="toc-plan" class="nav-link" data-scroll-target="#plan">Plan</a></li>
+  <li><a href="#installing-toolslm-from-source" id="toc-installing-toolslm-from-source" class="nav-link" data-scroll-target="#installing-toolslm-from-source">Installing <code>toolslm</code> from source</a></li>
+  <li><a href="#processing-the-swift2-api-markdown-format-with-toolslm" id="toc-processing-the-swift2-api-markdown-format-with-toolslm" class="nav-link" data-scroll-target="#processing-the-swift2-api-markdown-format-with-toolslm">Processing the swift2 API markdown format with <code>toolslm</code></a></li>
+  <li><a href="#massaging-the-hierarchical-subsection-to-short-names" id="toc-massaging-the-hierarchical-subsection-to-short-names" class="nav-link" data-scroll-target="#massaging-the-hierarchical-subsection-to-short-names">Massaging the hierarchical subsection to short names</a></li>
+  <li><a href="#massaging-the-dictionary-of-api-content" id="toc-massaging-the-dictionary-of-api-content" class="nav-link" data-scroll-target="#massaging-the-dictionary-of-api-content">Massaging the dictionary of API content</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+<script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    toggleBodyColorPrimary();
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        disableStylesheet(primaryStylesheets)
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const darkModeDefault = false;
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+
+
+
+
+<section id="parsing-a-mardown-python-api-to-provide-a-context-to-an-ai" class="level1">
+<h1>Parsing a Mardown python API to provide a context to an AI</h1>
+<section id="plan" class="level2">
+<h2 class="anchored" data-anchor-id="plan">Plan</h2>
+<p>We have a python package API documentation that is formatted as a Markdown document, using <a href="https://github.com/mkdocstrings/griffe2md">griffe2md</a>. We want to use a package called <code>toolslm</code> to massage this information into python dictionaries so that an AI can exploit this information. The <code>toolslm</code> package has a few buit-in behaviors entirely sensible for some other inputs, that create artefacts in its outputs that are not ideal for the Markdown document produced by <code>griffe2md</code>. This document is an attempt to modify or augment <code>toolslm</code> to maintain python function names and more intuitive hierarchical section names for the API documentation.</p>
+</section>
+<section id="installing-toolslm-from-source" class="level2">
+<h2 class="anchored" data-anchor-id="installing-toolslm-from-source">Installing <code>toolslm</code> from source</h2>
+<p>We do need to force the installation of the toolslm from source (somehow found that I needed to use <code>--force-reinstall</code>, and make sure I restart <code>solveit</code> to get the right version), as it includes a fix not yet released in the toolslm on <code>pypi</code>.</p>
+<div id="cell-2" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># !pip install --force-reinstall "git+https://github.com/AnswerDotAI/toolslm"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-3" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip freeze <span class="op">|</span> grep toolslm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>toolslm @ git+https://github.com/AnswerDotAI/toolslm@7c959bff55a60479e412385b3933ba8dfcbb4b40</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/usr/local/lib/python3.11/site-packages/lancedb/__init__.py:220: UserWarning: lance is not fork-safe. If you are using multiprocessing, use spawn instead.
+  warnings.warn(</code></pre>
+</div>
+</div>
+<div id="cell-4" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bs4 <span class="im">import</span> BeautifulSoup <span class="im">as</span> bs</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fn <span class="op">=</span> <span class="st">"./static/swift2_api.md"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(fn, <span class="st">'r'</span>) <span class="im">as</span> <span class="bu">file</span>:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    content <span class="op">=</span> <span class="bu">file</span>.read()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>text <span class="op">=</span> bs(content, <span class="st">'html.parser'</span>).get_text()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-5" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(text[:<span class="dv">10000</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>## swift2
+
+Python interface to the SWIFT2 streamflow simulation and forecasting libraries.
+
+**Modules:**
+
+- [**classes**](#swift2.classes) –
+- [**common**](#swift2.common) –
+- [**const**](#swift2.const) –
+- [**doc_helper**](#swift2.doc_helper) –
+- [**helpers**](#swift2.helpers) –
+- [**internal**](#swift2.internal) –
+- [**model_definitions**](#swift2.model_definitions) –
+- [**parameteriser**](#swift2.parameteriser) –
+- [**play_record**](#swift2.play_record) –
+- [**proto**](#swift2.proto) – Prototypes
+- [**prototypes**](#swift2.prototypes) –
+- [**simulation**](#swift2.simulation) –
+- [**statistics**](#swift2.statistics) –
+- [**system**](#swift2.system) –
+- [**utils**](#swift2.utils) –
+- [**vis**](#swift2.vis) –
+- [**wrap**](#swift2.wrap) – CFFI based wrapper for the SWIFT2 native library
+
+### swift2.classes
+
+**Classes:**
+
+- [**CandidateFactorySeed**](#swift2.classes.CandidateFactorySeed) –
+- [**CompositeParameteriser**](#swift2.classes.CompositeParameteriser) – A parameteriser defined as the concatenation of several parameterisers
+- [**ConstraintParameteriser**](#swift2.classes.ConstraintParameteriser) –
+- [**EnsembleForecastSimulation**](#swift2.classes.EnsembleForecastSimulation) –
+- [**EnsembleSimulation**](#swift2.classes.EnsembleSimulation) – A simulation designed to facilitate model runs over ensemble of inputs
+- [**ErrisStagedCalibration**](#swift2.classes.ErrisStagedCalibration) –
+- [**FilteringParameteriser**](#swift2.classes.FilteringParameteriser) –
+- [**FunctionsParameteriser**](#swift2.classes.FunctionsParameteriser) –
+- [**HypercubeParameteriser**](#swift2.classes.HypercubeParameteriser) –
+- [**MaerrisStagedCalibration**](#swift2.classes.MaerrisStagedCalibration) –
+- [**MemoryStates**](#swift2.classes.MemoryStates) –
+- [**ObjectiveEvaluator**](#swift2.classes.ObjectiveEvaluator) – Objective Evaluator
+- [**ObjectiveScores**](#swift2.classes.ObjectiveScores) –
+- [**Optimiser**](#swift2.classes.Optimiser) –
+- [**Parameteriser**](#swift2.classes.Parameteriser) – Wrapper around a native parameteriser.
+- [**ScalingParameteriser**](#swift2.classes.ScalingParameteriser) –
+- [**SceTerminationCondition**](#swift2.classes.SceTerminationCondition) –
+- [**Simulation**](#swift2.classes.Simulation) – Wrapper around single dimension simulation objects
+- [**SimulationMixin**](#swift2.classes.SimulationMixin) – A parent class for simulation objects. Most users are unlikely to explicitly use it.
+- [**StateInitParameteriser**](#swift2.classes.StateInitParameteriser) –
+- [**StateInitialiser**](#swift2.classes.StateInitialiser) –
+- [**TransformParameteriser**](#swift2.classes.TransformParameteriser) –
+- [**VectorObjectiveScores**](#swift2.classes.VectorObjectiveScores) –
+
+**Functions:**
+
+- [**wrap_cffi_native_handle**](#swift2.classes.wrap_cffi_native_handle) –
+
+#### swift2.classes.CandidateFactorySeed
+
+```python
+CandidateFactorySeed(handle, release_native, type_id=None, prior_ref_count=0)
+```
+
+Bases: [DeletableCffiNativeHandle](#refcount.interop.DeletableCffiNativeHandle)
+
+#### swift2.classes.CompositeParameteriser
+
+```python
+CompositeParameteriser(handle, release_native, type_id=None, prior_ref_count=0)
+```
+
+Bases: [HypercubeParameteriser](#swift2.classes.HypercubeParameteriser)
+
+A parameteriser defined as the concatenation of several parameterisers
+
+**Functions:**
+
+- [**add_parameter_to_hypercube**](#swift2.classes.CompositeParameteriser.add_parameter_to_hypercube) – Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception
+- [**add_to_hypercube**](#swift2.classes.CompositeParameteriser.add_to_hypercube) – Add entries to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception.
+- [**append**](#swift2.classes.CompositeParameteriser.append) – Append a parameteriser to this composite parameteriser
+- [**apply_sys_config**](#swift2.classes.CompositeParameteriser.apply_sys_config) – Apply a model configuration to a simulation
+- [**as_dataframe**](#swift2.classes.CompositeParameteriser.as_dataframe) – Convert this hypercube parameteriser to a pandas data frame representation
+- [**backtransform**](#swift2.classes.CompositeParameteriser.backtransform) – Get the parameteriser values in the untransformed space
+- [**clone**](#swift2.classes.CompositeParameteriser.clone) –
+- [**concatenate**](#swift2.classes.CompositeParameteriser.concatenate) – Concatenates some hypercubes to a single parameteriser
+- [**create_parameter_sampler**](#swift2.classes.CompositeParameteriser.create_parameter_sampler) – Creates a sampler for this parameteriser
+- [**empty_composite**](#swift2.classes.CompositeParameteriser.empty_composite) – Creates an empty parameteriser to be populated with other parameterisers
+- [**filtered_parameters**](#swift2.classes.CompositeParameteriser.filtered_parameters) – Wrap a parameteriser in a filter that can hide some parameters
+- [**from_dataframe**](#swift2.classes.CompositeParameteriser.from_dataframe) – Create a parameteriser
+- [**hide_parameters**](#swift2.classes.CompositeParameteriser.hide_parameters) – Hide some parameters (from the outside e.g. optimisers) in a filter parameteriser
+- [**make_state_init_parameteriser**](#swift2.classes.CompositeParameteriser.make_state_init_parameteriser) – Create a parameteriser used for model state initialisation
+- [**num_free_parameters**](#swift2.classes.CompositeParameteriser.num_free_parameters) – Number of free parameters in this hypercube parameteriser
+- [**score_for_objective**](#swift2.classes.CompositeParameteriser.score_for_objective) – Computes the value of an objective for this given set of parameters
+- [**set_hypercube**](#swift2.classes.CompositeParameteriser.set_hypercube) – Set the properties of a hypercube parameteriser
+- [**set_max_parameter_value**](#swift2.classes.CompositeParameteriser.set_max_parameter_value) – Sets the value(s) of the upper bound of one or more parameter(s)
+- [**set_min_parameter_value**](#swift2.classes.CompositeParameteriser.set_min_parameter_value) – Sets the value(s) of the lower bound of one or more parameter(s)
+- [**set_parameter_definition**](#swift2.classes.CompositeParameteriser.set_parameter_definition) – Sets the feasible range and value for a parameter
+- [**set_parameter_value**](#swift2.classes.CompositeParameteriser.set_parameter_value) – Sets the value(s) of one or more parameter(s)
+- [**show_parameters**](#swift2.classes.CompositeParameteriser.show_parameters) – Show some parameters (from the outside e.g. optimisers) in a filter parameteriser
+- [**subcatchment_parameteriser**](#swift2.classes.CompositeParameteriser.subcatchment_parameteriser) – Create a parameteriser that gets applied to a subset of a whole catchment
+- [**supports_thread_safe_cloning**](#swift2.classes.CompositeParameteriser.supports_thread_safe_cloning) – Is this parameteriser clonable as a deep copy, safe for multi-threading?
+- [**wrap_transform**](#swift2.classes.CompositeParameteriser.wrap_transform) – Create a parameteriser for which parameter transformations can be defined.
+
+##### swift2.classes.CompositeParameteriser.add_parameter_to_hypercube
+
+```python
+add_parameter_to_hypercube(name, value, min, max)
+```
+
+Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception
+
+##### swift2.classes.CompositeParameteriser.add_to_hypercube
+
+```python
+add_to_hypercube(specs)
+```
+
+Add entries to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception.
+
+**Parameters:**
+
+- **specs** ([DataFrame](#pandas.DataFrame)) – An optional data frame description of the parameter set, with at least columns Name, Min, Max, Value.
+
+##### swift2.classes.CompositeParameteriser.append
+
+```python
+append(p)
+```
+
+Append a parameteriser to this composite parameteriser
+
+**Parameters:**
+
+- **p** ([HypercubeParameteriser](#swift2.classes.HypercubeParameteriser)) – hypercube to append to this
+
+##### swift2.classes.CompositeParameteriser.apply_sys_config
+
+```python
+apply_sys_config(simulation)
+```
+
+Apply a model configuration to a simulation
+
+**Parameters:**
+
+- **simulation** ([Simulation](#swift2.classes.Simulation)) – simulation
+
+##### swift2.classes.CompositeParameteriser.as_dataframe
+
+```python
+as_dataframe()
+```
+
+Convert this hypercube parameteriser to a pandas data frame representation
+
+**Returns:**
+
+- [DataFrame](#pandas.DataFrame) – pd.DataFrame: pandas data frame
+
+##### swift2.classes.CompositeParameteriser.backtransform
+
+```python
+backtransform()
+```
+
+Get the parameteriser values in the untransformed space
+
+Get the parameteriser values in the untransformed space, i.e. remove any
+transform added via \[`HypercubeParameteriser.wrap_transform`\][HypercubeParameteriser.wrap_transform].
+This allows to transform back e.g. from a virtual parameter log_X
+to the underlying model (or even virtual/meta) parameter X.
+
+**Returns:**
+
+- **HypercubeParameteriser** ([HypercubeParameteriser](#swift2.classes.HypercubeParameteriser)) – The parameters definitions without the transforms (if there are any)
+
+**Examples:**
+
+```pycon
+&gt;&gt;&gt; ref_area = 250
+&gt;&gt;&gt; time_span = 3600
+&gt;&gt;&gt; ptrans = sdh.define_gr4j_scaled_parameter(ref_area, time_span)
+&gt;&gt;&gt; ptrans
+    Name     Value       Min       Max
+0    log_x4  0.305422  0.000000  2.380211
+1    log_x1  0.506690  0.000000  3.778151
+2    log_x3  0.315425  0.000000  3.000000
+3  asinh_x2  2.637752 -3.989327  3.989327
+&gt;&gt;&gt; ptrans.backtransform()
+Name    Value   Min     Max
+0   x2  6.95511 -27.0    27.0
+1   x3  2.06740   1.0  1000.0
+2   x4  2.02033   1.0   240.0
+3   x1  3.21137   1.0  6000.0
+&gt;&gt;&gt;
+```
+
+##### swift2.classes.CompositeParameteriser.clone
+
+```python
+clone()
+```
+
+##### swift2.classes.CompositeParameteriser.concatenate
+
+```python
+concatenate(*args, strategy='')
+```
+
+Concatenates some hypercubes to a single parameteriser
+
+**Parameters:**
+
+- **strategy** ([str](#str)) – The strategy to contatenate. Defaults to "", equivalent to "composite", the only available. May have other options in the future.</code></pre>
+</div>
+</div>
+</section>
+<section id="processing-the-swift2-api-markdown-format-with-toolslm" class="level2">
+<h2 class="anchored" data-anchor-id="processing-the-swift2-api-markdown-format-with-toolslm">Processing the swift2 API markdown format with <code>toolslm</code></h2>
+<div id="cell-7" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> toolslm.md_hier <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>hdgs <span class="op">=</span> create_heading_dict(text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-8" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>subsection_header <span class="op">=</span> hdgs[<span class="st">'swift2'</span>][<span class="st">'swift2.classes'</span>][<span class="st">'swift2.classes.CompositeParameteriser'</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>subsection_header</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<div class="sourceCode" id="cb10"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span> <span class="er">'swift2.classes.CompositeParameteriser.add_parameter_to_hypercube'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.add_to_hypercube'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.append'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.apply_sys_config'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.as_dataframe'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.backtransform'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.clone'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.concatenate'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.create_parameter_sampler'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.empty_composite'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.filtered_parameters'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.from_dataframe'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.hide_parameters'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.make_state_init_parameteriser'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.num_free_parameters'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.score_for_objective'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.set_hypercube'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.set_max_parameter_value'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.set_min_parameter_value'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.set_parameter_definition'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.set_parameter_value'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.show_parameters'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.subcatchment_parameteriser'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.supports_thread_safe_cloning'</span><span class="fu">:</span> <span class="fu">{},</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  <span class="er">'swift2.classes.CompositeParameteriser.wrap_transform'</span><span class="fu">:</span> <span class="fu">{}}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<p><strong>AI Prompt</strong></p>
+</section>
+<section id="massaging-the-hierarchical-subsection-to-short-names" class="level2">
+<h2 class="anchored" data-anchor-id="massaging-the-hierarchical-subsection-to-short-names">Massaging the hierarchical subsection to short names</h2>
+<p>The dictionary of dictionaries <code>hdgs</code> is such that the dictionary keys at every nested level have fully qualfied names, for instance <code>hdgs['swift2']['swift2.classes']['swift2.classes.CompositeParameteriser']['swift2.classes.CompositeParameteriser.add_parameter_to_hypercube']</code> I want to process this dictionary <code>hdgs</code> and produce a new dictionary using short module and function names at every level, to that I have a new dictionary of dictionaries <code>new_hdgs</code> where I can address the nested content with <code>new_hdgs['swift2']['classes']['CompositeParameteriser']['add_parameter_to_hypercube']</code> to access the final nested value, which is an empty dictionary <code>{}</code>. I suggest that in this case it is OK to assume that we can transform each sub-key by keeping the last dot-separated string, i.e.&nbsp;the sub-key <code>'swift2.classes.CompositeParameteriser.show_parameters'</code> becomes <code>'show_parameters'</code>. We do not need a more complicated algorithm that checks on the parent key of the sub-key to strip it from the sub-key. A possibly suitable strategy is to have a recursive python function to do this transformation, but I am open to your suggestions.</p>
+<p><strong>AI Response</strong></p>
+<p>I see what you’re trying to do! You want to transform your hierarchical dictionary to use shorter keys at each level, stripping away the fully qualified names.</p>
+<p>Let’s create a recursive function to transform the dictionary. Here’s an approach we can take:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shorten_keys(d, separator<span class="op">=</span><span class="st">'.'</span>):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Recursively transform dictionary keys to use only the last part after the separator.</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">        d: Dictionary to transform</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">        separator: Character that separates parts of the key (default '.')</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">        </span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">        New dictionary with shortened keys</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> {}</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> key, value <span class="kw">in</span> d.items():</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Get the last part of the key after the separator</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        short_key <span class="op">=</span> key.split(separator)[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># If value is a dictionary, recursively process it</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(value, <span class="bu">dict</span>):</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>            result[short_key] <span class="op">=</span> shorten_keys(value, separator)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>            result[short_key] <span class="op">=</span> value</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Would you like to try implementing this function? Or would you prefer me to show how to use it with your specific <code>hdgs</code> dictionary?</p>
+<p>OK, this looks sound, let’s give this a try and look at the resulting nested dictionary</p>
+<div id="cell-12" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shorten_keys(d, separator<span class="op">=</span><span class="st">'.'</span>):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Recursively transform dictionary keys to use only the last part after the separator.</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">        d: Dictionary to transform</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">        separator: Character that separates parts of the key (default '.')</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">        </span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">        New dictionary with shortened keys</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> {}</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> key, value <span class="kw">in</span> d.items():</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Get the last part of the key after the separator</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        short_key <span class="op">=</span> key.split(separator)[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># If value is a dictionary, recursively process it</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(value, <span class="bu">dict</span>):</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>            result[short_key] <span class="op">=</span> shorten_keys(value, separator)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>            result[short_key] <span class="op">=</span> value</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>new_hdgs <span class="op">=</span> shorten_keys(hdgs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-13" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>new_hdgs[<span class="st">'swift2'</span>][<span class="st">'classes'</span>][<span class="st">'CompositeParameteriser'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'add_parameter_to_hypercube': {},
+ 'add_to_hypercube': {},
+ 'append': {},
+ 'apply_sys_config': {},
+ 'as_dataframe': {},
+ 'backtransform': {},
+ 'clone': {},
+ 'concatenate': {},
+ 'create_parameter_sampler': {},
+ 'empty_composite': {},
+ 'filtered_parameters': {},
+ 'from_dataframe': {},
+ 'hide_parameters': {},
+ 'make_state_init_parameteriser': {},
+ 'num_free_parameters': {},
+ 'score_for_objective': {},
+ 'set_hypercube': {},
+ 'set_max_parameter_value': {},
+ 'set_min_parameter_value': {},
+ 'set_parameter_definition': {},
+ 'set_parameter_value': {},
+ 'show_parameters': {},
+ 'subcatchment_parameteriser': {},
+ 'supports_thread_safe_cloning': {},
+ 'wrap_transform': {}}</code></pre>
+</div>
+</div>
+<p>OK, this looks good. Now let us look at the dictionary that also includes the content, and flattens the markdown hierarchy</p>
+</section>
+<section id="massaging-the-dictionary-of-api-content" class="level2">
+<h2 class="anchored" data-anchor-id="massaging-the-dictionary-of-api-content">Massaging the dictionary of API content</h2>
+<div id="cell-15" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>hdict <span class="op">=</span> markdown_to_dict(text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-16" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>first_subsections <span class="op">=</span> <span class="bu">list</span>(hdict.keys())[:<span class="dv">10</span>]</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>first_subsections</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>['swift2',
+ 'swift2.swift2classes',
+ 'swift2.swift2classes.swift2classesCandidateFactorySeed',
+ 'swift2.swift2classes.swift2classesCompositeParameteriser',
+ 'swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriseraddparametertohypercube',
+ 'swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriseraddtohypercube',
+ 'swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriserappend',
+ 'swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriserapplysysconfig',
+ 'swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriserasdataframe',
+ 'swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriserbacktransform']</code></pre>
+</div>
+</div>
+<div id="cell-17" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(hdict[<span class="st">'swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriseraddparametertohypercube'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>##### swift2.classes.CompositeParameteriser.add_parameter_to_hypercube
+
+```python
+add_parameter_to_hypercube(name, value, min, max)
+```
+
+Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception</code></pre>
+</div>
+</div>
+<p><strong>AI Prompt</strong></p>
+<p>The implementation of the function <code>markdown_to_dict</code> is as follows:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.utils <span class="im">import</span> dict2obj</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> markdown_to_dict(markdown_content:<span class="bu">str</span>):</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> clean_heading(text): <span class="cf">return</span> re.sub(<span class="vs">r'</span><span class="pp">[^A-Za-z0-9 ]</span><span class="op">+</span><span class="vs">'</span>, <span class="st">''</span>, text).strip()</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> markdown_content.splitlines()</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    headings <span class="op">=</span> []</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    in_code_block <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Parse headings with their levels and line numbers</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, line <span class="kw">in</span> <span class="bu">enumerate</span>(lines):</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Toggle code block state when encountering fence</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.strip().startswith(<span class="st">'```'</span>): in_code_block <span class="op">=</span> <span class="kw">not</span> in_code_block</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Only detect headings when not in a code block</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> in_code_block: <span class="cf">continue</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>        match <span class="op">=</span> re.match(<span class="vs">r'</span><span class="dv">^</span><span class="kw">(</span><span class="vs">#</span><span class="op">{1,6}</span><span class="kw">)</span><span class="dv">\s</span><span class="op">*</span><span class="kw">(</span><span class="dv">.</span><span class="op">*</span><span class="kw">)</span><span class="vs">'</span>, line)</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> match:</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>            level <span class="op">=</span> <span class="bu">len</span>(match.group(<span class="dv">1</span>))</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>            text <span class="op">=</span> match.group(<span class="dv">2</span>).strip()</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>            headings.append({<span class="st">'level'</span>: level, <span class="st">'text'</span>: text, <span class="st">'line'</span>: idx})</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assign content to each heading, including subheadings</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, h <span class="kw">in</span> <span class="bu">enumerate</span>(headings):</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>        start <span class="op">=</span> h[<span class="st">'line'</span>]  <span class="co"># Include the heading line itself</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Find the end index: next heading of same or higher level</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(headings)):</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> headings[j][<span class="st">'level'</span>] <span class="op">&lt;=</span> h[<span class="st">'level'</span>]:</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>                end <span class="op">=</span> headings[j][<span class="st">'line'</span>]</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>: end <span class="op">=</span> <span class="bu">len</span>(lines)</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>        h[<span class="st">'content'</span>] <span class="op">=</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join(lines[start:end]).strip()</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build the dictionary with hierarchical keys</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>    result,stack <span class="op">=</span> {},[]</span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>    first_level <span class="op">=</span> headings[<span class="dv">0</span>][<span class="st">'level'</span>]</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> h <span class="kw">in</span> headings:</span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>        stack <span class="op">=</span> stack[:h[<span class="st">'level'</span>] <span class="op">-</span> first_level] <span class="op">+</span> [clean_heading(h[<span class="st">'text'</span>])]</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>        key <span class="op">=</span> <span class="st">'.'</span>.join(stack)</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>        result[key] <span class="op">=</span> h[<span class="st">'content'</span>]</span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dict2obj(result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now we observe that if we apply this function to the following string:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>text_raw<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="st">## swift2</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="st">Python interface to the SWIFT2 streamflow simulation and forecasting libraries.</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="st">**Modules:**</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="st">- [**classes**](#swift2.classes) –</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="st">### swift2.classes</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="st">**Classes:**</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="st">- [**CandidateFactorySeed**](#swift2.classes.CandidateFactorySeed) –</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="st">- [**CompositeParameteriser**](#swift2.classes.CompositeParameteriser) – A parameteriser defined as the concatenation of several parameterisers</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="st">#### swift2.classes.CandidateFactorySeed</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="st">Bases: [DeletableCffiNativeHandle](#refcount.interop.DeletableCffiNativeHandle)</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="st">#### swift2.classes.CompositeParameteriser</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="st">Bases: [HypercubeParameteriser](#swift2.classes.HypercubeParameteriser)</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="st">A parameteriser defined as the concatenation of several parameterisers</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="st">**Functions:**</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="st">- [**add_parameter_to_hypercube**](#swift2.classes.CompositeParameteriser.add_parameter_to_hypercube) – Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="st">##### swift2.classes.CompositeParameteriser.add_parameter_to_hypercube</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a><span class="st">Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception</span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>dict_sections <span class="op">=</span> markdown_to_dict(text_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Resulting from <code>markdown_to_dict</code>, <code>dict_sections</code> has a key ‘swift2.swift2classes.swift2classesCompositeParameteriser.swift2classesCompositeParameteriseraddparametertohypercube’, but what I want is <code>dict_sections</code> such that the key is ‘swift2.classes.CompositeParameteriser.add_parameter_to_hypercube’. Can you propose a modified <code>markdown_to_dict</code> such that I end up with the latter key, the fully qualified python name of the function <code>swift2.classes.CompositeParameteriser.add_parameter_to_hypercube</code>?</p>
+<p><strong>AI Response</strong></p>
+<p>I see the issue with the current <code>markdown_to_dict</code> function. It’s creating keys by cleaning the heading text (removing special characters) and then joining them, which results in those long concatenated keys without proper module structure.</p>
+<p>Let’s modify the function to preserve the original heading structure instead of cleaning it. Here’s an approach:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.utils <span class="im">import</span> dict2obj</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> markdown_to_dict(markdown_content:<span class="bu">str</span>):</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> markdown_content.splitlines()</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    headings <span class="op">=</span> []</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    in_code_block <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Parse headings with their levels and line numbers</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, line <span class="kw">in</span> <span class="bu">enumerate</span>(lines):</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Toggle code block state when encountering fence</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.strip().startswith(<span class="st">'```'</span>): </span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>            in_code_block <span class="op">=</span> <span class="kw">not</span> in_code_block</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Only detect headings when not in a code block</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> in_code_block: </span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>        match <span class="op">=</span> re.match(<span class="vs">r'</span><span class="dv">^</span><span class="kw">(</span><span class="vs">#</span><span class="op">{1,6}</span><span class="kw">)</span><span class="dv">\s</span><span class="op">*</span><span class="kw">(</span><span class="dv">.</span><span class="op">*</span><span class="kw">)</span><span class="vs">'</span>, line)</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> match:</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>            level <span class="op">=</span> <span class="bu">len</span>(match.group(<span class="dv">1</span>))</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>            text <span class="op">=</span> match.group(<span class="dv">2</span>).strip()</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>            headings.append({<span class="st">'level'</span>: level, <span class="st">'text'</span>: text, <span class="st">'line'</span>: idx})</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assign content to each heading, including subheadings</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, h <span class="kw">in</span> <span class="bu">enumerate</span>(headings):</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>        start <span class="op">=</span> h[<span class="st">'line'</span>]  <span class="co"># Include the heading line itself</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Find the end index: next heading of same or higher level</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(headings)):</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> headings[j][<span class="st">'level'</span>] <span class="op">&lt;=</span> h[<span class="st">'level'</span>]:</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>                end <span class="op">=</span> headings[j][<span class="st">'line'</span>]</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>: </span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>            end <span class="op">=</span> <span class="bu">len</span>(lines)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>        h[<span class="st">'content'</span>] <span class="op">=</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join(lines[start:end]).strip()</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build the dictionary with hierarchical keys</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> {}</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> h <span class="kw">in</span> headings:</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Use the original heading text as the key directly</span></span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This preserves the fully qualified names like "swift2.classes.CompositeParameteriser.add_parameter_to_hypercube"</span></span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>        key <span class="op">=</span> h[<span class="st">'text'</span>]</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>        result[key] <span class="op">=</span> h[<span class="st">'content'</span>]</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dict2obj(result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Would you like me to explain how this differs from the original implementation, or would you prefer to test it first?</p>
+<div id="cell-20" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.utils <span class="im">import</span> dict2obj</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> my_markdown_to_dict(markdown_content:<span class="bu">str</span>):</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    lines <span class="op">=</span> markdown_content.splitlines()</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    headings <span class="op">=</span> []</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    in_code_block <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Parse headings with their levels and line numbers</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, line <span class="kw">in</span> <span class="bu">enumerate</span>(lines):</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Toggle code block state when encountering fence</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> line.strip().startswith(<span class="st">'```'</span>): </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>            in_code_block <span class="op">=</span> <span class="kw">not</span> in_code_block</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Only detect headings when not in a code block</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> in_code_block: </span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>        match <span class="op">=</span> re.match(<span class="vs">r'</span><span class="dv">^</span><span class="kw">(</span><span class="vs">#</span><span class="op">{1,6}</span><span class="kw">)</span><span class="dv">\s</span><span class="op">*</span><span class="kw">(</span><span class="dv">.</span><span class="op">*</span><span class="kw">)</span><span class="vs">'</span>, line)</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> match:</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>            level <span class="op">=</span> <span class="bu">len</span>(match.group(<span class="dv">1</span>))</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>            text <span class="op">=</span> match.group(<span class="dv">2</span>).strip()</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>            headings.append({<span class="st">'level'</span>: level, <span class="st">'text'</span>: text, <span class="st">'line'</span>: idx})</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assign content to each heading, including subheadings</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, h <span class="kw">in</span> <span class="bu">enumerate</span>(headings):</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>        start <span class="op">=</span> h[<span class="st">'line'</span>]  <span class="co"># Include the heading line itself</span></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Find the end index: next heading of same or higher level</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(i <span class="op">+</span> <span class="dv">1</span>, <span class="bu">len</span>(headings)):</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> headings[j][<span class="st">'level'</span>] <span class="op">&lt;=</span> h[<span class="st">'level'</span>]:</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>                end <span class="op">=</span> headings[j][<span class="st">'line'</span>]</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>: </span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>            end <span class="op">=</span> <span class="bu">len</span>(lines)</span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>        h[<span class="st">'content'</span>] <span class="op">=</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>.join(lines[start:end]).strip()</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build the dictionary with hierarchical keys</span></span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> {}</span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> h <span class="kw">in</span> headings:</span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Use the original heading text as the key directly</span></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This preserves the fully qualified names like "swift2.classes.CompositeParameteriser.add_parameter_to_hypercube"</span></span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>        key <span class="op">=</span> h[<span class="st">'text'</span>]</span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>        result[key] <span class="op">=</span> h[<span class="st">'content'</span>]</span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dict2obj(result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-21" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>text_raw<span class="op">=</span><span class="st">"""</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="st">## swift2</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="st">Python interface to the SWIFT2 streamflow simulation and forecasting libraries.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="st">**Modules:**</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="st">- [**classes**](#swift2.classes) –</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="st">### swift2.classes</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="st">**Classes:**</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="st">- [**CandidateFactorySeed**](#swift2.classes.CandidateFactorySeed) –</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="st">- [**CompositeParameteriser**](#swift2.classes.CompositeParameteriser) – A parameteriser defined as the concatenation of several parameterisers</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="st">#### swift2.classes.CandidateFactorySeed</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="st">Bases: [DeletableCffiNativeHandle](#refcount.interop.DeletableCffiNativeHandle)</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="st">#### swift2.classes.CompositeParameteriser</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="st">Bases: [HypercubeParameteriser](#swift2.classes.HypercubeParameteriser)</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a><span class="st">A parameteriser defined as the concatenation of several parameterisers</span></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a><span class="st">**Functions:**</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a><span class="st">- [**add_parameter_to_hypercube**](#swift2.classes.CompositeParameteriser.add_parameter_to_hypercube) – Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a><span class="st">##### swift2.classes.CompositeParameteriser.add_parameter_to_hypercube</span></span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a><span class="st">Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception</span></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>new_hdict <span class="op">=</span> my_markdown_to_dict(text_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-22" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(new_hdict.keys()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['swift2', 'swift2.classes', 'swift2.classes.CandidateFactorySeed', 'swift2.classes.CompositeParameteriser', 'swift2.classes.CompositeParameteriser.add_parameter_to_hypercube']</code></pre>
+</div>
+</div>
+<div id="cell-23" class="cell" data-vscode="{&quot;languageId&quot;:&quot;python&quot;}">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(new_hdict[<span class="st">'swift2.classes.CompositeParameteriser.add_parameter_to_hypercube'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>##### swift2.classes.CompositeParameteriser.add_parameter_to_hypercube
+
+Add a parameter to a hypercube. Must be a type of object that is expandable, otherwise may raise an exception</code></pre>
+</div>
+</div>
+<p>OK, looking good, I think we may have a winner to process the API doc produced by griffe…</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(darkModeDefault) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    }
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jmp75\.github\.io\/work-blog\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2022 Jean-Michel Perraud. Except where otherwise noted, all text and images licensed CC-BY-NC 4.0.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

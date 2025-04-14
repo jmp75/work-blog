@@ -2,6 +2,10 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/20250327-python-API-griffe2md-markdown.html",
+      "/posts/20250221-hydro-buddy.html",
+      "/posts/20250220-solveit-forecasting-api/index.html",
+      "/posts/20250214-solveit-forecasting-api/index.html",
       "/posts/20250120-shiny-python-conditional-ui/index.html",
       "/posts/20240903-copier-uv/index.html",
       "/posts/20240809-python-package-template/index.html",
