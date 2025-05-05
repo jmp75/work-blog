@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/20250515-qwen3-local-llama-cpp/index.html",
       "/posts/20250415-gitmcp-continue-dev/index.html",
       "/posts/20250327-python-API-griffe2md-markdown.html",
       "/posts/20250221-hydro-buddy.html",
