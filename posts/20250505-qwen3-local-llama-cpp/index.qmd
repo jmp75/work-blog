@@ -1,0 +1,69 @@
+---
+title: "Running Qwen 3 via llama.cpp on a CPU"
+description: "Running Qwen 3 via llama.cpp on a CPU"
+author:
+  - name: J-M
+    url: {}
+date: "2025-05-05"
+categories: ["qwen", "llm", "ai"]
+format: 
+  html:
+    toc: true
+image: https://user-images.githubusercontent.com/1991296/230134379-7181e485-c521-4d23-a0d6-f7b3b61ba524.png
+engine: knitr
+draft: false
+---
+
+# qwen3:8B on a GPU
+
+Alibaba Qwen3 has landed last week. I've been using qwen2.5 coder for code completion for months, on and off. qwen3 coder is not yet available, but I thought I could give a try via continue.dev and ollama to one of the smaller versions of qwen3 as a conversational AI that may fit in my GPU: `ollama pull qwen3:8b` proved a good guess, just about filling my GPU VRAM. Notice the runtime, in seconds, which we will compare later to a CPU run version.
+
+!["Qwen3 8B on a GPU via ollama"](002.png)
+
+# Seeking a bigger Qwen 3 via llama.cpp 
+
+Qwen [in this tweet](https://x.com/Alibaba_Qwen/status/1918353505074725363) announced the availability of [Qwen3-32B-GGUF on huggingface](https://huggingface.co/Qwen/Qwen3-32B-GGUF), with instructions to run it via llama.cpp. Been meaning to trial running a larger LLM on my CPU, and on my more substantial RAM than my VRAM.
+
+Shout out to the post [llama.cpp guide - Running LLMs locally, on any hardware, from scratch](https://blog.steelph0enix.dev/posts/llama-cpp-guide/), which is not really needed for this present post, but a really nice writeup.
+
+## Qwen/Qwen3-32B-GGUF:Q8_0 
+
+Following the instructions on [How to build llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md). After reading decided to give a go at using [BLIS](https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/BLIS.md) as a backend.
+
+```sh
+./llama-cli -hf Qwen/Qwen3-32B-GGUF:Q8_0 --jinja --color -ngl 99 -fa -sm row --temp 0.6 --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5 -c 40960 -n 32768 --no-context-shift
+```
+
+!["downloading the model"](001.png)
+
+After completed download, the prompt is available. 
+
+```text
+Can you tell me a bit about you, as a large language model?
+```
+
+I note that the llama-cli process has a ~11 GB footprint, and it is using 50% of my i7 16 cores. The output seems to be about a token per second or so. Even if not comparing apple and apple with the GPU (8B on the GPU versus 8-bit quantised 32B on the CPU), it is as expected slower on a CPU than a GPU. That said, this much slower than I would have hoped reading the post [Running Local LLMs, CPU vs. GPU - a Quick Speed Test ](https://dev.to/maximsaplin/running-local-llms-cpu-vs-gpu-a-quick-speed-test-2cjn) where the CPU trials still bottom at 5 tokens per seconds.
+
+{{< video qwen3-cpu-speed.webm >}}
+
+
+## Qwen/Qwen3-32B-GGUF:Q8_0 
+
+I noticed a tweet with [Qwen 3 evaluations across a range of formats and quantisations by Wolfram Ravenwolf](https://x.com/WolframRvnwlf/status/1920186645384478955). He is running on GPU for sure, but I notice that observation is that the 30B-A3B unsloth build is ~5x faster than Qwen's Qwen3-32B. Worth a try to see if this is replicated. Again, not quite the same as I was using an 8 bit above, not 4 bit like in his benchmark, but if anything it may be even faster? Anyway, try and see.
+
+```sh
+./llama-cli -hf unsloth/Qwen3-30B-A3B-GGUF:Q4_K_XL
+ --jinja --color -ngl 99 -fa -sm row --temp 0.6 --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 1.5 -c 40960 -n 32768 --no-context-shift
+```
+
+Indeed, this is markedly speedier, and about the reading speed if you pay attention to the output rather than scan. The memory footpring is about 16GB, which may be an intuitive amount given the 4 bit quantisation, although I had not noted the previous footprint of the base qwen model.
+
+{{< video unsloth-qwen3-cpu-speed.webm >}}
+
+# Conclusion
+
+There are several impressive achievements with this release of `Qwen3`, by Alibaba and the open source ecosystem that builds on it.
+
+Would I run it on a regular basis in lieu of remote API endpoints? perhaps not. Is is energy efficient? Usually not. But if I am at home on solar in a decently sunny day as is usually the case in Australia, it is, and could have its uses.
+
+In any case, this was not an experiment with an exclusive goal to run an AI on prem, but to first hand get a feel of where capabilities are moving, and demystify running an AI on relatively constrained hardware.
