@@ -4,7 +4,7 @@ description: "Running Qwen 3 via llama.cpp on a CPU"
 author:
   - name: J-M
     url: {}
-date: "2025-05-05"
+date: "2025-05-09"
 categories: ["qwen", "llm", "ai"]
 format: 
   html:
@@ -16,15 +16,25 @@ draft: false
 
 # qwen3:8B on a GPU
 
-Alibaba Qwen3 has landed last week. I've been using qwen2.5 coder for code completion for months, on and off. qwen3 coder is not yet available, but I thought I could give a try via continue.dev and ollama to one of the smaller versions of qwen3 as a conversational AI that may fit in my GPU: `ollama pull qwen3:8b` proved a good guess, just about filling my GPU VRAM. Notice the runtime, in seconds, which we will compare later to a CPU run version.
+Alibaba [Qwen3](https://qwenlm.github.io/blog/qwen3/) has landed a week or so ago. I've been using amongst other thing qwen2.5 coder for code completion for months, on and off. qwen3 coder is not yet available, but I thought I could give a try via continue.dev and ollama to one of the smaller versions of qwen3 as a conversational AI that may fit in my GPU: `ollama pull qwen3:8b` proved a good guess, just about filling my GPU VRAM. Notice the runtime, in seconds, which we will compare later to a CPU run version.
 
 !["Qwen3 8B on a GPU via ollama"](002.png)
 
+8B is probably the biggest version my GPU can do, unless I perhaps explore quantisation in another post sometime.
+
 # Seeking a bigger Qwen 3 via llama.cpp 
+
+I have been meaning to try running on my CPU, just to test my assumptions as to the feasibility.
 
 Qwen [in this tweet](https://x.com/Alibaba_Qwen/status/1918353505074725363) announced the availability of [Qwen3-32B-GGUF on huggingface](https://huggingface.co/Qwen/Qwen3-32B-GGUF), with instructions to run it via llama.cpp. Been meaning to trial running a larger LLM on my CPU, and on my more substantial RAM than my VRAM.
 
+On 8th May, Wolfram Ravenwolf also reporded a derived Qwen3 quantised model, which we will also try.
+
+# Related read 
+
 Shout out to the post [llama.cpp guide - Running LLMs locally, on any hardware, from scratch](https://blog.steelph0enix.dev/posts/llama-cpp-guide/), which is not really needed for this present post, but a really nice writeup.
+
+# Repro setps
 
 ## Qwen/Qwen3-32B-GGUF:Q8_0 
 
@@ -47,7 +57,7 @@ I note that the llama-cli process has a ~11 GB footprint, and it is using 50% of
 {{< video qwen3-cpu-speed.webm >}}
 
 
-## Qwen/Qwen3-32B-GGUF:Q8_0 
+## unsloth/Qwen3-30B-A3B-GGUF:Q4_K_XL 
 
 I noticed a tweet with [Qwen 3 evaluations across a range of formats and quantisations by Wolfram Ravenwolf](https://x.com/WolframRvnwlf/status/1920186645384478955). He is running on GPU for sure, but I notice that observation is that the 30B-A3B unsloth build is ~5x faster than Qwen's Qwen3-32B. Worth a try to see if this is replicated. Again, not quite the same as I was using an 8 bit above, not 4 bit like in his benchmark, but if anything it may be even faster? Anyway, try and see.
 
