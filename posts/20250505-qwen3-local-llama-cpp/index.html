@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="J-M">
-<meta name="dcterms.date" content="2025-05-05">
+<meta name="dcterms.date" content="2025-05-09">
 <meta name="description" content="Running Qwen 3 via llama.cpp on a CPU">
 
 <title>Running Qwen 3 via llama.cpp on a CPU – J-M’s ‘lab notebook’</title>
@@ -184,7 +184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 5, 2025</p>
+        <p class="date">May 9, 2025</p>
       </div>
     </div>
     
@@ -201,10 +201,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#qwen38b-on-a-gpu" id="toc-qwen38b-on-a-gpu" class="nav-link active" data-scroll-target="#qwen38b-on-a-gpu">qwen3:8B on a GPU</a></li>
-  <li><a href="#seeking-a-bigger-qwen-3-via-llama.cpp" id="toc-seeking-a-bigger-qwen-3-via-llama.cpp" class="nav-link" data-scroll-target="#seeking-a-bigger-qwen-3-via-llama.cpp">Seeking a bigger Qwen 3 via llama.cpp</a>
+  <li><a href="#seeking-a-bigger-qwen-3-via-llama.cpp" id="toc-seeking-a-bigger-qwen-3-via-llama.cpp" class="nav-link" data-scroll-target="#seeking-a-bigger-qwen-3-via-llama.cpp">Seeking a bigger Qwen 3 via llama.cpp</a></li>
+  <li><a href="#related-read" id="toc-related-read" class="nav-link" data-scroll-target="#related-read">Related read</a></li>
+  <li><a href="#repro-setps" id="toc-repro-setps" class="nav-link" data-scroll-target="#repro-setps">Repro setps</a>
   <ul class="collapse">
   <li><a href="#qwenqwen3-32b-ggufq8_0" id="toc-qwenqwen3-32b-ggufq8_0" class="nav-link" data-scroll-target="#qwenqwen3-32b-ggufq8_0">Qwen/Qwen3-32B-GGUF:Q8_0</a></li>
-  <li><a href="#qwenqwen3-32b-ggufq8_0-1" id="toc-qwenqwen3-32b-ggufq8_0-1" class="nav-link" data-scroll-target="#qwenqwen3-32b-ggufq8_0-1">Qwen/Qwen3-32B-GGUF:Q8_0</a></li>
+  <li><a href="#unslothqwen3-30b-a3b-ggufq4_k_xl" id="toc-unslothqwen3-30b-a3b-ggufq4_k_xl" class="nav-link" data-scroll-target="#unslothqwen3-30b-a3b-ggufq4_k_xl">unsloth/Qwen3-30B-A3B-GGUF:Q4_K_XL</a></li>
   </ul></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
@@ -349,18 +351,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="qwen38b-on-a-gpu" class="level1">
 <h1>qwen3:8B on a GPU</h1>
-<p>Alibaba Qwen3 has landed last week. I’ve been using qwen2.5 coder for code completion for months, on and off. qwen3 coder is not yet available, but I thought I could give a try via continue.dev and ollama to one of the smaller versions of qwen3 as a conversational AI that may fit in my GPU: <code>ollama pull qwen3:8b</code> proved a good guess, just about filling my GPU VRAM. Notice the runtime, in seconds, which we will compare later to a CPU run version.</p>
+<p>Alibaba <a href="https://qwenlm.github.io/blog/qwen3/">Qwen3</a> has landed a week or so ago. I’ve been using amongst other thing qwen2.5 coder for code completion for months, on and off. qwen3 coder is not yet available, but I thought I could give a try via continue.dev and ollama to one of the smaller versions of qwen3 as a conversational AI that may fit in my GPU: <code>ollama pull qwen3:8b</code> proved a good guess, just about filling my GPU VRAM. Notice the runtime, in seconds, which we will compare later to a CPU run version.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="002.png" class="img-fluid figure-img"></p>
 <figcaption>“Qwen3 8B on a GPU via ollama”</figcaption>
 </figure>
 </div>
+<p>8B is probably the biggest version my GPU can do, unless I perhaps explore quantisation in another post sometime.</p>
 </section>
 <section id="seeking-a-bigger-qwen-3-via-llama.cpp" class="level1">
 <h1>Seeking a bigger Qwen 3 via llama.cpp</h1>
+<p>I have been meaning to try running on my CPU, just to test my assumptions as to the feasibility.</p>
 <p>Qwen <a href="https://x.com/Alibaba_Qwen/status/1918353505074725363">in this tweet</a> announced the availability of <a href="https://huggingface.co/Qwen/Qwen3-32B-GGUF">Qwen3-32B-GGUF on huggingface</a>, with instructions to run it via llama.cpp. Been meaning to trial running a larger LLM on my CPU, and on my more substantial RAM than my VRAM.</p>
+<p>On 8th May, Wolfram Ravenwolf also reporded a derived Qwen3 quantised model, which we will also try.</p>
+</section>
+<section id="related-read" class="level1">
+<h1>Related read</h1>
 <p>Shout out to the post <a href="https://blog.steelph0enix.dev/posts/llama-cpp-guide/">llama.cpp guide - Running LLMs locally, on any hardware, from scratch</a>, which is not really needed for this present post, but a really nice writeup.</p>
+</section>
+<section id="repro-setps" class="level1">
+<h1>Repro setps</h1>
 <section id="qwenqwen3-32b-ggufq8_0" class="level2">
 <h2 class="anchored" data-anchor-id="qwenqwen3-32b-ggufq8_0">Qwen/Qwen3-32B-GGUF:Q8_0</h2>
 <p>Following the instructions on <a href="https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md">How to build llama.cpp</a>. After reading decided to give a go at using <a href="https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/BLIS.md">BLIS</a> as a backend.</p>
@@ -376,8 +387,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>I note that the llama-cli process has a ~11 GB footprint, and it is using 50% of my i7 16 cores. The output seems to be about a token per second or so. Even if not comparing apple and apple with the GPU (8B on the GPU versus 8-bit quantised 32B on the CPU), it is as expected slower on a CPU than a GPU. That said, this much slower than I would have hoped reading the post <a href="https://dev.to/maximsaplin/running-local-llms-cpu-vs-gpu-a-quick-speed-test-2cjn">Running Local LLMs, CPU vs.&nbsp;GPU - a Quick Speed Test</a> where the CPU trials still bottom at 5 tokens per seconds.</p>
 <div class="quarto-video"><video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-fluid" controls="" preload="auto" data-setup="{}" title=""><source src="qwen3-cpu-speed.webm"></video></div>
 </section>
-<section id="qwenqwen3-32b-ggufq8_0-1" class="level2">
-<h2 class="anchored" data-anchor-id="qwenqwen3-32b-ggufq8_0-1">Qwen/Qwen3-32B-GGUF:Q8_0</h2>
+<section id="unslothqwen3-30b-a3b-ggufq4_k_xl" class="level2">
+<h2 class="anchored" data-anchor-id="unslothqwen3-30b-a3b-ggufq4_k_xl">unsloth/Qwen3-30B-A3B-GGUF:Q4_K_XL</h2>
 <p>I noticed a tweet with <a href="https://x.com/WolframRvnwlf/status/1920186645384478955">Qwen 3 evaluations across a range of formats and quantisations by Wolfram Ravenwolf</a>. He is running on GPU for sure, but I notice that observation is that the 30B-A3B unsloth build is ~5x faster than Qwen’s Qwen3-32B. Worth a try to see if this is replicated. Again, not quite the same as I was using an 8 bit above, not 4 bit like in his benchmark, but if anything it may be even faster? Anyway, try and see.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./llama-cli</span> <span class="at">-hf</span> unsloth/Qwen3-30B-A3B-GGUF:Q4_K_XL</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a> <span class="ex">--jinja</span> <span class="at">--color</span> <span class="at">-ngl</span> 99 <span class="at">-fa</span> <span class="at">-sm</span> row <span class="at">--temp</span> 0.6 <span class="at">--top-k</span> 20 <span class="at">--top-p</span> 0.95 <span class="at">--min-p</span> 0 <span class="at">--presence-penalty</span> 1.5 <span class="at">-c</span> 40960 <span class="at">-n</span> 32768 <span class="at">--no-context-shift</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
