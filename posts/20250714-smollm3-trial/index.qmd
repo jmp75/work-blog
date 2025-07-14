@@ -1,0 +1,153 @@
+---
+title: "Trying SmolLM3"
+description: "Trying SmolLM3 on a 4-year old laptop with a Quadro RTX 4000 card"
+author:
+  - name: J-M
+    url: {}
+date: "2025-07-14"
+categories: [""]
+format: 
+  html:
+    toc: true
+image: 000.png
+engine: knitr
+draft: false
+---
+
+# Context
+
+Last week, besides being my birthday, saw the announce of [SmolLM3: smol, multilingual, long-context reasoner](https://huggingface.co/blog/smollm3). Lots of reasons, professional and personal interest, to try it. Let's go!
+
+
+# Log
+
+I still have a Quadro RTX 4000 with 8GB VRAM, and glad I invested in it a few years ago. Let's see if I can run SmolLM3 on it.
+
+## setting up the python environment
+
+I am not quite logging my iterative process installing smollm3 dependencies; unsurpringly installing stuff on top of pytorch/cuda was a bit bumpy, though not as bad as I have experienced in the past.
+
+The smolLM3 setup instrucitons only refer to `uv pip install -U transformers` (I re-use an environment created with `uv`), but running sample code then complains about the lack of `pytorch`.
+
+I had a Debian Linux with a stack for `cuda` at version 12.9. The [pytorch instructions](https://pytorch.org/get-started/locally/#linux-prerequisites) seemed to max out at `cuda` 12.8 currencly. So, downgraded via `synaptic`, just in case. It is unclear whether the python env will be self contained or not.
+
+`uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128`
+
+Then trying:
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model_name = "HuggingFaceTB/SmolLM3-3B"
+device = "cuda" # for GPU usage or "cpu" for CPU usage
+
+# load the tokenizer and the model
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+).to(device)
+```
+
+But this maxes out the VRAM. I was not expecting this from a 3 billon parameter model. I need to use a smaller type for `torch_dtype` (according to copilot...)
+
+```python
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.bfloat16,
+).to(device)
+```
+
+This uses 6.478GB out of 8.000GB. Let's try a prompt, and time to get the token rate:
+
+```python
+prompt = "Give me a brief explanation of gravity in simple terms."
+messages_think = [
+    {"role": "user", "content": prompt}
+]
+
+text = tokenizer.apply_chat_template(
+    messages_think,
+    tokenize=False,
+    add_generation_prompt=True,
+)
+model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+
+# Generate the output
+import datetime
+a=datetime.datetime.now()
+generated_ids = model.generate(**model_inputs, max_new_tokens=32768)
+b=datetime.datetime.now()
+d=b-a
+```
+
+`model.generate` triggers the following warning
+
+```text
+.venv/lib/python3.11/site-packages/torch/_inductor/compile_fx.py:2177: UserWarning: Quadro RTX 4000 does not support bfloat16 compilation natively, skipping
+  warnings.warn(
+```
+
+```python
+# Get and decode the output
+output_ids = generated_ids[0][len(model_inputs.input_ids[0]) :]
+ntk = len(output_ids)
+tks_per_second = ntk/d.total_seconds()
+print(f"Generated at {tks_per_second:.2f} tokens per second")
+```
+
+`Generated at 6.69 tokens per second`. Not too bad, not stellar, but given the warning about no native support, may be the best on that GPU.
+
+## Quantizing
+
+The [transformer - SmolLM3 doc page](https://huggingface.co/docs/transformers/en/model_doc/smollm3) has a section on quantization. Let's see what memory footprint and token rate we can get with that setup. That doc page only hinted at the need to do `pip install flash-attn --no-build-isolation`, but I found out the following was necessary.
+
+```sh
+uv pip install wheel
+uv pip install flash-attn --no-build-isolation
+uv pip install accelerate bitsandbytes
+```
+
+However, flash-attn version 2 or 3 (latter currently in beta) do not support (yet) the Turing architecture of my GPU. Too old.
+
+I tried to downgrade with `uv pip install flash-attn==1.0.9 --no-build-isolation`, but then it is `transformers` that cannot handle `flash-attn` below version 2. There is a [flash-attention-turing](https://github.com/ssiu/flash-attention-turing) lifesaver, but I felt I was running out of time to try this. 
+
+So, instead trying other options for the attention implementation, presumably slower ones.
+
+```python
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+model_name = "HuggingFaceTB/SmolLM3-3B"
+device = "cuda" # for GPU usage or "cpu" for CPU usage
+
+quantization_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.bfloat16,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_use_double_quant=True,
+)
+
+# load the tokenizer and the model
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.bfloat16,
+    quantization_config=quantization_config,
+    # attn_implementation="flash_attention_1" # transformers complains and provides 4 possible choices, including
+    attn_implementation="flex_attention"
+).to(device)
+```
+
+VRAM is 3.706Gi/8.000Gi, below 50%.
+
+Let's query about gravity, same as previous trial. I note that the GPU is only used to the tune of about one third of its capacity somehow, it was about the same without quantization, now that I think about it. 
+
+![One third of the GPU compute only](001-gpu.png)
+
+The result is `Generated at 5.78 tokens per second`. 
+
+# Stocktake
+
+On the plus side, it works. The token rate and GPU usage are low, not a snail pace, but below fast reading. See [SmolLM3 has day-zero support in mlx-lm and it's blazing fast [190tk/s] on an M4 Max](https://x.com/awnihannun/status/1942686003455762544) for a higher water mark.
+
+Perhaps I could squeeze out one or two dozen tokens per seconds if I could get a flash attention implementation working, but this looks a low-level hack for now.
