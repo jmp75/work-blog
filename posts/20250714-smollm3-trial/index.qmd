@@ -18,6 +18,9 @@ draft: false
 
 Last week, besides being my birthday, saw the announce of [SmolLM3: smol, multilingual, long-context reasoner](https://huggingface.co/blog/smollm3). Lots of reasons, professional and personal interest, to try it. Let's go!
 
+# Upfront Acknowledgments
+
+A big applause to the team behind SmolLM3, really impressive work, and truly open.
 
 # Log
 
@@ -32,6 +35,8 @@ The smolLM3 setup instrucitons only refer to `uv pip install -U transformers` (I
 I had a Debian Linux with a stack for `cuda` at version 12.9. The [pytorch instructions](https://pytorch.org/get-started/locally/#linux-prerequisites) seemed to max out at `cuda` 12.8 currencly. So, downgraded via `synaptic`, just in case. It is unclear whether the python env will be self contained or not.
 
 `uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128`
+
+## Base trial according to smollm3 HF page
 
 Then trying:
 
@@ -54,8 +59,15 @@ But this maxes out the VRAM. I was not expecting this from a 3 billon parameter 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype=torch.bfloat16,
+    attn_implementation="flex_attention",
 ).to(device)
 ```
+
+::: {.callout-warning}
+
+**Important Note*** `attn_implementation="flex_attention"` will prove to be slowing things down a fair bit, which I discover afterwards. I had gotten to use that when first figuring out something and bumped into issues with using flash attention, see later in the quantization trial.
+
+:::
 
 This uses 6.478GB out of 8.000GB. Let's try a prompt, and time to get the token rate:
 
@@ -96,6 +108,23 @@ print(f"Generated at {tks_per_second:.2f} tokens per second")
 ```
 
 `Generated at 6.69 tokens per second`. Not too bad, not stellar, but given the warning about no native support, may be the best on that GPU.
+
+### Without specifying `attn_implementation`
+
+I later on tried creating the model with the following arguments:
+
+```python
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+    # attn_implementation="flex_attention"
+).to(device)
+```
+
+This led to a `Generated at 28.90 tokens per second`. I am not sure which default args and interplay between them for `AutoModelForCausalLM.from_pretrained`, but as flagged previously, this is quite a difference in generation rate. Also, I observe that the GPU usage rate is higher than `attn_implementation="flex_attention"` which was a third.
+
+![two third to three quarters of the GPU compute only](002-faster.png)
 
 ## Quantizing
 
@@ -146,8 +175,30 @@ Let's query about gravity, same as previous trial. I note that the GPU is only u
 
 The result is `Generated at 5.78 tokens per second`. 
 
+### quantized, but without specifying `attn_implementation`
+
+I later on tried creating the model with the following arguments:
+
+```python
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.bfloat16,
+    quantization_config=quantization_config,
+    trust_remote_code=True,
+    # not clear what the default attn_implementation is used, but disable the following:
+    # attn_implementation="flex_attention"
+).to(device)
+```
+
+This led to a `Generated at 16.15 tokens per second`, and the GPU usage is closer to 50 to 60 percent:
+
+![Better GPU use with the default `attn_implementation`](003-gpu-qntzed-faster.png)
+
+I do a quick check not specifying a value for the argument `trust_remote_code`, and this seems not cause have any change in the generation rate.
+
 # Stocktake
 
-On the plus side, it works. The token rate and GPU usage are low, not a snail pace, but below fast reading. See [SmolLM3 has day-zero support in mlx-lm and it's blazing fast [190tk/s] on an M4 Max](https://x.com/awnihannun/status/1942686003455762544) for a higher water mark.
+On the plus side, it works rather well, after a discovery phase. Main lesson is that the arguments passed to `AutoModelForCausalLM.from_pretrained` can really make a difference in performance, at the least the argument `attn_implementation`. The token rate and GPU usage can be low, not a snail pace, but below fast reading. The best rate of generation at **28 tokens per second** is pretty good to me on an older harware. See [SmolLM3 has day-zero support in mlx-lm and it's blazing fast [190tk/s] on an M4 Max](https://x.com/awnihannun/status/1942686003455762544) for a higher water mark, but then again very different hardware.
 
-Perhaps I could squeeze out one or two dozen tokens per seconds if I could get a flash attention implementation working, but this looks a low-level hack for now.
+Perhaps I could squeeze out a few more tokens per seconds if I could get a flash attention implementation working, but this looks a low-level hack for now.
+
